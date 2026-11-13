@@ -1,0 +1,122 @@
+[
+  {
+    "slug": "frontend-react-hooks",
+    "stackSlug": "frontend",
+    "title": "Understanding React Hooks",
+    "difficulty": 2,
+    "contentMd": "React Hooks changed how developers build components by letting you use state and side effects inside functions. Before hooks, you needed class components to manage a counter or to fetch data on mount. With useState, you declare a value and a setter, and the component re-renders whenever that value changes. This keeps your logic close to the markup it affects.\n\nThe useEffect hook runs code after the component paints, which is perfect for fetching data, subscribing to events, or changing the document title. A common mistake is forgetting the dependency array. If you leave it out, the effect runs after every render. If you pass an empty array, it runs only once. Including the right dependencies keeps your effect in sync without unnecessary work.\n\nHooks like useContext, useMemo, and useCallback help you share state and avoid expensive recomputation. The rules of hooks are simple but strict: only call them at the top level, and only inside components or custom hooks. Following these rules makes your components predictable and easy to test.",
+    "license": "original",
+    "category": "pitfalls",
+    "contentCn": "React Hooks 改变了开发者构建组件的方式，它让你能在函数里使用状态和副作用。在 hooks 之前，你必须用类组件来管理一个计数器，或者在挂载时抓取数据。有了 useState，你声明一个值和一个 setter，组件就会在这个值变化时重新渲染。这让你的逻辑紧挨着它所影响的标记结构。\n\nuseEffect 钩子在组件绘制完成之后运行代码，非常适合抓取数据、订阅事件或修改文档标题。一个常见错误是忘记写依赖数组。如果你省略它，effect 会在每次渲染后都执行；如果你传入空数组，它就只运行一次。把正确的依赖列进去，能让 effect 保持同步，又不做无用功。\n\nuseContext、useMemo 和 useCallback 这样的 hooks 帮你共享状态、避免昂贵的重复计算。Hooks 的规则简单却严格：只能在顶层调用，且只能在组件或自定义 hook 内部调用。遵守这些规则能让组件行为可预测，也容易测试。",
+    "titleEn": "Understanding React Hooks",
+    "titleCn": "理解 React Hooks"
+  },
+  {
+    "slug": "frontend-css-flexbox-grid",
+    "stackSlug": "frontend",
+    "title": "Laying Out Pages with Flexbox and Grid",
+    "difficulty": 2,
+    "contentMd": "Modern CSS gives frontend developers two powerful layout systems: Flexbox and Grid. Flexbox is one-dimensional, which means it arranges items in a single row or a single column. It is ideal for navigation bars, toolbars, and centered cards, because you can align, distribute, and reorder items with just a few properties.\n\nCSS Grid is two-dimensional, so it places items into rows and columns at the same time. This makes it perfect for full page layouts, dashboards, and image galleries. You define tracks with the grid-template-columns property and let items flow into the cells automatically.\n\nA practical pattern is to use Grid for the page shell and Flexbox for the pieces inside each region. Both systems support responsive design through media queries, so your layout can shift from a multi-column desktop view to a single-column mobile view. Mastering these two tools removes most of the need for floating elements or manual spacing hacks.",
+    "license": "original",
+    "category": "practice",
+    "contentCn": "现代 CSS 给前端开发者提供了两套强大的布局系统：Flexbox 和 Grid。Flexbox 是一维的，意味着它把项目排在单独一行或单独一列里。它非常适合导航栏、工具栏和居中卡片，因为你只需几个属性就能对齐、分布和重排项目。\n\nCSS Grid 是二维的，它同时按行和列放置项目，因此非常适合整页布局、仪表盘和图片画廊。你用 grid-template-columns 属性定义轨道，项目就会自动流入对应的单元格。\n\n一个实用模式是：用 Grid 搭建页面外壳，用 Flexbox 处理每个区域内部的构件。两套系统都通过媒体查询支持响应式设计，你的布局可以从多列桌面视图切换成单列移动视图。掌握这两个工具后，你大部分时候都不再需要浮动元素或手工间距的取巧做法。",
+    "titleEn": "Laying Out Pages with Flexbox and Grid",
+    "titleCn": "用 Flexbox 与 Grid 布局页面"
+  },
+  {
+    "slug": "frontend-state-management",
+    "stackSlug": "frontend",
+    "title": "Managing State in Frontend Applications",
+    "difficulty": 3,
+    "contentMd": "As an application grows, deciding where state lives becomes one of the hardest problems in frontend development. Local state, held inside a single component with useState, is perfect for things like an input value or a toggle. When many components need the same data, lifting state up or using a context prevents tedious prop drilling.\n\nFor large apps, dedicated stores such as Redux, Zustand, or Jotai offer a single source of truth. They let you keep normalized state, dispatch actions, and select only the slice a component needs. This improves performance and makes the data flow easier to follow.\n\nA useful habit is to separate server state from UI state. Server state is cached data that can become stale, while UI state describes what the user sees right now. Libraries like React Query handle caching, revalidation, and optimistic updates for you. Keeping these concerns apart makes your components simpler and your bugs easier to reproduce.",
+    "license": "original",
+    "category": "performance",
+    "contentCn": "随着应用不断长大，把状态放在哪里成了前端开发中最难的问题之一。局部状态保存在单个组件内部，用 useState 持有，非常适合输入框的值或开关这类东西。当许多组件需要同一份数据时，把状态上移或者使用 context，可以避免繁琐的 props 层层透传。\n\n对于大型应用，Redux、Zustand 或 Jotai 这类专门的状态库能提供单一事实来源。它们让你维护规范化的状态、分发 action，并且只选出组件需要的那一片数据。这既提升了性能，也让数据流向更容易追踪。\n\n一个有用的习惯是把服务端状态和 UI 状态分开。服务端状态是可能过期的缓存数据，UI 状态描述的是用户此刻看到的界面。React Query 这类库会替你处理缓存、重新校验和乐观更新。把这两类关注点分开，组件会更简单，bug 也更容易复现。",
+    "titleEn": "Managing State in Frontend Applications",
+    "titleCn": "前端应用中的状态管理"
+  },
+  {
+    "slug": "frontend-web-performance",
+    "stackSlug": "frontend",
+    "title": "Why Frontend Performance Matters",
+    "difficulty": 3,
+    "contentMd": "Users judge a website in milliseconds, so frontend performance is a feature, not an afterthought. Core Web Vitals capture this with three metrics: Largest Contentful Paint measures loading, Interaction to Next Paint measures responsiveness, and Cumulative Layout Shift measures visual stability.\n\nSlow bundles are a frequent cause of poor scores. Code splitting, tree shaking, and lazy loading let you ship only the JavaScript a page actually needs. Serving assets from a CDN and compressing them with gzip or brotli shortens the time to first byte.\n\nImages deserve special attention. Modern formats and explicit width and height attributes prevent layout shift and reduce download size. The browser cache and service workers keep repeat visits fast. Measuring with real-user monitoring reveals which pages actually suffer, so you can spend effort where it helps users most. Ultimately, a faster interface reduces bounce rate and increases conversion, which is why performance belongs in the definition of done for every release.",
+    "license": "original",
+    "category": "tooling",
+    "contentCn": "用户在毫秒之间判断一个网站，所以前端性能是一项功能，而不是事后补丁。Core Web Vitals 用三个指标来衡量它：Largest Contentful Paint 衡量加载，Interaction to Next Paint 衡量响应速度，Cumulative Layout Shift 衡量视觉稳定性。\n\n臃肿的打包产物是评分不佳的常见原因。代码分割、tree shaking 和懒加载让你只交付页面真正需要的 JavaScript。从 CDN 分发资源，并用 gzip 或 brotli 压缩，可以缩短首字节到达时间。\n\n图片值得特别关注。现代格式以及明确的 width 和 height 属性可以避免布局偏移并减小下载体积。浏览器缓存和 service worker 能让回访保持快速。用真实用户监控做测量，可以揭示究竟哪些页面真的在受苦，这样你才能把精力花在最能帮到用户的地方。归根结底，更快的界面能降低跳出率、提升转化率——这就是为什么性能应该写进每一次发布的完成标准里。",
+    "titleEn": "Why Frontend Performance Matters",
+    "titleCn": "前端性能为什么重要"
+  },
+  {
+    "slug": "frontend-accessibility",
+    "stackSlug": "frontend",
+    "title": "Building Accessible Interfaces",
+    "difficulty": 3,
+    "contentMd": "Accessibility means everyone, including people who use screen readers or keyboards, can use your product. It begins with semantic HTML: a button is a button, a nav is a nav, and a heading hierarchy describes the page structure. Assistive technology relies on these native roles to announce content correctly.\n\nARIA attributes extend meaning when plain markup is not enough. Use role, aria-label, and live regions to describe dynamic updates, but prefer real elements over ARIA when both work. Keyboard navigation is equally important: every interactive control must be focusable, and focus must be visible and logical as the user tabs through the page.\n\nContrast ratios, alt text on images, and resizable text protect users with low vision. Testing with a screen reader and running an automated audit catches most issues early. Accessibility is not a final checklist item; it is a continuous practice that improves usability for every visitor. Writing accessible components from the start is far cheaper than retrofitting them after users have already struggled.",
+    "license": "original",
+    "category": "practice",
+    "contentCn": "无障碍意味着每个人都能使用你的产品，包括使用屏幕阅读器或纯键盘操作的人。它始于语义化 HTML：按钮就是按钮，导航就是导航，标题层级描述页面结构。辅助技术依赖这些原生角色来正确播报内容。\n\n当纯标记不够时，ARIA 属性可以扩展语义。用 role、aria-label 和 live region 来描述动态更新，但当两者都可行时，优先使用真实元素。键盘导航同样重要：每个可交互控件都必须可以聚焦，并且当用户用 Tab 键在页面中移动时，焦点必须清晰可见且顺序合理。\n\n对比度、图片的 alt 文本以及可缩放的文字，保护着视力较弱的用户。用屏幕阅读器做测试，再跑一遍自动化审计，能尽早发现大部分问题。无障碍不是验收清单上的最后一项，它是一种持续的实践，能为每位访问者提升可用性。从一开始就写出无障碍组件，比等用户已经历过困难之后再返工便宜得多。",
+    "titleEn": "Building Accessible Interfaces",
+    "titleCn": "构建无障碍的界面"
+  },
+  {
+    "slug": "frontend-bundlers",
+    "stackSlug": "frontend",
+    "title": "How Frontend Bundlers Work",
+    "difficulty": 3,
+    "contentMd": "A bundler takes your modules, styles, and assets and combines them into files the browser can load efficiently. Tools like Webpack, Vite, and Rollup read your import statements, resolve dependencies, and produce optimized output. Without a bundler, the browser would fetch dozens or hundreds of small files on every visit.\n\nThe process usually includes transpiling modern JavaScript with Babel or esbuild, applying minification to shrink code, and generating source maps so you can still debug. Tree shaking removes exports that nothing imports, which keeps the bundle lean. Hashing asset filenames enables long-term caching without stale files.\n\nDevelopment mode favors speed, with hot module replacement that swaps a changed module without a full reload. Production mode favors size and runtime speed. Choosing the right loader and plugin setup keeps both modes fast as the project scales. Understanding this pipeline helps you diagnose slow builds and large bundles, and it lets you tune the tooling to match your project's needs.",
+    "license": "original",
+    "category": "tooling",
+    "contentCn": "打包器把模块、样式和资源合并成浏览器能高效加载的文件。Webpack、Vite 和 Rollup 这类工具读取你的 import 语句，解析依赖关系，产出经过优化的结果。没有打包器，浏览器每次访问都要请求几十甚至几百个小文件。\n\n这个过程通常包括用 Babel 或 esbuild 转译现代 JavaScript、执行压缩以缩减代码体积，以及生成 source map 让你仍能调试。Tree shaking 会移除没有任何地方 import 的导出，从而让打包产物保持精简。对资源文件名做哈希，则能在不拿到过期文件的前提下启用长期缓存。\n\n开发模式偏重速度，提供热模块替换，可以在不整页刷新的情况下换掉某个改动过的模块。生产模式偏重体积和运行时速度。选对 loader 和插件配置，能让两种模式随着项目规模增长依然保持快速。理解这条流水线可以帮助你诊断缓慢的构建和过大的打包产物，也能让你按项目需求调整工具链。",
+    "titleEn": "How Frontend Bundlers Work",
+    "titleCn": "前端打包器是怎么工作的"
+  },
+  {
+    "slug": "frontend-typescript-basics",
+    "stackSlug": "frontend",
+    "title": "Getting Started with TypeScript",
+    "difficulty": 2,
+    "contentMd": "TypeScript adds static types to JavaScript, catching mistakes before your code ever runs. Instead of discovering that a variable is undefined at runtime, you see the error in your editor. This is especially valuable in large frontend codebases where data flows through many components.\n\nYou begin with simple annotations such as string, number, and boolean, then move to interfaces that describe the shape of an object. Union types let a value be one of several possibilities, and generics keep functions flexible while still typed. The compiler emits plain JavaScript, so TypeScript runs anywhere modern JS runs.\n\nA great first step is enabling strict mode, which turns on the most helpful checks. You will write a few more characters, but you gain confidence that props match their components and API responses match their types. Teams that adopt types gradually often start with a single typed module and expand from there. Over time, this type safety reduces bugs and makes refactoring far less stressful.",
+    "license": "original",
+    "category": "practice",
+    "contentCn": "TypeScript 为 JavaScript 加上静态类型，在代码运行之前就能抓住错误。你不必等到运行时才发现某个变量是 undefined，在编辑器里就能看到报错。这在数据流经许多组件的大型前端代码库里尤其有价值。\n\n你先从 string、number、boolean 这样简单的注解开始，再过渡到描述对象结构的 interface。联合类型让一个值可以是若干可能之一，泛型则在保持类型的同时让函数保持灵活。编译器最终输出普通的 JavaScript，所以 TypeScript 能运行在任何现代 JS 能运行的地方。\n\n一个很好的第一步是开启严格模式，它会打开最有价值的那些检查。你会多写几个字符，但换来的信心是：props 与组件匹配，API 响应与类型匹配。逐步采用类型的团队通常从一个带类型的模块开始，再向外扩展。日积月累，这种类型安全会减少 bug，也让重构轻松得多。",
+    "titleEn": "Getting Started with TypeScript",
+    "titleCn": "TypeScript 入门"
+  },
+  {
+    "slug": "frontend-ssr-vs-spa",
+    "stackSlug": "frontend",
+    "title": "Server Rendering versus Single Page Apps",
+    "difficulty": 3,
+    "contentMd": "A single page application downloads a JavaScript bundle that renders the interface in the browser. This gives snappy client-side navigation once the app loads, but the first visit can feel slow because nothing appears until the script runs and hydrates.\n\nServer-side rendering solves the blank screen by producing HTML on the server for the first request. The browser shows content immediately, then the framework hydrates it into an interactive app. Frameworks such as Next.js combine both, offering static site generation for fast pages and streaming SSR for dynamic ones.\n\nThe trade-off is complexity. Server rendering needs a runtime or build step, and you must decide what to fetch and cache. Many teams use a hybrid approach: marketing pages are pre-rendered, while dashboards stay client-heavy. Progressive enhancement keeps a basic version working even when JavaScript fails to load. Choosing the right rendering strategy depends on your content, your audience, and how much you value first paint speed versus interaction richness.",
+    "license": "original",
+    "category": "practice",
+    "contentCn": "单页应用会下载一个 JavaScript bundle，在浏览器里渲染界面。应用加载完成后，客户端导航会非常流畅，但首次访问可能显得很慢，因为要等脚本运行并完成 hydrate 之后，页面才会出现内容。\n\n服务端渲染通过在服务端为首次请求生成 HTML 来解决白屏问题。浏览器立刻显示内容，然后框架把它 hydrate 成可交互的应用。Next.js 之类的框架把两者结合起来，既有用于快速页面的静态生成，也有用于动态页面的流式 SSR。\n\n代价是复杂度。服务端渲染需要一个运行时或构建步骤，你还得决定抓取什么、缓存什么。很多团队采用混合方案：营销页面预渲染，仪表盘则保持客户端为主。渐进增强能保证在 JavaScript 加载失败时，基础版本依然可用。选择哪种渲染策略，取决于你的内容、你的受众，以及你有多看重首屏速度与交互丰富度之间的取舍。",
+    "titleEn": "Server Rendering versus Single Page Apps",
+    "titleCn": "服务端渲染还是单页应用"
+  },
+  {
+    "slug": "frontend-event-handling",
+    "stackSlug": "frontend",
+    "title": "Handling Events in the Browser",
+    "difficulty": 2,
+    "contentMd": "User interaction in the browser is built on events: clicks, key presses, scrolls, and form submissions. You register an event listener on an element, and the browser calls your function when the event happens. The event object carries useful details such as the target and the position of the cursor.\n\nEvents bubble up from the element that triggered them to their ancestors. This enables event delegation, where a single listener on a parent handles actions from many children. It also means you can call stopPropagation to prevent an event from reaching higher elements when needed.\n\nTwo patterns deserve care. Debouncing delays a handler until activity settles, which is ideal for search inputs, while throttling limits how often a handler runs during rapid scroll or resize. Understanding the event loop helps you see why heavy handlers can freeze the interface. Keep handlers small and move expensive work off the main thread to keep the page responsive.",
+    "license": "original",
+    "category": "concurrency",
+    "contentCn": "浏览器中的用户交互建立在事件之上：点击、按键、滚动和表单提交。你在某个元素上注册一个事件监听器，事件发生时浏览器就会调用你的函数。事件对象携带了有用的细节，比如事件目标和光标位置。\n\n事件会从触发它们的元素向上冒泡到各级祖先。这让事件委托成为可能：父元素上的一个监听器就能处理许多子元素的动作。这也意味着你可以在需要时调用 stopPropagation，阻止事件继续传播到更高的元素。\n\n有两种模式需要格外小心。防抖 debounce 会把处理函数推迟到活动平息之后再执行，非常适合搜索输入框；而节流 throttling 则在快速滚动或缩放时限制处理函数的执行频率。理解事件循环能让你明白为什么沉重的处理函数会卡住界面。保持处理函数轻量，把昂贵的工作移出主线程，页面才能保持响应。",
+    "titleEn": "Handling Events in the Browser",
+    "titleCn": "在浏览器中处理事件"
+  },
+  {
+    "slug": "frontend-responsive-layout",
+    "stackSlug": "frontend",
+    "title": "Designing for Every Screen Size",
+    "difficulty": 2,
+    "contentMd": "Responsive design ensures your interface works on phones, tablets, and wide monitors without building separate apps. The foundation is a fluid layout built from relative units, flexible grids, and images that scale with their container. A viewport meta tag tells mobile browsers to use the device width instead of a fixed desktop width.\n\nMedia queries let you change styles at breakpoints, such as collapsing a sidebar into a menu below six hundred pixels. Modern CSS goes further with container queries, which adapt a component to the size of its parent rather than the whole screen. This keeps components reusable in different contexts.\n\nMobile-first is a helpful mindset: design the small layout first, then enhance it for larger screens. This naturally prioritizes essential content and avoids shipping heavy desktop assumptions to phones. Testing on real devices and emulating various widths confirms that text stays readable and touch targets remain comfortable for every user.",
+    "license": "original",
+    "category": "tooling",
+    "contentCn": "响应式设计让你的界面在手机、平板和宽屏显示器上都能正常工作，而不必为每种设备构建独立的应用。它的基础是由相对单位、弹性网格和随容器缩放的图片构成的流体布局。viewport meta 标签则告诉移动浏览器使用设备宽度，而不是固定的桌面宽度。\n\n媒体查询让你在断点处改变样式，比如在六百像素以下把侧边栏折叠成菜单。现代 CSS 走得更远，提供了容器查询，它让组件适应父容器的大小，而不是整个屏幕。这让组件能在不同上下文中复用。\n\n移动优先是一种有用的思路：先设计小屏布局，再为更大屏幕做增强。这样做天然地优先保证核心内容，也避免把沉重的桌面端假设带到手机上。在真机测试并模拟各种宽度，能确认文字始终可读、触摸目标对每位用户都足够舒适。",
+    "titleEn": "Designing for Every Screen Size",
+    "titleCn": "为每一种屏幕尺寸做设计"
+  }
+]

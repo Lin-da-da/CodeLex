@@ -1,0 +1,122 @@
+[
+  {
+    "slug": "rust-ownership-basics",
+    "stackSlug": "rust",
+    "title": "Ownership: Rust's Foundation for Safety",
+    "difficulty": 2,
+    "contentMd": "Rust is famous for memory safety without a garbage collector, and the reason is ownership. Every value in Rust has a single owner, usually a variable binding. When that owner goes out of scope, Rust automatically frees the memory it holds. This rule moves responsibility for cleanup from a runtime system into the compiler, so bugs like use-after-free are caught before the program ever runs.\n\nOwnership becomes interesting when values are passed around. Assigning a String to another variable does not copy it; it moves ownership. After the move, the original binding is no longer valid, and the compiler will refuse to let you use it. This prevents two owners from freeing the same memory later.\n\nFor cases where you want to read a value without taking it, Rust offers borrowing through references. An immutable reference lets many readers inspect the data, while a mutable reference grants exclusive write access. The borrow checker enforces that these two kinds of references never overlap, which is why so much of Rust's power feels like a conversation with the compiler.",
+    "license": "original",
+    "category": "practice",
+    "contentCn": "Rust 以无需垃圾回收器（garbage collector）的内存安全性闻名，而原因就在所有权（ownership）。Rust 中的每个值都有唯一的所有者，通常是一个变量绑定。当这个所有者离开作用域时，Rust 会自动释放它所持有的内存。这条规则把清理的责任从运行时系统搬到了编译器手里，因此 use-after-free 这类 bug 在程序运行之前就被抓住了。\n\n当值被传来传去时，所有权才变得有意思。把一个 String 赋给另一个变量并不会复制它，而是移动（move）了所有权。移动之后，原来的绑定就失效了，编译器会拒绝你继续使用它。这避免了两个所有者日后释放同一块内存。\n\n如果你只是想读取一个值而不占有它，Rust 提供了通过引用借用的能力。不可变引用允许许多读者查看数据，而可变引用则赋予独占的写权限。借用检查器（borrow checker）会强制这两类引用永不重叠，这正是 Rust 大量特性让人感觉像在与编译器对话的原因。",
+    "titleEn": "Ownership: Rust's Foundation for Safety",
+    "titleCn": "所有权：Rust 安全性的根基"
+  },
+  {
+    "slug": "rust-borrow-checker",
+    "stackSlug": "rust",
+    "title": "Befriending the Borrow Checker",
+    "difficulty": 3,
+    "contentMd": "Many newcomers meet the borrow checker before they meet success. It is the part of the compiler that enforces Rust's borrowing rules, and its error messages can feel strict. In practice, the checker is protecting you from two classic problems: dangling references and conflicting access to the same data. Once you understand its logic, the messages start to read like helpful hints rather than roadblocks.\n\nThe core rule is simple to state and sometimes tricky to apply. You may have any number of immutable references to a value, or exactly one mutable reference, but never both at the same time. This guarantees that when you write through a mutable reference, no one else is quietly reading stale or half-written data.\n\nA useful habit is to keep the lifetime of each borrow as short as possible. Extract the work that needs a reference into a small function, finish with it, and return. When the scopes are tight, the borrow checker has little to complain about, and your code stays both safe and readable.",
+    "license": "original",
+    "category": "pitfalls",
+    "contentCn": "许多新手还没尝到成功的滋味就先遇上了借用检查器。它是编译器中负责执行 Rust 借用规则的部分，它的错误信息有时显得相当苛刻。实际上，它保护你免受两个经典问题的困扰：悬垂引用，以及对同一数据的冲突访问。一旦理解了它的逻辑，这些信息读起来就像有用的提示，而不再是拦路虎。\n\n核心规则说出口很简单，应用起来却有时会棘手。你可以拥有任意多个对某个值的不可变引用，或者恰好一个可变引用，但绝不能同时拥有两者。这保证了当你通过可变引用写入时，不会有人在悄悄读取陈旧或写了一半的数据。\n\n一个有用的习惯是让每次借用的生命周期尽可能短。把需要引用的工作提取到一个小函数里，完成后立刻返回。当作用域收得很紧，借用检查器就没什么可抱怨的，你的代码也既安全又易读。",
+    "titleEn": "Befriending the Borrow Checker",
+    "titleCn": "与借用检查器和平共处"
+  },
+  {
+    "slug": "rust-enums-pattern-matching",
+    "stackSlug": "rust",
+    "title": "Enums and Pattern Matching in Practice",
+    "difficulty": 2,
+    "contentMd": "Rust enums are more powerful than the enumerations found in many languages. Each variant can carry its own data, which makes an enum a compact way to describe a value that might be one of several shapes. A message type, for example, can hold a quiet quit signal, a move with coordinates, or a text payload, all within one definition.\n\nPattern matching is the natural companion to enums. The match expression takes a value and branches on its shape, often binding the inner data directly to new variables. Because match must be exhaustive, the compiler forces you to consider every variant, which removes a whole category of forgotten-case bugs.\n\nFor the common situation where you care about only one variant, if let offers a lighter syntax. It matches a single pattern and runs a block when it fits, while ignoring the rest. Together, match and if let give you expressive, compile-checked control flow that reads almost like prose.",
+    "license": "original",
+    "category": "practice",
+    "contentCn": "Rust 的枚举比许多语言里的枚举类型强大得多。每个变体都可以携带自己的数据，这让 enum 成为描述“可能是若干形态之一”的值的一种紧凑方式。例如一种消息类型，既可以承载一个安静的退出信号，也可以承载一次带坐标的移动，或者一段文本负载，全都在同一份定义里。\n\n模式匹配是枚举的自然搭档。match 表达式接收一个值并按其形态分支，通常还会把内部数据直接绑定到新的变量上。由于 match 必须穷尽所有情况，编译器会强迫你考虑每一个变体，从而消除了一整类“漏写分支”的 bug。\n\n对于只关心某一个变体的常见情形，if let 提供了更轻量的语法。它只匹配单个模式，命中时执行一段代码块，其余情况则忽略。match 与 if let 一起，为你带来表达力强、且经过编译期检查的控制流，读起来几乎像散文。",
+    "titleEn": "Enums and Pattern Matching in Practice",
+    "titleCn": "枚举与模式匹配实战"
+  },
+  {
+    "slug": "rust-traits-interfaces",
+    "stackSlug": "rust",
+    "title": "Traits: Interfaces Done Statically",
+    "difficulty": 3,
+    "contentMd": "A trait in Rust defines a set of methods that a type promises to provide. It is closest to an interface in other languages, but Rust resolves trait calls statically by default. That means the compiler knows exactly which implementation runs, so there is no hidden runtime lookup cost for ordinary generic code.\n\nDefining behavior with traits keeps your types decoupled. You can write a function that accepts anything implementing Draw, and later supply a Circle or a Square without changing that function. The standard library leans on this heavily: Iterator, Display, and Clone are all traits that unlock shared functionality across unrelated types.\n\nSometimes you want flexibility at runtime instead of compile time. Wrapping a value in a trait object, written as dyn Trait, lets different concrete types flow through the same variable. The trade-off is a small dynamic dispatch cost paid through a virtual table. Choosing between static generics and dynamic trait objects is one of the first real design decisions Rust teaches you to make.",
+    "license": "original",
+    "category": "internals",
+    "contentCn": "Rust 中的 trait 定义了一组方法，某个类型承诺提供这些方法。它最接近其他语言中的 interface，但 Rust 默认在编译期静态解析 trait 调用。这意味着编译器确切知道会运行哪个实现，因此普通泛型代码没有隐藏的运行时查找开销。\n\n用 trait 定义行为能让你的类型保持解耦。你可以写一个接受任何实现了 Draw 的东西的函数，之后再传入 Circle 或 Square，而不必修改这个函数。标准库大量依赖这一点：Iterator、Display 和 Clone 都是 trait，它们为互不相关的类型解锁了共享的功能。\n\n有时你想要的恰恰是运行时的灵活性。把值包装进 trait 对象（写作 dyn Trait），可以让不同的具体类型流经同一个变量。代价是通过虚表付出一点点动态分发的开销。在静态泛型与动态 trait 对象之间做选择，是 Rust 教给你的第一个真正的设计决策。",
+    "titleEn": "Traits: Interfaces Done Statically",
+    "titleCn": "Trait：静态实现的接口"
+  },
+  {
+    "slug": "rust-error-handling",
+    "stackSlug": "rust",
+    "title": "Errors as Values, Not Exceptions",
+    "difficulty": 2,
+    "contentMd": "Rust does not use exceptions. Instead, a function that can fail returns a Result, an enum with two variants: Ok for success and Err for failure. This design makes the possibility of error part of the type signature, so callers cannot accidentally ignore it the way a thrown exception might slip past.\n\nThe question mark operator is the key to ergonomic error handling. Placed after an expression that yields a Result, it means \"if this is an error, return it early; otherwise, give me the inner value.\" A long sequence of fallible steps becomes surprisingly flat and readable with this one symbol.\n\nFor libraries, defining your own error enum and deriving thiserror keeps the boilerplate small. For applications, a flexible type like anyhow lets you wrap whatever went wrong and propagate it upward. Either way, the compiler ensures the failure path is handled, not hidden.",
+    "license": "original",
+    "category": "practice",
+    "contentCn": "Rust 不使用异常。取而代之的是，可能失败的函数返回一个 Result，这是一个带两个变体的枚举：Ok 表示成功，Err 表示失败。这种设计让出错的可能性成为类型签名的一部分，因此调用方不会像对待可能溜过去的异常那样，无意中忽略它。\n\n问号运算符（?）是符合人体工学错误处理的关键。它放在一个产出 Result 的表达式之后，含义是“如果这是错误就提前返回；否则把里面的值给我”。有了这一个符号，一长串可能失败的步骤会变得出奇地扁平、易读。\n\n对于库，定义自己的错误枚举并派生 thiserror 能让样板代码保持在低位。对于应用，anyhow 这样灵活的类型可以让你把各种失败包装起来继续向上传递。无论哪种情况，编译器都确保失败路径被处理，而不是被藏起来。",
+    "titleEn": "Errors as Values, Not Exceptions",
+    "titleCn": "把错误当作值，而不是异常"
+  },
+  {
+    "slug": "rust-async-await",
+    "stackSlug": "rust",
+    "title": "Async and Await Without the Mystery",
+    "difficulty": 4,
+    "contentMd": "Asynchronous Rust lets a single thread do useful work while waiting on slow operations like network calls. An async function does not run immediately; instead it returns a Future, a value that represents a computation not yet finished. Nothing happens until something drives that future forward.\n\nThat something is an executor, and the most common one is Tokio. When you await a future, the current task pauses and yields control back to the executor, which can then run a different task. Crucially, awaiting does not block the operating system thread, so thousands of connections can make progress on one worker.\n\nThe mental model that helps most is to treat a future like a state machine that the runtime polls. Your job is to write the steps and await the slow ones; the runtime's job is to schedule them efficiently. Once that separation clicks, async code reads almost like ordinary sequential code, which is exactly the point.",
+    "license": "original",
+    "category": "concurrency",
+    "contentCn": "异步 Rust 让单个线程在等待网络调用这类慢操作时仍能干有用的活。async 函数不会立即执行，而是返回一个 Future，代表一段尚未完成的计算。在有东西驱动这个 future 向前推进之前，什么都不会发生。\n\n那个东西就是执行器（executor），最常见的是 Tokio。当你 await 一个 future 时，当前任务会暂停并把控制权交回执行器，执行器随后就可以运行另一个任务。关键在于，await 不会阻塞操作系统线程，因此单个 worker 上可以有成千上万个连接取得进展。\n\n最有帮助的心智模型，是把 future 看成由运行时轮询的状态机。你的工作是写下步骤并 await 那些慢的部分；运行时的工作是高效地调度它们。一旦这个分工想明白了，异步代码读起来几乎和普通顺序代码一样，而这正是重点所在。",
+    "titleEn": "Async and Await Without the Mystery",
+    "titleCn": "异步与 await：去掉神秘感"
+  },
+  {
+    "slug": "rust-smart-pointers",
+    "stackSlug": "rust",
+    "title": "Smart Pointers: More Than Addresses",
+    "difficulty": 3,
+    "contentMd": "A plain pointer just holds a memory address, but a smart pointer also carries behavior and ownership. In Rust the most fundamental smart pointer is Box, which places a single value on the heap and owns it. Box is the tool you reach for when a type is too large for the stack or when you need a recursive data structure.\n\nSharing is where the family grows. Rc uses reference counting to allow several owners of the same immutable data within one thread. Each clone increments a counter, and the value is freed only when the last owner disappears. Its thread-safe sibling Arc does the same with atomic counters so it can cross thread boundaries.\n\nWhen you need interior mutability, RefCell and Cell step in, enforcing borrow rules at runtime instead of compile time. Combined with Rc, they let a value appear immutable from the outside while still changing on the inside. Knowing which smart pointer fits the situation is a quiet sign that someone really knows Rust.",
+    "license": "original",
+    "category": "internals",
+    "contentCn": "普通指针只持有一个内存地址，而智能指针还携带行为与所有权。在 Rust 中最基础的智能指针是 Box，它把单个值放在堆上并拥有它。当某个类型对栈来说太大，或者你需要递归数据结构时，Box 就是该用的工具。\n\n共享场景让这个家族不断壮大。Rc 用引用计数，允许同一线程内同一份不可变数据拥有多个所有者。每次 clone 都会让计数器加一，只有当最后一个所有者消失时值才会被释放。它的线程安全表亲 Arc 做同样的事，只是使用原子计数器，因此可以跨越线程边界。\n\n当你需要内部可变性时，RefCell 和 Cell 登场了，它们在运行时而非编译期强制借用规则。与 Rc 结合使用时，它们能让一个值从外部看不可变，内部却仍可变化。知道该用哪种智能指针，是有人真正懂 Rust 的一个安静信号。",
+    "titleEn": "Smart Pointers: More Than Addresses",
+    "titleCn": "智能指针：不只是一个地址"
+  },
+  {
+    "slug": "rust-cargo-workflow",
+    "stackSlug": "rust",
+    "title": "Cargo: The Tool That Does the Heavy Lifting",
+    "difficulty": 1,
+    "contentMd": "Cargo is the command-line companion that most Rust developers touch every day. It creates projects, fetches dependencies, compiles code, runs tests, and generates documentation. A new project begins with cargo new, and from then on cargo build, cargo run, and cargo test cover the bulk of daily work.\n\nDependencies live in a file called Cargo.toml. You list a crate by name and a version range, and Cargo resolves the full tree, locks exact versions for reproducible builds, and downloads only what is needed. Optional features let a crate expose extra capability without bloating the default build, so you enable JSON support or TLS only when you actually use it.\n\nBecause Cargo is consistent across machines, onboarding onto a Rust project feels calm. You clone the repository, run cargo build, and trust that the same toolchain behavior produces the same binary. That predictability is a large part of why teams choose Rust for long-lived services.",
+    "license": "original",
+    "category": "tooling",
+    "contentCn": "Cargo 是大多数 Rust 开发者每天都会用的命令行伙伴。它创建项目、拉取依赖、编译代码、运行测试并生成文档。新项目从 cargo new 开始，此后 cargo build、cargo run 和 cargo test 就覆盖了日常工作的绝大部分。\n\n依赖写在名为 Cargo.toml 的文件里。你按名字和版本范围列出各个 crate，Cargo 会解析出完整的依赖树、锁定精确版本以获得可复现的构建，并且只下载真正需要的东西。可选特性（optional features）让 crate 暴露额外能力而不让默认构建膨胀，因此你只在真正用到时才开启 JSON 支持或 TLS。\n\n因为 Cargo 在各台机器上的表现一致，加入一个 Rust 项目会让人感觉很踏实。你克隆仓库、运行 cargo build，并相信同样的工具链行为能产出同样的二进制文件。这种可预测性是团队选择 Rust 承载长期运行服务的重要原因之一。",
+    "titleEn": "Cargo: The Tool That Does the Heavy Lifting",
+    "titleCn": "Cargo：干重活的工具"
+  },
+  {
+    "slug": "rust-concurrency-safety",
+    "stackSlug": "rust",
+    "title": "Fearless Concurrency, Explained",
+    "difficulty": 4,
+    "contentMd": "Rust's slogan of fearless concurrency comes from its type system, not from luck. Two marker traits, Send and Sync, describe whether a type can be moved between threads or safely shared by reference across them. The compiler checks these markers at compile time, so a whole class of data races is impossible to express in valid Rust.\n\nWhen threads truly need to share mutable state, the language offers real tools. A Mutex guards data so only one thread can touch it at a time, and an RwLock allows many readers or a single writer. Channels provide another style entirely, letting threads pass messages instead of memory, which often matches the problem better.\n\nThe practical takeaway is reassuring. You still have to think about deadlocks and design, but you cannot accidentally share unsynchronized memory. The borrow checker and the Send Sync rules act as a co-pilot, turning many runtime crashes into compile-time errors you fix once and move on.",
+    "license": "original",
+    "category": "concurrency",
+    "contentCn": "Rust“无畏并发”的口号来自它的类型系统，而不是运气。两个标记 trait，Send 和 Sync，描述一个类型能否在线程之间移动，或能否通过引用在线程间安全共享。编译器在编译期检查这些标记，于是一整类数据竞争在合法的 Rust 里根本表达不出来。\n\n当线程确实需要共享可变状态时，这门语言提供了真正的工具。Mutex 守护数据，同一时刻只允许一个线程访问；RwLock 则允许多个读者或一个单独的写者。Channel 提供了完全不同的风格，让线程之间传递消息而不是共享内存，这往往更贴合问题本身。\n\n实际的结论令人安心。你仍然要思考死锁并做设计，但你不可能在不经意间共享了未同步的内存。借用检查器与 Send/Sync 规则充当副驾驶，把许多运行期崩溃变成编译期错误，你修好一次，就可以继续往下走。",
+    "titleEn": "Fearless Concurrency, Explained",
+    "titleCn": "无畏并发，深度解析"
+  },
+  {
+    "slug": "rust-iterators-functional",
+    "stackSlug": "rust",
+    "title": "Iterators: Lazy Power for Everyday Code",
+    "difficulty": 2,
+    "contentMd": "Iterators are everywhere in idiomatic Rust, and they are lazy. Calling map or filter on a collection does not immediately compute anything; it builds a pipeline. The work happens only when you consume the iterator with a method like collect, count, or a for loop. This laziness means you can describe a complex transformation without creating intermediate arrays at each step.\n\nThe style encourages reading data as a stream. You start from a range or a vector, adapt it with chained methods, and finish by collecting the result into the concrete type you need. Because the compiler monomorphizes the generic code, the final machine instructions are often as fast as a hand-written loop, yet the source stays declarative and concise.\n\nA good first exercise is to rewrite a small for loop as an iterator chain. You will usually end up with fewer mutable variables and clearer intent. Over time, thinking in iterators changes how you see data flow, and that shift is one of the pleasures of writing Rust.",
+    "license": "original",
+    "category": "practice",
+    "contentCn": "迭代器在惯用的 Rust 代码中随处可见，而且它们是惰性的（lazy）。在集合上调用 map 或 filter 并不会立刻算出任何东西，它只是在搭建一条流水线。真正的工作发生在你用 collect、count 之类的方法或 for 循环消费迭代器的时候。这种惰性让你可以描述一次复杂变换，而不必在每一步都创建中间数组。\n\n这种风格鼓励你把数据当作流来阅读。你从一个范围或一个 vector 出发，用链式方法做适配，最后把结果收集成你需要的具体类型。由于编译器会单态化（monomorphize）泛型代码，最终生成的机器指令常常和手写循环一样快，而源码依然声明式、简洁。\n\n一个不错的入门练习是把一个小 for 循环改写成迭代器链。你通常会得到更少的可变变量和更清晰的意图。久而久之，用迭代器思考会改变你看待数据流动的方式，而这种转变正是写 Rust 的一大乐趣。",
+    "titleEn": "Iterators: Lazy Power for Everyday Code",
+    "titleCn": "迭代器：日常代码里的惰性威力"
+  }
+]

@@ -1,0 +1,122 @@
+[
+  {
+    "slug": "agent-introduction-to-ai-agents",
+    "stackSlug": "agent",
+    "title": "What Is an AI Agent",
+    "difficulty": 1,
+    "contentMd": "An AI agent is a system that can perceive context, decide what to do, and act by calling tools or writing text. Unlike a simple chatbot that only replies to one message, an agent keeps a goal in mind and works through several steps to reach it. It reads the current state, picks the next action, observes the result, and repeats until the task is done. This loop of thinking and acting is what makes an agent feel autonomous.\n\nThe core pieces of an agent are a language model, a set of tools, and some memory. The model supplies reasoning. The tools let the agent affect the outside world, such as searching the web, running code, or sending a message. Memory helps the agent remember what it did earlier in the same session. Together these parts let the agent handle tasks that are too complex for a single prompt.\n\nBuilding an agent does not always require a heavy framework. A basic loop that calls the model, parses its choice, and runs the chosen tool can already solve many practical problems. As tasks grow harder, developers add planners to break goals into subtasks and supervisors to coordinate several worker agents. The key idea is simple: give the model the ability to act, then let it decide how to act.",
+    "license": "original",
+    "category": "practice",
+    "contentCn": "AI agent 是一个能够感知上下文、决定该做什么，并通过调用工具或撰写文本来行动的系统。与只回复单条消息的简单聊天机器人不同，agent 心里始终装着一个目标，并通过若干步骤去达成它。它读取当前状态，选择下一步动作，观察结果，然后重复这一过程，直到任务完成。正是这种“思考—行动”的循环，让 agent 显得具有自主性。\n\nagent 的核心部件包括一个语言模型、一组工具和某种形式的记忆。模型提供推理能力，工具让 agent 能够影响外部世界，例如搜索网页、运行代码或发送消息，而记忆则帮助 agent 记住同一会话中早先做过的事。这些部分合在一起，就能处理那些单靠一个提示词（prompt）无法应付的复杂任务。\n\n构建 agent 并不总是需要重量级框架。一个基本循环——调用模型、解析模型的选择、执行选中的工具——就已经能解决许多实际问题。随着任务变难，开发者会加入 planner 把目标拆成子任务，再加入 supervisor 来协调多个 worker agent。核心思路很简单：先给模型行动的能力，再让它自己决定如何行动。",
+    "titleEn": "What Is an AI Agent",
+    "titleCn": "什么是 AI Agent"
+  },
+  {
+    "slug": "agent-how-prompting-works",
+    "stackSlug": "agent",
+    "title": "How Prompting Works",
+    "difficulty": 1,
+    "contentMd": "Prompting is the art of telling a language model what you want. The model reads your text and predicts what should come next, so the words you choose strongly shape the answer. A good prompt states the role, the task, and any constraints clearly. For example, asking the model to act as a careful reviewer and to list risks before fixes will produce a very different result than a vague request.\n\nMost prompts combine a system instruction, a few examples, and the real question. The system instruction sets the behavior, the examples show the format, and the question asks for the output. This pattern is called few-shot prompting. When the task needs careful logic, you can ask the model to think step by step, a method known as chain-of-thought. Writing down intermediate steps often improves accuracy on math and planning problems.\n\nPrompting is also how we steer agents. The system prompt can forbid guessing unknown APIs, require citations, or define a tone. Because the prompt is plain text, it is cheap to experiment with. Small wording changes can fix broken outputs, which is why prompt engineering is one of the first skills every builder learns. Still, prompting has limits, and that is where retrieval and tools come in.",
+    "license": "original",
+    "category": "practice",
+    "contentCn": "提示词（prompting）是告诉语言模型你希望得到什么结果的艺术。模型读取你的文本并预测接下来应该出现什么，因此你选用的措辞会强烈影响答案。一条好的提示词会清晰地说明角色、任务和约束条件。比如，让模型扮演一个细致的评审者并要求先列出风险再给修复方案，与含糊其辞的请求相比，产出的结果会截然不同。\n\n大多数提示词由系统指令、若干示例和真实问题组合而成。系统指令设定行为，示例展示格式，问题则要求给出输出。这种模式被称为 few-shot prompting。当任务需要缜密逻辑时，你可以让模型逐步思考，这就是所谓的 chain-of-thought 方法。把中间步骤写下来，通常能提升数学与规划类问题的准确率。\n\n提示词也是我们引导 agent 的手段。system prompt 可以禁止猜测未知的 API、要求给出引用，或者规定语气。由于提示词就是纯文本，做实验的成本很低。改动几个词就可能修复坏掉的输出，这也是 prompt engineering 成为每一位构建者最先学会的技能之一的原因。不过提示词也有局限，这正是检索（retrieval）和工具登场的地方。",
+    "titleEn": "How Prompting Works",
+    "titleCn": "提示词是怎么起作用的"
+  },
+  {
+    "slug": "agent-rag-explained",
+    "stackSlug": "agent",
+    "title": "Retrieval-Augmented Generation Explained",
+    "difficulty": 2,
+    "contentMd": "Retrieval-augmented generation, or RAG, connects a language model to your own documents. Instead of relying only on what the model memorized during training, the system first searches a knowledge base for relevant passages and then feeds those passages into the model as context. This grounding reduces hallucination because every claim can be traced to a source you control.\n\nA typical RAG pipeline has three stages. First, you split documents into chunks and turn each chunk into an embedding, which is a dense vector that captures meaning. Those vectors are stored in a vector database. Second, when a user asks a question, you embed the question and find the nearest neighbor chunks by cosine similarity. Third, you give the model the question plus the retrieved text and ask it to answer using only that evidence.\n\nRAG works best when retrieval is accurate. Poor chunking scatters related sentences, and a weak index returns the wrong passages. Many teams improve results with hybrid search, which mixes keyword matching like BM25 with vector search, and then rerank the candidates with a stronger model. With solid retrieval, RAG lets an agent answer questions about private data it was never trained on.",
+    "license": "original",
+    "category": "practice",
+    "contentCn": "检索增强生成（Retrieval-Augmented Generation，简称 RAG）把语言模型与你自己的文档连接起来。系统不再只依赖模型训练时记住的内容，而是先在知识库中检索相关段落，再把这些段落作为上下文喂给模型。这种接地（grounding）方式降低了幻觉，因为每一条论断都能追溯到由你掌控的来源。\n\n一条典型的 RAG 流水线有三个阶段。首先，把文档切分成块（chunk），并把每个块转换成嵌入向量（embedding），也就是一种能够捕捉语义的稠密向量，这些向量被存进向量数据库。其次，当用户提问时，你把问题也转成嵌入向量，并通过余弦相似度找出最接近的块。最后，把问题连同检索到的文本一起交给模型，要求它只依据这些证据作答。\n\n只有检索准确，RAG 才能发挥最佳效果。糟糕的分块会把相关句子打散，而薄弱的索引会返回错误的段落。许多团队会用混合检索（hybrid search）来提升效果，把 BM25 这类关键词匹配与向量搜索混合起来，再用更强的模型对候选结果重新排序。检索一旦扎实，RAG 就能让 agent 回答那些它从未在训练中见过、但存在于私有数据中的问题。",
+    "titleEn": "Retrieval-Augmented Generation Explained",
+    "titleCn": "一文讲透检索增强生成（RAG）"
+  },
+  {
+    "slug": "agent-tool-calling-basics",
+    "stackSlug": "agent",
+    "title": "Tool Calling Basics",
+    "difficulty": 2,
+    "contentMd": "Tool calling is the ability that turns a language model from a text generator into an actor. When you give the model a tool schema that describes a function and its parameters, the model can decide to call that function and return structured arguments instead of free text. Your code then runs the function and sends the result back to the model so it can continue.\n\nThe flow is straightforward. You define tools such as search_web or get_weather, each with a name, a description, and a JSON schema for its inputs. You send the user request together with these schemas to the model. The model replies with a tool call, for example a request to fetch the weather for Beijing. Your program executes the call, appends the observation, and calls the model again. This think, act, observe cycle is the heart of most agents.\n\nFunction calling and tool use are closely related terms for the same idea. The benefit is safety: rather than letting the model invent an API response, it emits a clean, validated request that your backend controls. To avoid errors, keep tool schemas simple and only require the fields the model truly needs. Good schemas are the difference between a flaky bot and a dependable assistant.",
+    "license": "original",
+    "category": "practice",
+    "contentCn": "工具调用（tool calling）是把语言模型从文本生成器变成行动者的关键能力。当你给模型一份描述函数及其参数的 tool schema 时，模型可以决定调用该函数，并返回结构化的参数，而不是自由文本。你的代码随后执行函数，再把结果回传给模型，让它继续往下走。\n\n整个流程很直接。你定义诸如 search_web 或 get_weather 这样的工具，每个都有名称、描述和一份描述输入的 JSON schema。你把用户请求连同这些 schema 一起发给模型，模型则回以一次工具调用，例如请求获取北京的天气。你的程序执行这次调用，追加上观察结果，再次调用模型。这种“思考—行动—观察”的循环，正是大多数 agent 的核心。\n\nfunction calling 和 tool use 是描述同一件事的近义术语。它的好处在于安全：模型不会凭空编造一个 API 响应，而是发出一个干净、经过校验、由你后端掌控的请求。为避免出错，tool schema 要保持简单，只要求模型真正需要的字段。好的 schema 就是时灵时不灵的工具型机器人和可靠助手之间的分水岭。",
+    "titleEn": "Tool Calling Basics",
+    "titleCn": "工具调用入门"
+  },
+  {
+    "slug": "agent-building-memory",
+    "stackSlug": "agent",
+    "title": "Building Memory for Agents",
+    "difficulty": 2,
+    "contentMd": "Memory is what lets an agent hold a conversation that makes sense over many turns. Without memory, every request is a blank slate and the agent forgets decisions made a moment ago. With memory, the agent can recall earlier context and build on it, which is essential for tasks that span several steps.\n\nThe simplest form of memory is the message history: you keep the list of past messages and send it back to the model each turn. This works until the history grows larger than the context window, at which point you must trim or summarize older messages. A common trick is to compress the early part of a long thread into a short summary and keep only recent messages in full.\n\nBeyond short-term history, agents can use longer-term memory stored outside the model. You might save key facts to a database or embed them into a vector store so the agent can retrieve them later. State such as the current step or the chosen goal also counts as memory because it tells the agent where it is in its plan. Designing memory well means deciding what to keep, what to summarize, and what to forget, so the agent stays focused without overflowing its context.",
+    "license": "original",
+    "category": "practice",
+    "contentCn": "记忆让 agent 能在多轮对话中维持一段合情合理的对话。没有记忆，每次请求都是一张白纸，agent 转头就忘了刚刚做出的决定。有了记忆，agent 能够回想先前的上下文并在其基础上继续，这对跨越多个步骤的任务至关重要。\n\n最简单的记忆形式就是消息历史：你保存过去消息的列表，每一轮都把它回传给模型。这种做法一直有效，直到历史长度超过上下文窗口，此时你必须裁剪或总结较早的消息。一个常见技巧是把长对话的前半部分压缩成一段简短摘要，只完整保留近期的消息。\n\n除了短期历史，agent 还可以利用存放在模型之外的长期记忆。你可以把关键事实保存到数据库中，或者把它们嵌入向量库，以便 agent 之后检索。当前处于第几步、选定了什么目标这类状态同样算作记忆，因为它告诉 agent 自己在计划中的位置。设计好记忆，本质上就是决定什么要保留、什么要总结、什么该忘掉，让 agent 既保持聚焦，又不会撑爆上下文。",
+    "titleEn": "Building Memory for Agents",
+    "titleCn": "为 Agent 构建记忆"
+  },
+  {
+    "slug": "agent-multi-agent-systems",
+    "stackSlug": "agent",
+    "title": "Multi-Agent Systems",
+    "difficulty": 3,
+    "contentMd": "When a single agent struggles with a complex job, you can split the work across several agents that collaborate. A multi-agent system assigns different roles to different agents, such as a researcher who gathers facts, a coder who writes the program, and a reviewer who checks the result. Each agent focuses on what it does best, and together they solve problems no single agent handles cleanly.\n\nCoordination is the hard part. A supervisor agent usually decides which worker, or sub-agent, should act next and collects their outputs. Without clear orchestration, agents may race, repeat work, or contradict each other. A good design gives each agent a narrow job and a defined handoff so the flow stays predictable.\n\nPatterns like ReAct, where the agent alternates reasoning with actions, also appear inside each worker. Reflection lets an agent review its own draft before passing it on, which catches mistakes early. Multi-agent setups cost more because many model calls happen, but they often produce higher quality on hard tasks. The trade-off is between the simplicity of one agent and the power of a small team working in parallel.",
+    "license": "original",
+    "category": "practice",
+    "contentCn": "当单个 agent 难以胜任复杂工作时，你可以把工作拆分给多个协作的 agent。多 agent 系统为不同 agent 分配不同角色，例如负责搜集事实的 researcher、负责写代码的 coder，以及负责检查结果的 reviewer。每个 agent 都专注于自己最擅长的部分，合在一起便能解决单个 agent 无法干净处理的难题。\n\n难点在于协调。通常由一个 supervisor agent 决定下一步该由哪个 worker（也就是子 agent）出手，并收集它们的产出。如果没有清晰的编排，agent 们可能会互相抢跑、重复劳动甚至彼此矛盾。好的设计会给每个 agent 划定狭窄的职责，并定义明确的交接方式，让整个流程保持可预期。\n\n像 ReAct 这样让 agent 在推理与行动之间交替的模式，也会出现在每个 worker 内部。Reflection 让 agent 在把草稿交出去之前先自我复查，从而尽早发现错误。多 agent 方案因为要发起大量模型调用，成本更高，但在困难任务上往往能产出更好的质量。这其中的权衡，是单个 agent 的简单性与一支并行小团队的力量之间的取舍。",
+    "titleEn": "Multi-Agent Systems",
+    "titleCn": "多 Agent 系统"
+  },
+  {
+    "slug": "agent-evaluating-agents",
+    "stackSlug": "agent",
+    "title": "Evaluating Agents",
+    "difficulty": 3,
+    "contentMd": "Shipping an agent without evaluation is risky because small changes can quietly break behavior. Evaluation means measuring how well the agent performs using metrics, an evaluation dataset, and sometimes human review. The goal is to catch regressions before users do.\n\nA practical approach starts with a held-out set of tasks that have known good answers. You run the agent on each task and score the result with a metric such as accuracy or a custom rubric. For open-ended answers, a stronger model can act as a judge, comparing the agent output against a reference. Benchmarks give you a standard way to compare models, but they rarely match your exact product, so a private evaluation dataset is more valuable.\n\nAgents are harder to evaluate than single prompts because they take many steps. You may need to score not only the final answer but also whether the agent used the right tools and avoided unsafe actions. Tracking cost and latency per run is also useful, since a smarter agent that is ten times slower may not be worth it. Build evaluation into your workflow so every change is measured, not guessed.",
+    "license": "original",
+    "category": "practice",
+    "contentCn": "不做评估就把 agent 上线是有风险的，因为很小的改动就可能在悄无声息中破坏行为。评估意味着用指标、评估数据集，有时再加上人工复核，来衡量 agent 表现得有多好。目标是在用户发现问题之前先抓住回归。\n\n一个务实的做法，是先准备一批留出的任务，它们的标准答案是已知的。你在每个任务上运行 agent，用准确率或自定义评分表（rubric）之类的指标给结果打分。对于开放式答案，可以让一个更强的模型充当裁判，把 agent 的输出与参考答案做比较。公开 benchmark 给了你一种比较模型的标准方式，但它们很少与你的具体产品吻合，因此私有评估数据集更有价值。\n\nagent 比单个提示词更难评估，因为它要走很多步骤。你可能不仅要给最终答案打分，还要看它是否调用了正确的工具、是否避免了不安全的操作。记录每次运行的成本与延迟同样有用，因为一个聪明十倍却慢十倍的 agent 未必划算。把评估融入你的工作流，让每次改动都被度量，而不是靠猜。",
+    "titleEn": "Evaluating Agents",
+    "titleCn": "如何评估 Agent"
+  },
+  {
+    "slug": "agent-guardrails-safety",
+    "stackSlug": "agent",
+    "title": "Guardrails and Safety",
+    "difficulty": 3,
+    "contentMd": "Agents that call tools and read data can cause real harm if left unchecked, so safety must be designed in from the start. Guardrails are the boundaries that keep the model within acceptable behavior. They include a guardrail prompt that forbids leaking secrets, a moderation step that filters toxic input, and code that detects and redacts personal information before anything leaves the system.\n\nTwo common attacks are prompt injection and jailbreak. In prompt injection, a user or a retrieved document tries to override your system instruction, for example by telling the model to ignore earlier rules. A jailbreak uses clever roleplay to slip past safety limits. Both can make an agent reveal its hidden prompt or take unauthorized actions, so you should validate inputs and treat any external text as untrusted.\n\nDefense is layered. Keep the system prompt separate from user content, check outputs with a moderation model, and constrain tool calls with strict schemas. Alignment techniques like reinforcement learning from human feedback train the base model to be helpful and safe, but they are not enough on their own. The strongest setups combine a well-aligned model with explicit runtime guardrails, because no single control is perfect.",
+    "license": "original",
+    "category": "practice",
+    "contentCn": "会调用工具、会读取数据的 agent 一旦无人约束就可能造成真实伤害，因此安全必须从一开始就纳入设计。护栏（guardrails）就是把模型限制在可接受行为之内的边界。它们包括禁止泄露机密的 guardrail prompt、过滤有毒输入的审核步骤，以及在数据离开系统之前检测并脱敏个人信息的代码。\n\n两种常见攻击是提示词注入（prompt injection）和越狱（jailbreak）。在提示词注入中，用户或被检索到的文档试图覆盖你的系统指令，比如让模型忽略先前的规则。越狱则通过精心设计的角色扮演来绕过安全限制。两者都可能让 agent 泄露其隐藏提示词或执行未授权操作，所以你要校验输入，并把任何外部文本都当作不可信内容。\n\n防御是分层的。把 system prompt 与用户内容分开存放，用审核模型检查输出，用严格的 schema 约束工具调用。基于人类反馈的强化学习（RLHF）这类对齐技术，会训练基座模型变得有用且安全，但单靠它们并不够。最稳健的配置，是把对齐良好的模型与明确的运行时护栏结合起来，因为任何单一控制手段都不完美。",
+    "titleEn": "Guardrails and Safety",
+    "titleCn": "护栏与安全"
+  },
+  {
+    "slug": "agent-fine-tuning-vs-rag",
+    "stackSlug": "agent",
+    "title": "Fine-Tuning vs RAG",
+    "difficulty": 3,
+    "contentMd": "Teams often ask whether to fine-tune a model or to use retrieval-augmented generation. The two solve different problems and are frequently combined. Fine-tuning further trains a pre-trained model on your task data, baking new style or knowledge into the weights. RAG keeps the model fixed and feeds it fresh context at request time.\n\nChoose fine-tuning when you want a stable change in behavior, such as a specific tone, a compact output format, or a skill that appears in every request. Methods like LoRA make this affordable by training only a tiny set of added parameters. Choose RAG when the knowledge changes often or must be traceable, because you simply update the documents instead of retraining.\n\nFine-tuning has downsides. It can overfit, it costs a training run, and it risks forgetting. RAG adds retrieval latency and depends on retrieval quality. In practice, many production systems use both: a fine-tuned model for the desired style and RAG for up-to-date facts. Quantization and distillation can then shrink the model so it serves cheaply. The right mix depends on how often your knowledge changes and how strict your accuracy requirements are.",
+    "license": "original",
+    "category": "practice",
+    "contentCn": "团队常常会问：到底该微调模型，还是该用检索增强生成。两者解决的是不同问题，而且经常组合使用。微调是在你的任务数据上继续训练一个预训练模型，把新的风格或知识“烘焙”进权重里；RAG 则保持模型不变，而是在每次请求时喂给它最新的上下文。\n\n如果你想要的是稳定的行为变化，比如特定的语气、紧凑的输出格式，或者一项每个请求都会用到的能力，那就选择微调。LoRA 这类方法让这件事变得负担得起，因为只训练一小部分新增参数。如果你希望知识经常变化，或者必须可追溯，那就选择 RAG，因为更新文档即可，无需重新训练。\n\n微调也有代价。它可能过拟合，需要付出一次训练开销，还存在遗忘的风险。RAG 会引入检索延迟，并依赖检索质量。实践中，很多生产系统两者并用：用微调后的模型获得期望风格，用 RAG 提供最新事实。量化与蒸馏还能进一步压缩模型，让它以更低的成本提供服务。最优配比取决于你的知识变化有多频繁，以及你对准确率的要求有多严格。",
+    "titleEn": "Fine-Tuning vs RAG",
+    "titleCn": "微调还是 RAG"
+  },
+  {
+    "slug": "agent-deploying-to-production",
+    "stackSlug": "agent",
+    "title": "Deploying Agents to Production",
+    "difficulty": 4,
+    "contentMd": "Moving an agent from a notebook to production means caring about reliability, cost, and speed. In a demo, a single slow call is fine. In production, thousands of users hit your endpoint at once, so you must handle rate limits, batch requests where possible, and stream responses to keep the interface feeling fast.\n\nStart with solid serving hygiene. Keep your API key in a secret store, never in code. Set a sensible temperature for factual tasks and cap the maximum tokens to control cost. Monitor throughput and latency, because a model that is accurate but too slow will frustrate users. Caching common answers and batching similar calls can cut both cost and wait time.\n\nObservability matters as much as the model. Log each agent loop, including the tools called and the observations returned, so you can debug failures later. Build an evaluation dataset and run it on every deploy to catch regressions. Add guardrails at the boundary so unsafe outputs never reach users. Finally, design for graceful failure: when a tool times out or returns garbage, the agent should retry or explain clearly rather than invent an answer. Production agents are less about clever prompts and more about dependable engineering.",
+    "license": "original",
+    "category": "practice",
+    "contentCn": "把 agent 从 notebook 搬进生产环境，意味着要操心可靠性、成本和速度。演示中，一次慢调用无关紧要；生产环境中，成千上万用户同时打到你的接口，你必须处理限流、在可能的情况下批处理请求，并用流式响应让界面保持轻快的体感。\n\n先从扎实的服务规范做起。API key 放在密钥库里，绝不写进代码。对事实性任务设置合理的 temperature，并限制最大 token 数以控制成本。监控吞吐量和延迟，因为一个准确却过慢的模型只会让用户恼火。缓存常见答案、合并相似调用，可以同时削减成本和等待时间。\n\n可观测性（observability）与模型本身同等重要。记录每一次 agent 循环，包括调用了哪些工具、返回了哪些观察结果，以便日后排查故障。建立评估数据集，并在每次部署时跑一遍以捕捉回归。在边界处加上护栏，让不安全输出永远到不了用户手中。最后，要为优雅失败而设计：当工具超时或返回乱码时，agent 应该重试或清楚地解释，而不是凭空编造答案。生产级 agent 靠的更多是可靠的工程实践，而不是聪明的提示词。",
+    "titleEn": "Deploying Agents to Production",
+    "titleCn": "把 Agent 部署到生产环境"
+  }
+]

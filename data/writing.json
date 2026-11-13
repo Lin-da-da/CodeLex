@@ -1,0 +1,306 @@
+[
+  {
+    "id": "pr-01",
+    "cat": "pr",
+    "title": "功能型 PR 描述",
+    "en": "## What changed\n- Add [feature] to let users [outcome].\n- Introduce [component/API] and update [related area].\n- Add tests for the main flow and important edge cases.\n\n## Why\nUsers currently have to [pain point]. This change makes the workflow [faster/safer/clearer] and supports [business or technical goal].\n\n## How to test\n1. Open [page or endpoint].\n2. Perform [action].\n3. Verify that [expected result].\n4. Confirm the existing [related flow] still works.\n\n## Screenshots\n[Attach before/after screenshots when the UI changes.]",
+    "cn": "适合新增用户可见功能或完整能力的 PR。What changed 说明改了什么，Why 解释问题与价值，How to test 给审阅者可复现的验证步骤；涉及界面时补充前后对比截图。",
+    "tips": ["标题用 Add / Support / Enable 开头", "把业务价值写清楚，不只罗列文件", "测试步骤要能让审阅者直接照做"]
+  },
+  {
+    "id": "pr-02",
+    "cat": "pr",
+    "title": "Bug 修复 PR",
+    "en": "## Problem\nWhen [precondition], [unexpected behavior] occurs. This affects [users or systems] because [impact].\n\n## Root cause\n[Component] assumed that [incorrect assumption], so [failure mechanism].\n\n## Fix\n- Validate [input/state] before [operation].\n- Handle [edge case] explicitly.\n- Add a regression test that fails without this patch.\n\n## How to verify\n1. Reproduce the issue with [steps].\n2. Apply this change and repeat the same steps.\n3. Confirm [expected behavior] and check that [related behavior] is unchanged.\n\nFixes #[issue number].",
+    "cn": "适合有明确复现路径的缺陷修复。先写用户可感知的问题和影响，再解释根因与修复方式；必须给出回归验证，并尽量关联 issue，避免只写“fix bug”。",
+    "tips": ["区分现象、根因和修复方案", "加入能防止复发的回归测试", "用 Fixes #123 自动关联问题"]
+  },
+  {
+    "id": "pr-03",
+    "cat": "pr",
+    "title": "重构 PR",
+    "en": "## Summary\nRefactor [module] to [structural improvement] without changing externally visible behavior.\n\n## Motivation\nThe current implementation [duplicates logic/couples components/is difficult to test]. This makes [maintenance task] error-prone.\n\n## Changes\n- Extract [responsibility] into [new component].\n- Replace [old pattern] with [new pattern].\n- Keep the public API and data format unchanged.\n\n## Validation\n- Existing tests pass unchanged.\n- Added focused tests for [extracted behavior].\n- Compared [observable output] before and after the refactor.\n\n## Follow-ups\n[Any intentionally deferred cleanup, or “None.”]",
+    "cn": "适合不改变外部行为的结构调整。重点写清重构动机、保持不变的契约和验证方式，让审阅者能把注意力放在代码结构而不是猜测功能差异上。",
+    "tips": ["明确声明 no behavior change", "列出保持不变的公共契约", "功能变化与重构尽量分开提交"]
+  },
+  {
+    "id": "pr-04",
+    "cat": "pr",
+    "title": "性能改动 PR",
+    "en": "## Summary\nImprove [operation] performance by [optimization].\n\n## Baseline\nUsing [dataset and environment], the current implementation processes [load] in [latency/throughput/memory]. The bottleneck is [measured cause].\n\n## Change\n- [Describe the optimization.]\n- Preserve [correctness or ordering guarantee].\n\n## Results\n| Metric | Before | After |\n| --- | ---: | ---: |\n| p95 latency | [value] | [value] |\n| throughput | [value] | [value] |\n| memory | [value] | [value] |\n\n## Validation\nRun `[benchmark command]`. Results are averaged over [number] runs. Functional tests remain green.",
+    "cn": "适合延迟、吞吐或内存优化。必须给出可复现的基线、环境和优化后数据，并说明正确性约束没有被破坏；不要只凭体感声称“更快”。",
+    "tips": ["先测量再优化", "同时报告环境、数据集和指标", "说明性能收益是否有资源或复杂度代价"]
+  },
+  {
+    "id": "pr-05",
+    "cat": "pr",
+    "title": "依赖升级 PR",
+    "en": "## Summary\nUpgrade `[package]` from `[old version]` to `[new version]`.\n\n## Why\nThis release provides [security fix/required feature/compatibility update]. See [release notes or advisory].\n\n## Notable changes\n- [Relevant upstream change.]\n- [Deprecated or removed API, if any.]\n- Update our usage in [files or modules].\n\n## Risk assessment\nThe main risk is [behavior or compatibility concern]. The lockfile changes are limited to [scope], and no unrelated packages were upgraded.\n\n## Validation\n- Run `[test command]`.\n- Exercise [critical integration].\n- Confirm the production build succeeds.\n\n## Rollback\nRevert this PR and restore `[old version]` in the lockfile.",
+    "cn": "适合单个或一组相关依赖升级。说明升级原因、与项目有关的上游变更、锁文件范围、兼容风险和回滚方式，避免把大量无关升级混进同一个 PR。",
+    "tips": ["链接 release notes 或安全公告", "明确是否包含破坏性变更", "锁文件变化应与升级范围一致"]
+  },
+  {
+    "id": "pr-06",
+    "cat": "pr",
+    "title": "Breaking change PR",
+    "en": "## Breaking change\nChange `[API or behavior]` from `[old contract]` to `[new contract]`. Existing consumers must update before adopting this release.\n\n## Why\nThe previous contract [limitation]. The new design enables [benefit] and removes [ambiguity or maintenance cost].\n\n## Migration\nBefore:\n```ts\n[old usage]\n```\nAfter:\n```ts\n[new usage]\n```\n\n## Compatibility\n- Removed: `[old API]`\n- Replacement: `[new API]`\n- Deprecation window: `[version or date]`\n\n## Rollout and rollback\nDeploy [producer/consumer] first, monitor [signals], and revert to [previous version or flag] if [threshold] is exceeded.",
+    "cn": "适合修改公共 API、数据格式或默认行为。标题和正文要醒目标出 breaking change，并提供迁移前后示例、兼容窗口、发布顺序与回滚条件。",
+    "tips": ["在标题和 footer 标记 BREAKING CHANGE", "给出可复制的迁移示例", "写清生产者与消费者的升级顺序"]
+  },
+  {
+    "id": "pr-07",
+    "cat": "pr",
+    "title": "Hotfix PR",
+    "en": "## Incident\n[Production symptom] started at [time] and affects [scope]. Current severity: [SEV level].\n\n## Immediate fix\nApply [minimal change] to stop [impact]. This intentionally avoids broader cleanup so the patch remains small and reversible.\n\n## Verification\n- Reproduced the failure in [environment].\n- Confirmed this patch restores [expected behavior].\n- Monitored [error rate/latency/business metric] for [period].\n\n## Risk and rollback\nRisk: [specific concern]. Roll back by [command or version] if [metric threshold].\n\n## Follow-up\nTrack root-cause analysis, permanent prevention, and missing tests in #[issue].",
+    "cn": "适合需要快速止损的生产热修复。正文聚焦影响、最小修复、验证与回滚，不在紧急 PR 中夹带重构；长期方案和复盘放到明确的后续 issue。",
+    "tips": ["保持改动最小且可逆", "写出明确的回滚阈值", "把根因治理登记为后续任务"]
+  },
+  {
+    "id": "pr-08",
+    "cat": "pr",
+    "title": "文档 PR",
+    "en": "## Summary\nUpdate the documentation for [feature or workflow].\n\n## Changes\n- Explain [concept] and its intended use.\n- Add a runnable example for [common task].\n- Clarify [previously confusing statement].\n- Fix outdated links or commands in [section].\n\n## Audience\nThis update is intended for [new users/operators/contributors] who need to [goal].\n\n## Validation\n- Ran every command in the examples against [version/environment].\n- Checked internal and external links.\n- Previewed the rendered Markdown and verified headings, code blocks, and tables.\n\n## Related work\nDocuments the behavior introduced in #[PR or issue].",
+    "cn": "适合 README、运行手册、API 文档或开发指南更新。说明目标读者和他们要完成的任务，并验证命令、链接及 Markdown 渲染，而不是只写“update docs”。",
+    "tips": ["从读者任务出发组织内容", "示例命令必须实际运行", "关联被记录的功能或问题"]
+  },
+  {
+    "id": "pr-09",
+    "cat": "pr",
+    "title": "大 PR 拆分说明",
+    "en": "## Goal\nDeliver [large feature] through a sequence of small, independently reviewable PRs.\n\n## Plan\n1. **#[PR] — Foundation:** add [types/schema/infrastructure] with no user-visible change.\n2. **#[PR] — Core behavior:** implement [main path] behind [guard, if applicable].\n3. **#[PR] — Integration:** connect [consumer] and add end-to-end tests.\n4. **#[PR] — Cleanup:** remove [temporary code] after rollout.\n\n## This PR\nThis is step [number]. It includes [scope] and intentionally excludes [out-of-scope work].\n\n## Review guidance\nPlease focus on [specific decisions]. Later PRs depend on this interface, so naming and contract feedback is most useful now.\n\n## Safety\nEach step can be merged or reverted independently.",
+    "cn": "适合较大功能的首个或串联 PR。用编号说明整个拆分计划、本 PR 边界、依赖关系和希望审阅者重点关注的决策，降低一次审阅过多代码的负担。",
+    "tips": ["每个 PR 都应可独立审阅和回滚", "明确当前步骤不包含什么", "尽早征求接口与命名反馈"]
+  },
+  {
+    "id": "commit-01",
+    "cat": "commit",
+    "title": "Conventional Commits 规范总览",
+    "en": "<type>(<optional scope>): <imperative summary>\n\nExplain why the change is needed and how the new behavior differs from the previous behavior. Wrap the body at a readable width and omit implementation details already obvious from the diff.\n\nRefs: #123\nBREAKING CHANGE: Describe the incompatible behavior and the exact migration required.\n\nCommon types are `feat`, `fix`, `refactor`, `perf`, `test`, `docs`, and `chore`. Keep the subject concise, do not end it with a period, and use a footer for issue references, co-authors, or breaking changes.",
+    "cn": "这是 Conventional Commits 的通用骨架。首行表达单一意图，body 解释原因和行为差异，footer 放 issue、共同作者或破坏性变更；scope 只在能稳定指向模块时使用。",
+    "tips": ["首行使用祈使语气且不加句号", "body 重点解释 why，而不是复述 diff", "破坏性变更必须写 BREAKING CHANGE footer"]
+  },
+  {
+    "id": "commit-02",
+    "cat": "commit",
+    "title": "feat：新增功能",
+    "en": "feat(auth): add passkey sign-in\n\nAllow returning users to authenticate with a registered passkey instead of entering a password. Keep password sign-in available as a fallback and reuse the existing session creation path.\n\nAdd integration coverage for successful authentication, an unknown credential, and a canceled browser prompt.\n\nRefs: #482\n\nUse `feat` for a new user-visible capability, not for internal cleanup. If the feature changes an existing contract, add a `BREAKING CHANGE:` footer with migration instructions.",
+    "cn": "适合新增用户或调用方可感知的能力。subject 说清新增了什么，body 解释使用价值、兼容策略与覆盖范围，footer 关联需求；纯内部结构调整不要标成 feat。",
+    "tips": ["scope 写稳定模块名，如 auth", "body 交代用户价值和兼容行为", "关联需求 issue，必要时标注 breaking change"]
+  },
+  {
+    "id": "commit-03",
+    "cat": "commit",
+    "title": "fix：修复缺陷",
+    "en": "fix(cache): prevent stale reads after invalidation\n\nDelete the local entry before publishing the invalidation event. Previously, a concurrent request could repopulate the shared cache from stale local data during the propagation window.\n\nAdd a regression test that coordinates two readers and verifies that both observe the updated value.\n\nFixes: #617\n\nUse `fix` when correcting observable behavior. The body should capture the failure mechanism and why the chosen change prevents recurrence; avoid vague subjects such as `fix issue` or `bug fix`.",
+    "cn": "适合修复可观察到的错误行为。subject 描述被纠正的问题，body 记录根因与修复机制，footer 关联缺陷编号；最好提到对应的回归测试。",
+    "tips": ["不要写 fix bug 这类空泛标题", "body 说明失败机制", "用回归测试证明问题不会复发"]
+  },
+  {
+    "id": "commit-04",
+    "cat": "commit",
+    "title": "refactor：重构代码",
+    "en": "refactor(payments): extract retry policy\n\nMove retry classification and backoff calculation from the payment client into a dedicated policy module. This removes duplicated branching and lets the policy be tested without network setup.\n\nThe request format, retry limits, timing, and public client API remain unchanged. Existing behavior tests pass without modification.\n\nRefs: #731\n\nUse `refactor` only when externally visible behavior does not change. State the preserved contract in the body so reviewers can distinguish structural work from a feature or fix.",
+    "cn": "适合只调整结构、不改变外部行为的提交。body 要说明为何重构，以及哪些 API、时序或输出保持不变，帮助审阅者准确判断风险。",
+    "tips": ["明确声明行为保持不变", "不要把功能修改混入 refactor", "说明可测试性或可维护性收益"]
+  },
+  {
+    "id": "commit-05",
+    "cat": "commit",
+    "title": "perf：性能优化",
+    "en": "perf(search): batch index lookups\n\nReplace one lookup per result with a single batched request. On the 50k-document benchmark, this reduces p95 search latency from 240 ms to 95 ms while keeping ranking output identical.\n\nRun `npm run benchmark:search` to reproduce the measurement. Peak memory increases by about 8 MB for a batch of 100 results.\n\nRefs: #804\n\nUse `perf` for measured performance improvements. Include the workload, before-and-after numbers, validation command, and any resource trade-off in the body.",
+    "cn": "适合有数据支撑的性能改进。subject 点明优化对象，body 记录数据规模、前后指标、复现方式和资源代价，避免仅凭代码看起来更快就使用 perf。",
+    "tips": ["包含前后对比数字", "写明基准数据集和复现命令", "不要隐瞒内存或复杂度代价"]
+  },
+  {
+    "id": "commit-06",
+    "cat": "commit",
+    "title": "test：补充测试",
+    "en": "test(api): cover expired pagination tokens\n\nAdd request-level coverage for an expired token, a token signed with the wrong key, and a valid token near its expiry boundary. Assert both the response status and the stable error code returned to clients.\n\nNo production behavior changes in this commit. The new cases document the current contract before the pagination parser is refactored.\n\nRefs: #856\n\nUse `test` when the commit only adds or corrects tests. Explain the scenarios and why they matter; do not use it when production code changes too.",
+    "cn": "适合只新增或修正测试的提交。body 写出覆盖场景、关键断言和补测目的，并明确没有生产代码行为变化；若同时修了实现，通常应拆成 fix 与 test。",
+    "tips": ["描述场景而不是只写 add tests", "说明关键断言或契约", "生产代码改动应使用对应类型"]
+  },
+  {
+    "id": "commit-07",
+    "cat": "commit",
+    "title": "docs：更新文档",
+    "en": "docs(cli): clarify database migration steps\n\nDocument the required backup command, the order of migration and verification, and the rollback command for failed deployments. Replace the outdated staging URL and add an example for multi-tenant installations.\n\nAll commands were verified with CLI version 4.2 on a clean staging database.\n\nRefs: #903\n\nUse `docs` when only documentation changes. The body can identify the intended reader, the corrected ambiguity, and how examples were checked. If code behavior also changes, document it in the corresponding feature or fix commit.",
+    "cn": "适合纯文档提交。说明修正了什么歧义、面向谁、示例如何验证，并在 footer 关联原需求；代码和文档同时变化时，类型应反映主要代码意图。",
+    "tips": ["标题说明具体文档主题", "验证示例中的命令与链接", "纯格式化也可说明范围"]
+  },
+  {
+    "id": "commit-08",
+    "cat": "commit",
+    "title": "chore 与 revert：维护和回退",
+    "en": "chore(deps): update lint tooling\n\nUpgrade ESLint and the TypeScript plugin to align local checks with CI. No runtime dependency or application behavior changes.\n\nRefs: #944\n\n---\n\nrevert: feat(auth): add passkey sign-in\n\nRevert commit `1a2b3c4` because the rollout increased authentication failures on Safari 16. Password sign-in remains available while #951 tracks a compatible implementation.\n\nRefs: #951\n\nUse `chore` for repository maintenance that does not affect product behavior. Use `revert` to undo a specific commit, quoting its hash and explaining the operational reason in the body.",
+    "cn": "chore 用于构建、工具、依赖等仓库维护，revert 用于明确撤销某个提交。本模板同时展示两者的 body 与 footer：维护要说明无运行时影响，回退要写原提交哈希、原因和后续。",
+    "tips": ["chore 不应掩盖用户可见变化", "revert 写明被撤销的提交哈希", "说明回退原因和后续跟踪 issue"]
+  },
+  {
+    "id": "review-01",
+    "cat": "review",
+    "title": "请求修改（Request changes）",
+    "en": "Could we address this before merging? In the current flow, a failed write is logged but the request still returns `200`, so callers may assume the update succeeded. Please propagate the failure as the existing `StorageError` and add a regression test for the response status.\n\nI am marking this as a required change because it can cause data loss for clients that do not retry successful responses. The rest of the approach looks good, and I am happy to re-review once this path is covered.",
+    "cn": "适合必须在合并前解决的正确性、安全性或数据风险。先指向具体行为和影响，再提出可执行修改，并解释为何这是 blocking issue；评价代码，不评价作者。",
+    "tips": ["用 Could we / Please 描述动作", "明确 blocking 的原因", "指出具体路径和期望测试"]
+  },
+  {
+    "id": "review-02",
+    "cat": "review",
+    "title": "提出疑问",
+    "en": "Question: What should happen if the user refreshes while this request is still pending? I may be missing some context, but it looks like the in-memory state is cleared before the server confirms the update.\n\nCould you clarify whether losing that optimistic state is intentional? If the server response is the source of truth, would it be safer to restore the previous value on failure? A short comment or a test for the intended behavior would make this easier to maintain.",
+    "cn": "适合不确定设计意图、需要作者补充上下文时。用 Question 和“我可能遗漏上下文”降低武断感，提出具体场景与可能方案，但不把未经确认的推测写成结论。",
+    "tips": ["先问意图，不要直接断言错误", "说明你关注的具体场景", "可给方向，但给作者解释空间"]
+  },
+  {
+    "id": "review-03",
+    "cat": "review",
+    "title": "建议更好实现",
+    "en": "Suggestion: Could we reuse `parseAccountId` here instead of duplicating the validation? That helper already handles whitespace, length limits, and the legacy prefix, while this branch only checks the prefix.\n\nUsing the shared parser would keep both entry points consistent and reduce the chance that future validation changes reach only one path. This is not blocking if the duplication is intentional, but please add a comment explaining why the rules need to differ. I can also help with the small refactor if useful.",
+    "cn": "适合提出非阻塞的实现改进。以 Suggestion 开头，说明替代方案和长期收益，同时明确是否 blocking；不要只丢一句“这里写得不好”。",
+    "tips": ["给出具体可落地的替代方案", "解释一致性或维护性收益", "非阻塞建议要明确标注"]
+  },
+  {
+    "id": "review-04",
+    "cat": "review",
+    "title": "称赞优秀实现",
+    "en": "Nice improvement. Moving the retry decision into a pure function makes the behavior much easier to reason about, and the table-driven tests document the policy clearly. I especially like that the tests cover both retryable status codes and the maximum-attempt boundary.\n\nThe public client API remains small, while the policy can now evolve independently. This also removes the duplicated backoff branches from the two callers. No changes requested from me; thank you for keeping the refactor focused and for including the before-and-after benchmark.",
+    "cn": "适合肯定值得保留的工程实践。称赞要具体指出设计、测试或可维护性亮点，让团队知道什么做法值得复用，而不是只写 LGTM 或 Good job。",
+    "tips": ["具体指出好在哪里", "连接到可维护性或正确性收益", "真诚简洁，不要为了称赞而称赞"]
+  },
+  {
+    "id": "review-05",
+    "cat": "review",
+    "title": "指出边界条件",
+    "en": "Could we cover the empty-page case here? If the final item is deleted while the user is on the last page, `currentPage` remains greater than `totalPages`, and the next request asks for a page that no longer exists.\n\nOne option is to clamp the page after the total changes and then refetch. Please add a test where a one-item final page becomes empty, and verify that the user lands on the previous valid page. The normal multi-item deletion path already looks correct.",
+    "cn": "适合指出空值、边界页、并发或状态转换等遗漏场景。描述触发条件、当前结果和预期结果，再建议最小测试用例，避免只说“考虑 edge case”。",
+    "tips": ["写清触发条件和错误结果", "优先给出最小复现案例", "同时认可已正确覆盖的主路径"]
+  },
+  {
+    "id": "review-06",
+    "cat": "review",
+    "title": "指出命名问题",
+    "en": "Nit: Could we rename `data` to `pendingInvoices`? At this point the value has already been filtered and sorted, so the more specific name would save readers from tracing the previous steps.\n\nSimilarly, `handleIt` could be `submitInvoiceBatch` because the function performs the network submission rather than handling a generic event. These are non-blocking naming suggestions; the behavior is clear and I do not think we need any structural changes. Describing the domain role should make future call sites easier to scan.",
+    "cn": "适合不影响正确性的命名建议。用 Nit 标注低优先级，说明名称与真实语义的差距并给出替代名；不要因个人偏好阻塞合并。",
+    "tips": ["轻微建议用 Nit 标注", "名称应表达领域角色或动作", "命名偏好通常不应 blocking"]
+  },
+  {
+    "id": "review-07",
+    "cat": "review",
+    "title": "指出测试缺失",
+    "en": "Could we add a regression test for the authorization failure path? The new success case is covered, but this branch also changes how a missing project role is mapped to the API response.\n\nPlease verify that a user without the role receives `403` with the stable `PROJECT_ACCESS_DENIED` code and that no write is attempted. That test would protect both the client contract and the security boundary. A unit test around the mapper is useful, but I would prefer one request-level test because middleware configuration is part of this behavior.",
+    "cn": "适合实现改动涉及新分支、契约或安全边界但缺少测试时。指出未覆盖的具体路径、关键断言和推荐测试层级，避免泛泛要求“提高覆盖率”。",
+    "tips": ["指定缺失的行为路径", "列出状态码、错误码、副作用等断言", "根据风险选择单元或集成测试"]
+  },
+  {
+    "id": "review-08",
+    "cat": "review",
+    "title": "指出性能隐患",
+    "en": "Potential performance issue: This calls `loadProfile` once for every row, which can turn a 100-row page into 101 database queries. Could we fetch the required profiles in one query and join them by user ID in memory?\n\nIf the per-row call is intentionally cached, please add a note and a query-count test so that behavior stays visible. Otherwise, batching should reduce latency and database load without changing the response. It would also be helpful to include a before-and-after query count for the largest supported page size.",
+    "cn": "适合指出 N+1、重复计算或不必要 I/O。用 Potential 表示需要验证，给出规模化后的影响、替代方案和可测量指标，不要在没有数据时夸大为确定事故。",
+    "tips": ["说明问题如何随数据规模放大", "建议批处理、缓存等具体方向", "要求查询数或基准数据验证"]
+  },
+  {
+    "id": "review-09",
+    "cat": "review",
+    "title": "批准通过（Approve）",
+    "en": "Approved. I walked through the migration path, ran the focused tests locally, and verified that the fallback remains available during rollout. The API change is documented, the metrics cover the main failure modes, and the rollback steps are actionable.\n\nI left two non-blocking nits about variable names; feel free to address them here or in a follow-up. Nothing else blocks this from merging. Please keep an eye on the error-rate dashboard during the first deployment window, as noted in the rollout plan.",
+    "cn": "适合完成审阅并确认可以合并时。简要说明检查了哪些高风险点，区分非阻塞意见，并提示上线观察事项；比单独写 LGTM 更能传达审阅责任。",
+    "tips": ["说明已验证的关键内容", "明确剩余意见是否阻塞", "有发布风险时提醒监控"]
+  },
+  {
+    "id": "design-01",
+    "cat": "design",
+    "title": "Design Doc 结构总览",
+    "en": "# [Project] Design Document\n\n## Status and owners\nStatus: Draft | In review | Approved\nAuthors: [names]\nReviewers: [names]\nLast updated: [date]\n\n## Summary\nDescribe the proposal and expected outcome in a short paragraph.\n\n## Background\nExplain the current system, user problem, and relevant constraints.\n\n## Goals and non-goals\nList measurable goals and explicitly excluded work.\n\n## Proposed design\nCover architecture, data flow, APIs, storage, security, and operational behavior.\n\n## Alternatives considered\nCompare credible options and explain the decision.\n\n## Risks, rollout, and rollback\nIdentify failure modes, monitoring, staged delivery, and recovery steps.\n\n## Testing and milestones\nDefine validation, owners, dependencies, and delivery checkpoints.\n\n## Open questions\nTrack unresolved decisions with owners and due dates.",
+    "cn": "适合中大型技术方案的统一目录。先让读者快速理解结论，再补背景、目标、方案、替代项和上线安全；开放问题要有负责人和截止点，避免文档长期停在模糊状态。",
+    "tips": ["摘要应让非作者快速理解结论", "明确 non-goals 防止范围膨胀", "关键决策记录替代方案和取舍"]
+  },
+  {
+    "id": "design-02",
+    "cat": "design",
+    "title": "Background & Goals",
+    "en": "## Background\nToday, [users or services] use [current workflow] to [task]. The system handles [current scale], but [measured problem] causes [user or operational impact]. Previous attempts include [workarounds], which did not solve [remaining gap]. The proposal must work within [technical, legal, staffing, or timeline constraints].\n\n## Goals\n- Reduce [metric] from [baseline] to [target] by [date].\n- Support [specific use case] for [audience].\n- Preserve [compatibility, security, or reliability requirement].\n\n## Non-goals\n- Replacing [adjacent system].\n- Supporting [explicitly excluded scenario].\n- Optimizing [metric] beyond [threshold] in this phase.\n\n## Success criteria\nWe will consider the project successful when [observable signals] remain within target for [period].",
+    "cn": "适合 design doc 开头定义问题和边界。Background 要用数据说明现状与影响，Goals 要可衡量，Non-goals 主动排除容易扩张的相邻需求，最后给出成功判定标准。",
+    "tips": ["用基线数据描述问题", "目标必须可测量且有时间范围", "non-goals 不是以后永远不做"]
+  },
+  {
+    "id": "design-03",
+    "cat": "design",
+    "title": "方案对比与选型",
+    "en": "## Options considered\n\n### Option A: [name]\nApproach: [brief description]\nPros: [advantages]\nCons: [costs and limitations]\n\n### Option B: [name]\nApproach: [brief description]\nPros: [advantages]\nCons: [costs and limitations]\n\n### Option C: [name]\nApproach: [brief description]\nPros: [advantages]\nCons: [costs and limitations]\n\n## Decision criteria\nWe compare the options on correctness, delivery cost, operational complexity, scalability, security, and reversibility. Weight [most important criteria] more heavily because [project constraint].\n\n## Decision\nChoose Option [X]. It best satisfies [criteria] while accepting [explicit trade-off]. We will revisit this decision if [measurable condition] changes.\n\n## Why not the others\nOption [Y] was rejected because [reason], not because it is universally inferior.",
+    "cn": "适合记录多个可行方案及选型依据。比较维度要一致，结论要承认代价，并写清重新评估的触发条件；避免为了衬托首选方案而虚构明显很差的稻草人选项。",
+    "tips": ["只比较真实可行的候选方案", "统一使用正确性、成本、运维等维度", "写清接受了什么 trade-off"]
+  },
+  {
+    "id": "design-04",
+    "cat": "design",
+    "title": "风险与回滚",
+    "en": "## Risk assessment\n\n| Risk | Likelihood | Impact | Mitigation | Owner |\n| --- | --- | --- | --- | --- |\n| [failure mode] | Low/Med/High | Low/Med/High | [preventive action] | [name] |\n\n## Rollout plan\n1. Deploy to [internal or canary group].\n2. Validate [metrics and functional checks] for [duration].\n3. Increase traffic to [percentage] only if [thresholds] remain healthy.\n4. Complete rollout and remove temporary safeguards after [condition].\n\n## Rollback triggers\nRoll back if [error rate, latency, data mismatch, or business metric] exceeds [threshold] for [duration].\n\n## Rollback procedure\nDisable [flag], restore [version/schema], and verify [recovery signals]. The rollback owner is [name]. Estimated data repair, if required: [steps].\n\n## Irreversible changes\n[List migrations or external effects and explain compensation.]",
+    "cn": "适合评审方案的上线安全性。用表格记录风险概率、影响、缓解措施和负责人，再定义渐进发布步骤、量化回滚阈值、实际操作与不可逆变更的补偿方式。",
+    "tips": ["风险必须有负责人和缓解措施", "回滚阈值要量化", "单独标出数据迁移等不可逆操作"]
+  },
+  {
+    "id": "design-05",
+    "cat": "design",
+    "title": "容量与性能估算",
+    "en": "## Workload assumptions\n- Daily active users: [value]\n- Peak requests per second: [value]\n- Read/write ratio: [value]\n- Average and maximum payload: [value]\n- Retention period: [value]\n\n## Capacity estimate\nAt peak, the service needs approximately [CPU], [memory], [network], and [storage growth per day]. Apply a [factor] safety margin for bursts, retries, and uneven partition distribution.\n\n## Performance targets\n- p50 latency: [target]\n- p95 latency: [target]\n- p99 latency: [target]\n- Availability: [target]\n\n## Bottlenecks and limits\nThe first expected limit is [database/queue/external API] at [threshold]. We will scale by [method] and apply backpressure at [boundary].\n\n## Validation\nRun [load test] with [traffic model], monitor [metrics], and compare results with these assumptions before launch.",
+    "cn": "适合在方案阶段估算峰值流量、存储增长和延迟目标。先写可核查的业务假设，再换算资源与安全余量，指出最先到达的瓶颈，并用贴近真实流量模型的压测验证。",
+    "tips": ["区分平均值、峰值和突发流量", "为重试和分片不均预留安全余量", "估算必须能被压测结果校准"]
+  },
+  {
+    "id": "design-06",
+    "cat": "design",
+    "title": "里程碑排期",
+    "en": "## Milestones\n\n### M1 — Design approved ([date])\nOwner: [name]\nExit criteria: API, data model, security review, and open questions are resolved.\n\n### M2 — Core implementation ([date])\nOwner: [name]\nExit criteria: Main path is implemented behind a flag with unit and integration tests.\n\n### M3 — Staging validation ([date])\nOwner: [name]\nExit criteria: Load tests pass, dashboards and alerts are ready, and the runbook is reviewed.\n\n### M4 — Production rollout ([date])\nOwner: [name]\nExit criteria: Canary metrics stay healthy and rollout reaches 100 percent.\n\n## Dependencies\n- [Team/system] must deliver [dependency] by [date].\n\n## Critical path and contingency\n[Milestones] are on the critical path. If [risk] occurs, defer [scope] rather than removing [quality or safety requirement].",
+    "cn": "适合把 design doc 转成可执行计划。每个里程碑写负责人、日期和可验收的退出条件，明确外部依赖与关键路径；延期时优先缩减范围，不应删除测试、安全或回滚要求。",
+    "tips": ["里程碑用结果验收，不用“完成 80%”", "每项依赖写负责人和截止日期", "预先说明延期时可砍掉的范围"]
+  },
+  {
+    "id": "sync-01",
+    "cat": "sync",
+    "title": "每日站会同步",
+    "en": "Yesterday:\n- Completed [task] and merged #[PR].\n- Verified [result or metric].\n\nToday:\n- Implement [next task].\n- Review [PR or design] with [teammate].\n\nBlockers:\n- None.\n\nOr:\n- Blocked by [specific dependency]. I need [decision, access, or input] from [owner] by [time] to keep [milestone] on track.\n\nConfidence: [On track / At risk / Off track].\n\nKeep the update focused on outcomes and coordination. Link detailed discussions instead of replaying the full history, and call out changes to scope or delivery confidence early.",
+    "cn": "适合每日站会或异步 stand-up。按 Yesterday、Today、Blockers 汇报结果与下一步，阻塞项要写需要谁在何时提供什么，并主动标记交付信心变化。",
+    "tips": ["汇报结果，不罗列所有操作", "阻塞项包含 owner、诉求和截止时间", "没有阻塞时明确写 None"]
+  },
+  {
+    "id": "sync-02",
+    "cat": "sync",
+    "title": "阻塞求助",
+    "en": "Hi [name/team], I am blocked on [task] because [specific issue]. I have tried [attempt 1] and [attempt 2], and the current result is [error or evidence].\n\nCould you help with [concrete request]? The relevant context is in [link], and the smallest reproduction is [steps or command]. If we cannot resolve this by [time], [milestone or user impact] will be at risk.\n\nMy proposed next step is [option], but I need confirmation on [decision]. I am available at [time window] for a quick pairing session if that is faster.",
+    "cn": "适合在 Slack、Teams 或邮件里请求解除阻塞。交代具体问题、已尝试方法、证据、明确诉求和影响时间点，让接收者不用反复追问背景就能行动。",
+    "tips": ["不要只说“有空帮我看看吗”", "附最小复现和相关链接", "明确需要建议、权限还是决策"]
+  },
+  {
+    "id": "sync-03",
+    "cat": "sync",
+    "title": "进度延期告知",
+    "en": "Update: [project or milestone] is now expected on [new date], instead of [original date].\n\nThe main cause is [specific reason], which affects [critical path item]. We completed [finished scope], but [remaining work] still requires [dependency or validation].\n\nImpact:\n- [User, team, or launch impact].\n- [What is not affected].\n\nRecovery plan:\n- [Action and owner] by [date].\n- [Action and owner] by [date].\n- Daily checkpoint on [metric or risk].\n\nTo protect quality, I recommend deferring [optional scope] rather than skipping [testing, security review, or rollback preparation]. I will send the next update by [time].",
+    "cn": "适合发现无法按原计划交付时尽早通知相关方。直接给出新日期、原因、影响和恢复计划，区分已完成与剩余范围，并明确下一次更新时间。",
+    "tips": ["先给结论和新日期", "说明影响与不受影响的范围", "不要用牺牲测试或安全换进度"]
+  },
+  {
+    "id": "sync-04",
+    "cat": "sync",
+    "title": "上线公告",
+    "en": "[Feature] is now live for [audience or percentage of traffic].\n\nWhat changed:\n- [User-visible capability].\n- [Operational or API change].\n\nRollout status:\n- Version: [version]\n- Regions/environments: [scope]\n- Started: [time]\n- Current health: [key metrics are normal / issue summary]\n\nHow to use it:\n[Short instruction or documentation link.]\n\nMonitoring and support:\nWe are watching [dashboards and alerts] through [time]. If you see [symptom], please report it in [channel] with [request ID or context]. Rollback steps and the on-call owner are documented in [runbook]. Thank you to [teams or contributors] for the reviews and launch support.",
+    "cn": "适合功能或服务正式上线后通知用户与协作团队。说明上线范围、用户变化、版本、当前健康状态、使用入口和问题反馈渠道，并让值班与回滚信息可快速找到。",
+    "tips": ["写清灰度比例、区域或用户范围", "提供使用文档和反馈渠道", "包含监控状态与值班信息"]
+  },
+  {
+    "id": "sync-05",
+    "cat": "sync",
+    "title": "事故通报（Incident）",
+    "en": "Incident update — [service or feature]\nStatus: [Investigating / Identified / Monitoring / Resolved]\nSeverity: [SEV level]\nStarted: [time]\nLast updated: [time]\n\nImpact:\n[Who is affected, what fails, and the approximate scope. Avoid unsupported estimates.]\n\nCurrent findings:\nWe have confirmed [facts]. We are still investigating [unknowns].\n\nMitigation:\n[Action] was applied at [time], and [metric] is [improving/stable].\n\nNext steps:\n- [Action and owner].\n- Next update by [time], even if there is no material change.\n\nPlease use [channel or status page] for updates. After recovery, we will publish a blameless review covering the timeline, root cause, and preventive actions.",
+    "cn": "适合生产事故期间的定时通报。把已确认事实与未知项分开，量化影响但不猜测，说明缓解动作、负责人和下次更新时间；语气应无责备并保持透明。",
+    "tips": ["区分 confirmed facts 与 unknowns", "没有新进展也按承诺时间更新", "事故中不猜根因、不追责个人"]
+  },
+  {
+    "id": "sync-06",
+    "cat": "sync",
+    "title": "请假与交接",
+    "en": "I will be out of office from [start date/time] through [end date/time] and will return on [date].\n\nHandover:\n- [Project/task]: Current status is [status]. Next action is [action]. Owner while I am away: [name].\n- [Project/task]: Waiting on [dependency]. Relevant context: [link]. Backup owner: [name].\n- On-call or approvals: [coverage arrangement].\n\nKnown risks:\n[Risk, trigger, and response], or “None.”\n\nFor urgent issues, contact [person or channel]. For non-urgent questions, leave a note in [channel/document], and I will follow up after I return. All open decisions and runbooks are linked from [handover document].",
+    "cn": "适合休假、出差或较长时间离线前同步。逐项写当前状态、下一步、临时负责人、依赖和风险，并给出紧急联系渠道，避免工作只存在于个人聊天记录里。",
+    "tips": ["每项工作都指定 backup owner", "链接决策记录、PR 和 runbook", "写清离开与返回的具体时间"]
+  }
+]

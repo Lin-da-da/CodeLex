@@ -1,0 +1,370 @@
+[
+  {
+    "concept": "Garbage Collection",
+    "stack": "java",
+    "seconds": 55,
+    "en": "Garbage collection is the JVM automatically reclaiming memory held by objects that are no longer reachable. It decides that by starting from GC roots, things like local variables on the stack, static fields, and JNI references, and walking the object graph; anything it cannot reach is garbage. The mechanism worth knowing is generational collection. The heap is split into young and old generations because most objects die young. New objects land in Eden; when Eden fills, a minor GC copies survivors through the survivor spaces, aging them until they get promoted to the old generation. When the old generation fills up you get a full GC, which is far more expensive. The key point is the trade-off between throughput, latency, and footprint. Stop-the-world pauses hurt latency, so collectors like G1 and ZGC do their marking concurrently with your application threads, trading some throughput for much shorter pauses. What that means in practice is you pick a collector based on whether you optimize for request latency or batch throughput.",
+    "cn": "垃圾回收就是 JVM 自动回收那些已经不再可达的对象所占用的内存。判断的方式是从 GC Roots 出发,比如栈上的局部变量、静态字段、JNI 引用,然后遍历整个对象图;凡是遍历不到的,就是垃圾。这里最值得讲的机制是分代收集。堆被划分成新生代和老年代,因为绝大多数对象都是朝生夕死的。新对象进入 Eden 区,Eden 满了就触发 minor GC,把存活对象在 survivor 区之间来回拷贝并增加年龄,直到晋升到老年代。老年代满了才会触发 full GC,代价要大得多。关键在于吞吐、延迟和内存占用这三者的权衡。Stop-the-world 的停顿直接伤害延迟,所以 G1、ZGC 这类收集器把标记阶段和业务线程并发执行,牺牲一部分吞吐来换取极短的停顿时间。这意味着在实践中,你是根据系统更看重请求延迟还是批处理吞吐量来选择收集器的。",
+    "keywords": ["heap", "generation", "pause", "GC roots", "throughput"]
+  },
+  {
+    "concept": "Java Memory Model",
+    "stack": "java",
+    "seconds": 55,
+    "en": "The Java Memory Model is the spec that defines what one thread is guaranteed to see when it reads memory written by another thread. It exists because hardware and the JIT compiler perform instruction reordering and cache values in registers, so naive intuition about shared variables simply breaks. The concrete mechanism is happens-before: a set of rules saying that if action A happens-before action B, then everything A did is visible and ordered before B. Volatile writes, lock release, thread start and join all create happens-before edges. The trade-off worth pointing out is that visibility is not atomicity. Volatile makes a write immediately visible but does not make read-modify-write sequences like count plus plus atomic; for that you need locks or atomics. What that means in practice is that most concurrency bugs are visibility and ordering bugs rather than naively obvious races, and reasoning strictly with happens-before is the reliable way to argue your code is correct.",
+    "cn": "Java 内存模型是一份规范,它定义了一个线程读取另一个线程写入的内存时,到底能看到什么。它之所以存在,是因为硬件和 JIT 编译器会重排指令、会把值缓存在寄存器里,所以我们对共享变量的直觉往往是错的。具体的机制叫 happens-before:它是一组规则,含义是如果动作 A happens-before 动作 B,那么 A 做的所有事对 B 都可见、且有序排在 B 之前。volatile 写、锁的释放、线程的 start 和 join,都会建立 happens-before 边。这里必须讲清楚的权衡是:可见性不等于原子性。volatile 能让写立刻被看到,但没法让 count++ 这种读改写序列变得原子,那需要锁或者原子类。这意味着在实践中,大多数并发 bug 其实是可见性和有序性问题,而不是表面看上去的那种竞态,因此只有严格用 happens-before 去推理,才能可靠地证明代码是对的。",
+    "keywords": ["happens-before", "visibility", "volatile", "reordering", "atomicity"]
+  },
+  {
+    "concept": "HashMap",
+    "stack": "java",
+    "seconds": 50,
+    "en": "HashMap is a hash table storing key-value pairs with average O(1) get and put. Mechanically, it hashes the key, spreads that hash across buckets, and drops the entry into an array slot indexed by that bucket. Collisions are handled by chaining, meaning entries in the same bucket form a linked list, and since Java 8, once a single bucket gets too long it converts into a red-black tree, which takes worst-case lookup from linear down to log n. The key detail is resizing: once entries exceed capacity times load factor, default 0.75, the map has to resize, doubling the table and rehashing everything. The trade-off is memory versus collisions. A low load factor avoids long chains but wastes space, a high one saves memory but degrades lookup time. What that means in practice is that if you know the size up front, construct the map with that initial capacity, and always use immutable keys so their hash code cannot change after insertion.",
+    "cn": "HashMap 是一个存放键值对的哈希表,平均情况下 get 和 put 都是 O(1)。具体机制是:它对 key 做哈希,把这个哈希值打散到各个桶里,再把条目放进按桶索引的数组槽位。冲突用链地址法处理,也就是同一个桶里的条目串成链表;从 Java 8 开始,当一个桶变得过长时会转成红黑树,把最坏情况的查找从线性降到 log n。这里的关键细节是扩容:一旦条目数超过容量乘以加载因子,默认是 0.75,它就会把数组翻倍并重新哈希所有元素。权衡在于内存和冲突之间:加载因子低,链短但浪费空间;加载因子高,省内存但查找变慢。这意味着在实践中,如果你事先知道数据规模,就应该用这个初始容量来构造 map,并且一定要用不可变对象做 key,避免插入之后哈希值发生变化。",
+    "keywords": ["hash", "bucket", "collision", "resize", "load factor"]
+  },
+  {
+    "concept": "ConcurrentHashMap",
+    "stack": "java",
+    "seconds": 55,
+    "en": "ConcurrentHashMap is a thread-safe hash map designed for high concurrency. The older Java 7 version used segment locking; since Java 8 it locks far more finely, normally doing a lock-free CAS insert into a bucket, and only falling back to synchronizing on that single bucket head when there is an actual collision. Reads are almost always lock-free because the value field is volatile. The mechanism I would highlight is resizing: multiple threads cooperate, each taking a slice of the table to migrate, so the map scales instead of blocking everyone. The trade-off is that it gives you per-operation atomicity, not a consistent snapshot. Iterators are weakly consistent, they reflect updates made during traversal, and size is only an estimate. What that means in practice is use it for high-throughput shared state, but reach for computeIfAbsent for compound updates rather than the naive check-then-put pattern, which still races even on this map.",
+    "cn": "ConcurrentHashMap 是为高并发场景设计的线程安全哈希表。老版本 Java 7 用的是分段锁;从 Java 8 开始锁的粒度细得多,通常是对桶做无锁的 CAS 插入,只有在真正发生哈希冲突时,才退化成对这个桶的头节点加 synchronized。读操作几乎总是无锁的,因为 value 字段是 volatile 的。这里我最想强调的是扩容机制:多个线程会协作,每个线程认领表的一部分去迁移数据,所以这个 map 能横向扩展,而不是把所有线程阻塞住。它的权衡是:它提供的是单操作原子性,而不是一致性快照。它的迭代器是弱一致性的,遍历过程中发生的更新可能被反映出来,而且 size 只是一个估计值。这意味着在实践中,你可以用它承载高吞吐的共享状态,但复合更新一定要用 computeIfAbsent,而不是先 check 再 put 的写法,那种写法即便在这张表上依然存在竞态。",
+    "keywords": ["concurrency", "CAS", "bucket", "lock-free", "weakly consistent"]
+  },
+  {
+    "concept": "Thread Pool",
+    "stack": "java",
+    "seconds": 55,
+    "en": "A thread pool is a set of pre-created worker threads pulling tasks off a shared queue, instead of you spawning a thread per task. The mechanism is the execute flow in ThreadPoolExecutor: if core threads are below core size, create one; otherwise push onto the work queue; only if the queue is full do you grow up to max size; and beyond that the rejection policy kicks in. So the knobs are core size, max size, queue capacity, keep-alive, and the rejection handler. The trade-off is throughput versus resource protection. Threads are expensive, so a bounded pool stops your service being killed by thread exhaustion, but a badly sized pool either leaves CPU idle or floods memory with queued work and context switches. What that means in practice is size the pool by workload, roughly CPU count for CPU-bound work and much higher for blocking IO, and always use a bounded queue so backpressure is visible instead of an unbounded queue that quietly grows until you hit out of memory.",
+    "cn": "线程池就是一组预先创建好的工作线程,它们从一个共享队列里取任务执行,而不是为每个任务都新建线程。它的核心机制是 ThreadPoolExecutor 的 execute 流程:如果线程数还没到核心线程数,就直接创建线程;否则把任务塞进工作队列;只有当队列也满了,才会继续扩容到最大线程数;再往后,就交给拒绝策略处理。所以要调的就是几个参数:核心线程数、最大线程数、队列容量、keep-alive 时间以及拒绝处理器。这里的权衡是吞吐量与资源保护之间的取舍。线程很昂贵,所以一个有界的池能避免服务被线程耗尽拖垮,但配置不合理的话,要么 CPU 闲着没事干,要么队列堆积加上上下文切换把内存压垮。这意味着在实践中要按负载类型来定大小:CPU 密集型大致等于核数,阻塞 IO 型要高得多;并且一定要用有界队列,让背压暴露出来,而不是用无界队列悄悄膨胀,最后直接 OOM。",
+    "keywords": ["queue", "core size", "rejection", "backpressure", "context switch"]
+  },
+  {
+    "concept": "ReentrantLock",
+    "stack": "java",
+    "seconds": 50,
+    "en": "ReentrantLock is the explicit locking primitive in java.util.concurrent, and the core difference from synchronized is that you acquire and release it manually with lock and unlock in a finally block. Mechanically it is built on AQS, a queue of waiting threads, so a thread that fails to acquire parks instead of spinning, and it supports fairness, meaning the longest-waiting thread can go first. The real advantages are the extras: tryLock with a timeout, interruptible lock acquisition, and multiple condition queues so you can wait on different predicates all on one lock. The trade-off is responsibility versus power. Unlike synchronized the JVM will not release it for you, so forgetting the finally block leaks the lock permanently. What that means in practice is simple: prefer synchronized for straightforward critical sections because the compiler guarantees correctness, and only reach for ReentrantLock when you genuinely need timed waits, interruptibility, or several conditions.",
+    "cn": "ReentrantLock 是 java.util.concurrent 里显式的加锁原语,它和 synchronized 最核心的区别是,你需要手动调用 lock 和 unlock,并且必须把 unlock 放在 finally 块里。它的底层实现基于 AQS,也就是一个等待线程队列,所以抢不到锁的线程会被 park 挂起而不是自旋空转;它还支持公平性,可以让等待最久的线程优先拿到锁。它真正的优势在于那些附加能力:带超时的 tryLock、可中断的加锁等待,以及多个 condition 队列,这样你可以在同一把锁上等待不同的条件谓词。这里的权衡是责任与能力的交换:不像 synchronized, JVM 不会替你释放,所以一旦忘了 finally,这把锁就永久泄漏了。这意味着实践中的取舍很清楚:普通的临界区优先用 synchronized,因为编译器帮你保证正确性;只有当你确实需要超时等待、可打断或者多个条件队列时,才用 ReentrantLock。",
+    "keywords": ["fairness", "condition", "tryLock", "AQS", "unlock"]
+  },
+  {
+    "concept": "Volatile Keyword",
+    "stack": "java",
+    "seconds": 45,
+    "en": "volatile is a Java keyword giving a field two guarantees: visibility and ordering, but not atomicity. The mechanism is memory barriers. A volatile write flushes the value to main memory and blocks reordering of earlier writes after it, and a volatile read always sees the most recent write. So when one thread sets a volatile running flag to false, another thread polling that flag sees it immediately instead of reading a stale cached copy. The trade-off is cost and scope. It adds a barrier on every access, which is cheaper than a lock but not free, and it does not make compound operations safe, because volatile count plus plus still loses updates since read-modify-write spans three separate steps. What that means in practice is use volatile for state flags and for safe publication of immutable objects, and reach for AtomicInteger or locks whenever you need true read-modify-write semantics.",
+    "cn": "volatile 是 Java 的一个关键字,它给字段两个保证:可见性和有序性,但不保证原子性。机制是内存屏障:volatile 写会把值刷回主内存,并阻止之前的写被重排到它后面;volatile 读总能看到最近一次写入。所以当线程一把 volatile 的运行标志置为 false 时,轮询这个标志的线程二能立刻看到,而不是一直读到自己缓存里的旧值。这里的权衡是成本与适用范围。它每次访问都要加屏障,比锁便宜,但也不是免费的;而且它没法让复合操作变安全,volatile 修饰的 count++ 依然会丢失更新,因为读改写跨越了三个独立步骤。这意味着在实践中,volatile 适合做状态标志位,也适合做不可变对象的安全发布;而一旦你需要真正的读改写语义,就该用 AtomicInteger 或者加锁。",
+    "keywords": ["visibility", "memory barrier", "reordering", "atomicity", "publication"]
+  },
+  {
+    "concept": "Dependency Injection",
+    "stack": "spring",
+    "seconds": 50,
+    "en": "Dependency Injection is the idea that a class should receive its collaborators from the outside rather than create them itself, and Spring implements it through Inversion of Control, meaning the container owns object creation and wiring. Concretely, you declare beans through annotations or configuration, and when you annotate a constructor parameter the container resolves that dependency and injects it at startup. The key detail is that this only works because Spring manages those objects and their lifecycle, so depending on interfaces rather than concrete classes lets you swap implementations without touching any calling code. The trade-off is convenience versus transparency. You get very loose coupling and easy unit testing because you can pass in a mock, but wiring errors move from compile time to runtime, and heavy field injection hides what a class really needs. What that means in practice is prefer constructor injection: dependencies become explicit, the object is fully initialized after construction, and circular dependencies surface at startup rather than at an awkward moment later.",
+    "cn": "依赖注入的意思是,一个类应该从外部拿到它依赖的协作者,而不是自己去 new 出来;Spring 是通过控制反转来实现的,也就是由容器负责对象的创建和装配。具体来讲,你通过注解或者配置类声明 bean,当你在构造器参数上标注时,容器就会解析这个依赖并在启动时注入进去。这里的关键细节在于,这一切之所以成立,是因为 Spring 托管了这些对象及其生命周期,所以面向接口而不是具体类来依赖,就可以在不碰任何调用方代码的情况下替换实现。权衡体现在便利性与透明度之间:耦合度极低、单测里传个 mock 就能测,这是好处;坏处是装配错误从编译期挪到了运行期,而大量使用字段注入还会藏住一个类真正需要什么。这意味着实践中应该优先用构造器注入:依赖变成显式的,构造完成后对象就是完整可用的,而且循环依赖会在启动时立刻暴露,而不是等到某个尴尬的时刻才炸出来。",
+    "keywords": ["container", "bean", "wiring", "constructor injection", "coupling"]
+  },
+  {
+    "concept": "Aspect-Oriented Programming",
+    "stack": "spring",
+    "seconds": 50,
+    "en": "AOP lets you add behaviour such as logging, transactions, or security checks across many methods without editing those methods, by attaching it at join points. In Spring the mechanism is a proxy: when you mark a bean with an aspect, Spring wraps it in a JDK dynamic proxy or a CGLIB subclass, and calls to that bean go through the proxy, which runs your advice code before delegating to the real target. That is why you declare pointcuts, expressions matching which methods should be intercepted, and advice types like before, after, around, and after-throwing. The trade-off is that it cleanly separates cross-cutting concerns but also hides control flow, so reading a method in isolation does not tell you what actually happens at runtime. What that means in practice is the famous self-invocation gotcha: calling a method from inside the same class bypasses the proxy entirely, so the aspect never fires, and you must route through the proxy or restructure the code.",
+    "cn": "AOP 让你可以把日志、事务、权限校验这类逻辑横切到很多方法上,而不用去改动那些方法本身,它是通过把逻辑挂到连接点上实现的。在 Spring 里,机制是代理:当你给一个 bean 加上切面,Spring 会把它包成 JDK 动态代理或者 CGLIB 子类,对这个 bean 的调用会先经过代理,由代理在执行你的通知代码之后才转发给真正的目标对象。所以你需要声明切点,也就是匹配要拦截哪些方法的表达式,以及通知类型:before、after、around、after-throwing。权衡在于:它把横切关注点干净地分离出去了,但同时把控制流藏了起来,你孤立地看一个方法,完全判断不出运行时到底会发生什么。这意味着必须要提那个著名的自调用问题:在同一个类内部调用自己的方法会完全绕过代理,切面根本不会生效,所以必须通过代理调用或者直接重构代码结构。",
+    "keywords": ["proxy", "pointcut", "advice", "join point", "cross-cutting"]
+  },
+  {
+    "concept": "Spring Boot Auto-Configuration",
+    "stack": "spring",
+    "seconds": 50,
+    "en": "Auto-configuration is Spring Boot's way of configuring beans based on what is on your classpath rather than what you wrote in XML. The mechanism is conditional beans: Boot ships hundreds of configuration classes, each guarded by annotations such as ConditionalOnClass and ConditionalOnMissingBean, and at startup it evaluates those conditions and registers only what actually applies. So adding a database driver automatically gives you a DataSource, and adding the web starter gives you an embedded Tomcat and a Jackson converter. The key rule is that your own beans always win, because the conditional checks deliberately back off when you define one yourself. The trade-off is velocity versus transparency. You get a running application in seconds, but you no longer see everything that got created behind your back. What that means in practice is use actuator's conditions endpoint or the startup report to inspect what was applied, and exclude specific auto-configurations explicitly whenever they conflict with your own setup.",
+    "cn": "自动配置是 Spring Boot 的做法:它根据 classpath 上有什么来决定怎么配置 bean,而不是看你在 XML 里写了什么。机制是条件化 bean:Boot 内置了上百个配置类,每一个都用 ConditionalOnClass、ConditionalOnMissingBean 这类条件注解把守,启动时会逐个求值,只注册真正适用的那些。所以你加一个数据库驱动,它自动给你一个 DataSource;加一个 web starter,它就给你内嵌 Tomcat 和 Jackson 转换器。关键的规则是:你自己定义的 bean 永远优先,因为这些条件在你已经定义了同类型 bean 时会主动退让。权衡体现在开发速度与透明度之间:几秒钟就能跑起一个应用是好处,坏处是你看不全它到底偷偷创建了什么东西。这意味着实践中要用 actuator 的 conditions 端点或者启动报告去检查实际生效了什么,并且在和你的配置冲突时,显式地把某个自动配置类排除掉。",
+    "keywords": ["classpath", "conditional", "starter", "DataSource", "back off"]
+  },
+  {
+    "concept": "B+ Tree Index",
+    "stack": "db",
+    "seconds": 55,
+    "en": "A database index is a separate structure letting you find rows without scanning the whole table, and in MySQL InnoDB it is a B+ tree. The mechanism is that non-leaf nodes store only keys and pointers, while every actual row reference lives in the leaf nodes, and the leaves are linked together in a doubly linked list. So a point lookup walks maybe three levels even for billions of rows, and a range scan just walks sideways along the leaf chain. The reason you use a B+ tree rather than a binary tree is fan-out: each node holds hundreds of keys, so tree depth stays tiny, which means very few disk page reads. The trade-off is read speed versus write cost, because every index must be updated on insert and has to rebuild itself on a page split. What that means in practice is index the columns you actually query and join on, but keep indexes narrow, since bloated ones slow writes and eat memory that could otherwise be caching data.",
+    "cn": "数据库索引是一种独立结构,让你不必扫描整张表就能定位行数据,在 MySQL InnoDB 里它是 B+ 树。机制是这样的:非叶子节点只存键和指针,真正指向行的引用全在叶子节点里,而且叶子之间用双向链表串起来。所以即使在几十亿行数据里做单点查询,也只要走大约三层;做范围扫描时,直接沿着叶子链表横向走就行。之所以用 B+ 树而不是二叉搜索树,核心在于扇出:每个节点能存放几百个键,所以树非常矮,也就意味着极少的磁盘页读取。权衡在于读性能和写成本之间:每次插入都要更新每个索引,页分裂时还要重建结构。这意味着在实践中,你应该只为真正会查询和 join 的列建索引,并且保持索引窄小,因为臃肿的索引会拖慢写入,还会吃掉本可以用来缓存数据的内存。",
+    "keywords": ["leaf node", "fan-out", "range scan", "page split", "depth"]
+  },
+  {
+    "concept": "Transaction Isolation Levels",
+    "stack": "db",
+    "seconds": 55,
+    "en": "Isolation levels define how much one transaction is allowed to see of another uncommitted transaction's work. There are four. Read uncommitted lets you see uncommitted writes, risking dirty reads. Read committed exposes only committed data, but re-reading the same row can return different values, which is a non-repeatable read. Repeatable read guarantees the same row always yields the same value, though others can insert new matching rows, giving you a phantom read. Serializable eliminates all three by effectively ordering transactions. The mechanism differs per engine; InnoDB's default repeatable read relies on MVCC snapshots plus gap locks to suppress phantoms. The trade-off is consistency versus concurrency: stronger isolation means more locking, less throughput, and more deadlocks. What that means in practice is most systems should run read committed with explicit locking where correctness demands it, and escalate to serializable only for genuinely money-critical paths.",
+    "cn": "隔离级别定义了一个事务能看到另一个未提交事务的多少东西。一共四个。读未提交允许看到未提交的写,会有脏读风险。读已提交只能看到已提交的数据,但同一行重复读可能返回不同值,这就是不可重复读。可重复读保证同一行读出来永远一样,但别的事务还能插入新的匹配行,这就是幻读。串行化则通过给事务排序把这三个问题全部消灭。具体实现因引擎而异;InnoDB 默认的可重复读是靠 MVCC 快照加间隙锁来抑制幻读的。这里的权衡是一致性与并发度之间的取舍:隔离级别越强,加锁越多,吞吐越低,死锁也越多。这意味着在实践中,大多数系统应该用读已提交,只在正确性确有要求的地方显式加锁,并且只有真正涉及资金的关键链路才升级到串行化。",
+    "keywords": ["dirty read", "phantom", "snapshot", "locking", "throughput"]
+  },
+  {
+    "concept": "MVCC",
+    "stack": "db",
+    "seconds": 55,
+    "en": "MVCC, multi-version concurrency control, is how databases let readers and writers avoid blocking each other. The mechanism in InnoDB is that every row carries hidden transaction ID and rollback pointer fields, and every update writes a new version into the undo log while leaving the old one intact. When you start a transaction under repeatable read, InnoDB records the set of active transaction IDs, and your reads follow rollback pointers backwards from the current row until they find a version that was already committed before your snapshot existed. That is why plain reads take no locks and why a long-running transaction always sees one consistent view. The trade-off is storage and cleanup: old versions accumulate until the purge thread removes them, so a transaction open for hours blocks purging and can inflate the undo tablespace dramatically. What that means in practice is keep transactions short, because the cost of MVCC is paid by whoever holds the oldest snapshot open.",
+    "cn": "MVCC,多版本并发控制,是数据库让读写互不阻塞的做法。InnoDB 的机制是:每一行都带两个隐藏字段,事务 ID 和回滚指针;每次更新都往 undolog 里写一个新版本,旧版本保留不动。当你在可重复读下开启一个事务,InnoDB 会记录当前活跃事务 ID 的集合,你的读会沿着回滚指针从当前行一路往回找,直到找到那个在你的快照建立之前就已经提交的版本。这就是为什么普通读完全不加锁,以及为什么一个长事务看到的永远是一份一致的视图。权衡在于存储和清理:旧版本会一直累积,直到 purge 线程把它们删掉,所以一个开了几小时的事务会阻塞清理,把 undo 表空间撑到非常大。这意味着实践中一定要让事务短小,因为 MVCC 的成本是由那个持有最老快照的人来承担的。",
+    "keywords": ["version", "undo log", "snapshot", "rollback pointer", "purge"]
+  },
+  {
+    "concept": "Covering Index",
+    "stack": "db",
+    "seconds": 45,
+    "en": "A covering index is one that contains every column the query needs, so the database can answer the query entirely from the index without touching the table itself. The mechanism matters because InnoDB secondary indexes store the primary key in their leaf nodes, so a normal lookup finds the indexed key, grabs the primary key, then jumps back into the clustered index to fetch the row. That is two lookups, and the second jump is what people call a back-to-table or bookmark lookup. If the index already holds the values you are selecting, that second step disappears entirely. The trade-off is obvious: covering indexes are wide, and wide indexes cost memory, cache space, and write amplification on every single update. What that means in practice is use covering indexes deliberately for your hottest and narrowest queries, check EXPLAIN for the Using index marker, and resist adding five columns just to win one percent of latency.",
+    "cn": "覆盖索引就是那种包含了查询所需全部列的索引,这样数据库完全不用回表,直接从索引里就能拿到结果。这里机制很关键:InnoDB 的二级索引叶子节点里存的是主键值,所以普通查找会先在二级索引里找到那个键,拿到主键,再跳回聚簇索引去取整行数据。这是两次查找,第二次跳跃就是我们常说的回表。如果索引本身已经包含了你要查的列,那第二步就完全消失了。权衡非常明显:覆盖索引很宽,而宽索引会消耗内存、占用缓存,并且每次更新都会放大写成本。这意味着在实践中,覆盖索引要用在最热、最窄的查询上,并且刻意设计;用 EXPLAIN 去确认执行计划里出现 Using index;同时要忍住,别为了提升百分之一的延迟就往索引里塞五个列。",
+    "keywords": ["covering", "leaf", "back-to-table", "EXPLAIN", "clustered index"]
+  },
+  {
+    "concept": "Database Sharding",
+    "stack": "db",
+    "seconds": 55,
+    "en": "Sharding means splitting one logical dataset across multiple database nodes, usually by hashing a shard key such as user ID. Unlike partitioning, which stays inside a single instance, sharding scales both storage and write throughput because each node handles only its own slice. The mechanism is the routing layer: the application computes the shard from the key and connects directly to the right node. The trade-off is that sharding solves scale but destroys convenience. Cross-shard joins become application-side logic, distributed transactions need two-phase commit or sagas, and globally unique IDs must come from a central allocator rather than auto-increment. Choosing the key badly creates hotspots, and adding shards later forces you to rebalance and migrate data. What that means in practice is do everything cheaper first, meaning proper indexes, read replicas, caching, and archiving cold data, and only shard when one node genuinely cannot hold your write volume, picking a key that both spreads load evenly and matches your dominant query pattern.",
+    "cn": "分库分表就是把一份逻辑上的数据集拆到多个数据库节点上,通常是按某个分片键,比如用户 ID 做哈希。它跟分区不同,分区还停留在单实例内部,而分片同时扩展了存储容量和写吞吐,因为每个节点只处理自己那一片。机制就是路由层:应用根据分片键算出落到哪个分片,然后直连对应的节点。权衡在于:分片解决了规模问题,却把便利性毁掉了。跨分片 join 只能搬到应用层去做,分布式事务要靠两阶段提交或者 saga,全局唯一 ID 也必须来自统一发号器而不是自增主键。键选得不好会制造热点,后期加分片还要迁移数据。这意味着实践中的顺序是先做所有更便宜的事:合理的索引、读写分离、缓存、冷数据归档;只有当单节点确实扛不住写入量时才分片,并且挑一个既能均匀分散负载、又匹配你主查询模式的分片键。",
+    "keywords": ["shard key", "hotspot", "rebalance", "distributed transaction", "routing"]
+  },
+  {
+    "concept": "Cache-Aside Pattern",
+    "stack": "backend",
+    "seconds": 50,
+    "en": "Cache-aside, also called lazy loading, is the default caching pattern: the application checks Redis first, and on a cache miss it reads the database, writes the value into Redis, and returns it. Writes go straight to the database and invalidate the cache entry afterwards. The mechanism is simple, which is exactly why it is popular. Redis is never the source of truth, so a cache crash costs you performance rather than correctness, and only data that was actually requested gets cached. The trade-off is consistency. There is a window where the database has moved on but the cache has not, so clients can read stale data, and deleting rather than updating the key minimizes that window. What that means in practice is set a TTL on every single key so stale data expires even if an invalidation message is lost, and use delayed double-delete for hot rows, accepting that strong consistency and caching are fundamentally opposed.",
+    "cn": "Cache-aside,也叫懒加载,是最常用的缓存模式:应用先查 Redis,没命中就去读数据库,把值写回 Redis 再返回。写请求直接打到数据库,然后再失效掉对应的缓存。它的机制非常简单,而这正是它流行的原因。Redis 永远不是数据源,所以缓存挂掉损失的只是性能而不是正确性,而且只有真正被请求过的数据才会进缓存。权衡在于一致性:存在一个窗口,数据库已经更新了但缓存还没,于是客户端会读到脏数据;实践上删除 key 比更新 key 更能缩短这个窗口。这意味着在实践中,你要给每一个 key 都设置 TTL,这样即使失效消息丢了,脏数据也会过期;对热点行再加延迟双删;同时要接受一个事实:强一致性和缓存从根本上就是互斥的。",
+    "keywords": ["cache miss", "invalidate", "TTL", "stale", "consistency"]
+  },
+  {
+    "concept": "Cache Penetration and Avalanche",
+    "stack": "backend",
+    "seconds": 55,
+    "en": "Cache penetration, avalanche, and breakdown are three distinct cache failure modes, and interviewers care about all three. Penetration means querying an ID that does not exist in the database at all, so every request misses the cache and hits MySQL, and an attacker amplifies this by firing random keys. The fix is caching a null marker with a short TTL, or putting a Bloom filter in front that knows which keys can possibly exist. Avalanche is when many keys expire simultaneously and all traffic lands on the database at once; jitter your TTLs with randomness to fix that. Breakdown is one hotspot key expiring while thousands of requests wait; a mutex so only one thread rebuilds fixes that. The trade-off in every fix is added complexity and occasional false positives. What that means in practice is defense at every layer: jittered TTLs, null caching, a locked rebuild path, and rate limiting so a hostile key pattern cannot take your database down.",
+    "cn": "缓存穿透、雪崩和击穿是三种不同的缓存故障场景,面试里三个都常被问到。穿透是指查询一个数据库里根本不存在的 ID,于是每次请求都绕过缓存打到 MySQL,攻击者可以用一堆随机 key 把它放大。解决办法是缓存一个短 TTL 的空值标记,或者在前面加一层布隆过滤器来判断哪些 key 可能存在。雪崩是指大量 key 在同一时刻集体过期,流量瞬间全部压到数据库上;给 TTL 加上随机抖动就能解决。击穿是指某个热点 key 过期时成千上万的请求同时涌进来;用互斥锁让只有一个线程去重建就解决了。每种方案都要付出复杂度和偶发误判的代价。这意味着实践中要分层防御:抖动化的 TTL、空值缓存、加锁重建,以及限流,从而让恶意的 key 分布无法直接把数据库打垮。",
+    "keywords": ["Bloom filter", "TTL", "hotspot", "mutex", "avalanche"]
+  },
+  {
+    "concept": "Distributed Lock",
+    "stack": "backend",
+    "seconds": 50,
+    "en": "A distributed lock gives you mutual exclusion across different JVMs, and the usual implementation is Redis SET with NX and an expiration, meaning set only if not exists, done atomically. The mechanism has three hard requirements. You must set the TTL atomically with acquiring the lock, or a crash between the two deadlocks the resource forever. You must store a unique random token as the value and delete only if the value still matches, using a Lua script for the check, otherwise a slow client can release a lock that another client has since acquired. And your critical section must finish inside the TTL, so long operations need a renewal thread. The trade-off is that single-instance Redis locking is not foolproof: a failover can hand the same lock to two clients because replication is asynchronous. What that means in practice is use Redlock or lease-based coordination for anything correctness-critical, and ideally avoid the lock altogether with optimistic versioning.",
+    "cn": "分布式锁用来在多个 JVM 之间协调互斥访问,常见实现是 Redis 的 SET 命令带上 NX 和过期时间,也就是原子地执行 set if not exists。这个机制有三个硬性要求。第一,获取锁和设置过期时间必须原子完成,否则两步之间崩溃会让资源永久死锁。第二,value 必须放一个唯一的随机 token,并且只有 value 仍然匹配时才删除,用 Lua 脚本做这个检查和删除;否则一个慢客户端会把别的客户端后来拿到的锁给释放掉。第三,临界区必须在 TTL 之内跑完,所以长时间操作要配一个续约线程。权衡在于:单实例 Redis 的锁并不绝对可靠,因为主从复制是异步的,一次故障切换可能把同一把锁同时交给两个客户端。这意味着实践中凡涉及正确性的场景要用 Redlock 或者基于租约的协调服务,而更理想的情况是用乐观版本号彻底避开这把锁。",
+    "keywords": ["mutual exclusion", "TTL", "token", "failover", "atomic"]
+  },
+  {
+    "concept": "Message Queue",
+    "stack": "backend",
+    "seconds": 55,
+    "en": "A message queue decouples producers from consumers by buffering work in a broker, giving you asynchronous processing, load levelling, and fan-out. The mechanism runs producer, exchange or topic, queue, consumer group. RabbitMQ routes through exchanges and returns an acknowledgement for each message, while Kafka appends to a partitioned log and consumers track their own offset. The big design question is delivery semantics: at-most-once risks losing messages, at-least-once risks duplicates, and exactly-once is usually implemented as at-least-once plus idempotency on your side. The trade-off is latency and operational complexity versus resilience. You add a component that must itself be highly available, and debugging gets harder because your call stack disappears. What that means in practice is always assume duplicates and make handlers idempotent with a deduplication key, set up dead-letter queues for poison messages, and monitor consumer lag, because it is the clearest early signal that your consumers are falling behind.",
+    "cn": "消息队列通过在 broker 里缓冲任务来解耦生产者和消费者,给你带来异步处理、削峰填谷和扇出能力。链路是这样的:生产者、交换机或 topic、队列、消费者组。RabbitMQ 通过 exchange 路由,并对每条消息单独确认;而 Kafka 是往分区日志里追加写,由消费者自己维护 offset。设计上最关键的问题是投递语义:至多一次会丢消息,至少一次会产生重复,而精确一次通常就是用至少一次再加你自己这边的幂等来实现的。权衡是延迟和运维复杂度换取韧性:你多了一个自己也必须高可用的组件,而且因为调用栈消失了,排查问题会困难得多。这意味着实践中一定要假设会有重复消息,用去重键把消费端做成幂等的;要配死信队列来收那些毒药消息;还要监控消费堆积量,因为它是消费者开始跟不上时最直观的早期信号。",
+    "keywords": ["broker", "consumer", "acknowledgement", "idempotent", "dead-letter"]
+  },
+  {
+    "concept": "Idempotency",
+    "stack": "backend",
+    "seconds": 45,
+    "en": "An operation is idempotent when calling it N times has the same effect as calling it once, and it matters because networks make retry unavoidable. The mechanism is usually a request ID: the client generates a unique key, the server looks it up before doing anything, and if it already processed that key it returns the stored result instead of executing again. Critically, this relies on the deduplication record being written in the same transaction as the business change, so a crash part-way rolls back both. The trade-off is storage and lifetime: you must persist those keys and decide how long to keep them, and in a distributed system uniqueness itself needs a durable unique index or a Redis set acting as the gate. What that means in practice is retries are not an error case you defend against but a normal assumption, and every payment or order endpoint should be designed around a client-supplied idempotency key from day one.",
+    "cn": "所谓幂等,就是调用 N 次和调用一次的效果完全一样;它很重要,因为网络决定了重试是无法避免的。通常的机制是请求 ID:客户端生成一个唯一键,服务端在做任何事之前先查这个键,如果发现已经处理过,就直接返回存下来的结果而不是再执行一次。这里最关键的一点是,去重记录必须和业务变更写在同一个事务里,这样中途崩溃时两者会一起回滚。权衡在于存储和保留时长:你必须持久化这些键并决定保留多久,而且在分布式系统里,唯一性本身要靠持久化的唯一索引或者 Redis 集合来做闸门。这意味着实践中,重试不应该被当成需要防御的异常,而应该被视为常态;每一个支付或下单接口都应该从第一天起就围绕客户端提供的幂等键来设计。",
+    "keywords": ["retry", "deduplication", "request ID", "unique key", "transaction"]
+  },
+  {
+    "concept": "TCP Three-Way Handshake",
+    "stack": "backend",
+    "seconds": 50,
+    "en": "TCP opens a connection with a three-way handshake, and the reason it is three rather than two is that both sides must prove they can hear each other. The client sends SYN with its initial sequence number; the server replies with SYN-ACK, which is an acknowledgement of that number plus its own; the client sends ACK acknowledging the server's number. Only after that third packet can data flow in both directions. Sequence numbers are randomized precisely so that old duplicate packets from a previous connection cannot be mistaken for new ones. The trade-off is that this costs a full round trip before the first byte, which is why TLS layered on top of TCP pays penalty after penalty, and is why things like TCP Fast Open or QUIC merge connection setup with encryption. What that means in practice is latency is dominated by round trips rather than bandwidth, so connection pooling and keep-alive remain some of the cheapest performance wins available.",
+    "cn": "TCP 用三次握手建立连接,之所以是三次而不是两次,是因为双方都要证明自己能听见对方。客户端先发一个带初始序列号的 SYN;服务端回 SYN-ACK,既确认对方序列号也带上自己的;客户端再回 ACK 确认服务端的序列号。只有第三个包落地之后,数据才能双向流动。序列号要随机化,正是为了防止上个连接里迟到重复的包被误当成新连接的数据包。这里的代价是第一个字节之前要花掉一整个往返时延,这也是为什么在 TCP 之上叠 TLS 会带来一连串的延迟惩罚,以及为什么 TCP Fast Open 或者 QUIC 要把连接建立和加密协商合并在一起。这意味着实践中,延迟主要由往返次数而不是带宽决定,因此连接池和 keep-alive 至今仍是性价比最高的性能优化手段之一。",
+    "keywords": ["SYN", "sequence", "round trip", "acknowledgement", "keep-alive"]
+  },
+  {
+    "concept": "CAP Theorem",
+    "stack": "system-design",
+    "seconds": 55,
+    "en": "CAP says that when a network partition occurs, a distributed system must choose between consistency and availability, because it cannot have both. Consistency here means every read sees the most recent write, availability means every request gets a non-error response, and partition tolerance is not really a choice, since networks do fail. The subtlety most people miss is that in normal operation you can absolutely have both C and A; the trade-off only bites during an actual partition, and even then it is per-operation and per-data-item rather than a property of the whole system. The concrete mechanism is the choice itself: a CP system like etcd uses a quorum, so the minority side refuses writes to stay correct, while an AP system like Cassandra accepts writes on both sides and reconciles later, meaning reads may be stale. What that means in practice is decide per feature: inventory and payments want CP, feeds and view counters comfortably take AP.",
+    "cn": "CAP 说的是,当网络分区发生时,分布式系统必须在一致性和可用性之间二选一,不可能两者都要。这里的一致性是指每次读都能看到最近的写入,可用性是指每个请求都能拿到非错误的响应,而分区容错性其实不是选项,因为网络终究会出问题。很多人忽略的一个微妙之处是:在正常运行时,C 和 A 完全可以同时满足;这个取舍只在真正发生分区时才起作用,而且即便那时,它也是按单次操作、按单个数据项来判定的,不是整个系统的属性。具体的机制就体现在这个选择里:像 etcd 这种 CP 系统依靠多数派投票,所以少数派一侧会拒绝写入以保证正确;而像 Cassandra 这种 AP 系统在两侧都接受写入,之后再做合并,代价是读可能读到旧值。这意味着实践中要按功能逐个决定:库存和支付要 CP,而信息流和浏览量计数完全可以用 AP。",
+    "keywords": ["partition", "consistency", "availability", "quorum", "trade-off"]
+  },
+  {
+    "concept": "Load Balancing",
+    "stack": "system-design",
+    "seconds": 50,
+    "en": "A load balancer sits in front of a pool of servers and spreads requests across them, giving you horizontal scale and high availability. The mechanisms are layers and algorithms. A layer four balancer examines only IP and port and forwards extremely quickly, while a layer seven balancer understands HTTP and can route by path, header, or cookie, and terminate TLS for you. For algorithms, round robin is simplest, least connections adapts better to uneven request cost, and consistent hashing keeps the same client on the same server when you need session affinity. Every balancer also runs a health check against its backends and evicts the dead ones. The trade-off is that the balancer is itself a single point of failure, so you run pairs with a virtual IP, and layer seven intelligence costs real CPU. What that means in practice is keep your services stateless so any node can serve any request, because the moment you depend on local session state, balancing stops being simple.",
+    "cn": "负载均衡器位于一组服务器前面,把请求分摊到它们身上,从而给你横向扩展能力和高可用。机制可以从分层和算法两个维度看。四层负载均衡器只看 IP 和端口,转发极快;七层负载均衡器能理解 HTTP,可以按路径、请求头或者 cookie 做路由,还能帮你终结 TLS。算法方面,轮询最简单,最少连接更适合请求开销不均的场景,而当你需要会话保持时用一致性哈希让同一个客户端落到同一台机器。所有负载均衡器还会对后端做健康检查,把挂掉的节点摘除。权衡在于:负载均衡器本身就是一个单点故障,所以要用主备加虚拟 IP 的方式部署,而七层的智能是有真实 CPU 代价的。这意味着实践中应当让服务保持无状态,使任意节点都能处理任意请求,因为一旦依赖本地会话状态,负载均衡就再也不简单了。",
+    "keywords": ["health check", "round robin", "layer seven", "stateless", "affinity"]
+  },
+  {
+    "concept": "Consistent Hashing",
+    "stack": "system-design",
+    "seconds": 50,
+    "en": "Consistent hashing solves the problem that naive modulo sharding has: if you hash users modulo N servers and N changes, almost every key remaps and you effectively have to migrate your entire dataset. The mechanism is a hash ring. You hash both nodes and keys onto the same circular space, and a key belongs to the first node found clockwise from its position. Add or remove a node and only the keys in that node's arc need migration, roughly one over N of the data. It also uses virtual nodes, meaning each physical server gets dozens of points on the ring, so load distribution stays even instead of clumping. The trade-off is complexity and weaker range support: you lose the ability to scan ordered ranges efficiently, and carelessly chosen node placement still skews load. What that means in practice is consistent hashing is the right default for cache clusters and stateless sharding, precisely because it minimizes disruption when you scale out.",
+    "cn": "一致性哈希解决的是朴素取模分片的痛点:如果你把用户按 N 个服务器取模,N 一变,几乎所有 key 都会重新映射,相当于要把整个数据集迁移一遍。它的机制是哈希环。你把节点和数据键都哈希到同一个环形空间上,一个键归属于沿顺时针方向遇到的第一个节点。增加或删除一个节点时,只有落在该节点这段弧上的 key 需要迁移,大约是全部数据的 N 分之一。它还会使用虚拟节点,也就是让每台物理机在环上占几十个点位,这样负载才能均匀分布而不是扎堆。权衡在于复杂度和较弱的范围查询能力:你会失去高效扫描有序区间的能力,而节点位置选得不好负载依然会倾斜。这意味着实践中一致性哈希是缓存集群和无状态分片的默认选择,原因正是它在扩容时把迁移扰动降到了最低。",
+    "keywords": ["hash ring", "virtual node", "remap", "migration", "distribution"]
+  },
+  {
+    "concept": "Circuit Breaker",
+    "stack": "system-design",
+    "seconds": 50,
+    "en": "A circuit breaker stops one failing downstream dependency from taking your whole service down, the same way an electrical breaker protects a house. It wraps calls with three states. Closed, where requests flow normally and failures are counted. In the open state, once failures cross a threshold, every call fails immediately without touching the network at all. And half-open, where after a timeout it lets a few probe requests through to see whether the dependency recovered. If those probes succeed it closes, otherwise it opens again. The mechanism's real value is fast failure and giving the struggling service time to recover instead of a retry storm burying it further. The trade-off is that the breaker hides genuine failures from callers, so you need sensible fallbacks and clear metrics or you will be blind to an outage. What that means in practice is pair it with timeouts, bounded retries with jitter, and bulkheads, so a slow downstream degrades gracefully instead of turning into a cascade failure across your whole call graph.",
+    "cn": "熔断器的作用是防止某一个下游依赖的故障把你的整个服务拖垮,就像电路里的保险丝保护整栋房子一样。它用三个状态包装调用。关闭状态:请求正常放行,同时统计失败次数。打开状态:失败率越过阈值后,所有调用立刻失败,完全不去触碰网络。半开状态:等待一段时间之后放几个探测请求过去,看看下游是否已经恢复。探测成功就闭合,失败就再次打开。这个机制真正的价值在于快速失败,并且给那个正在挣扎的服务留出恢复时间,而不是被重试风暴越压越深。权衡在于:熔断器会把真实的失败从调用方眼前遮住,所以你必须配好兜底降级方案和清晰的指标,否则 outage 来了你反而两眼一抹黑。这意味着实践中要把它和超时、带抖动的有界重试以及舱壁隔离配套使用,让下游变慢时系统优雅降级,而不是沿着整个调用图雪崩传播。",
+    "keywords": ["open state", "half-open", "threshold", "fallback", "cascade"]
+  },
+  {
+    "concept": "Rate Limiting",
+    "stack": "system-design",
+    "seconds": 50,
+    "en": "Rate limiting caps how many requests a client can make in a window, protecting you from abuse, accidental traffic spikes, and runaway retry loops. Two classic algorithms: fixed window counters are trivially cheap but allow twice the rate at window boundaries, while sliding windows are accurate but need more state. My favourite is the token bucket. Tokens refill at a steady rate, a request consumes one, and if the bucket is empty the request is rejected or queued. It enforces sustained rate while still permitting short bursts, which matches how real users behave. The distributed problem is where the counter lives, because a per-instance counter is useless behind a load balancer, so you keep counts in Redis with an atomic Lua script. The trade-off is fairness versus cost: per-user quotas are precise but expensive to track. What that means in practice is limit at the edge by API key or user ID, return 429 with a Retry-After header, and decide deliberately whether you fail open or closed when Redis itself is down.",
+    "cn": "限流就是限制一个客户端在一段时间窗口内能发多少请求,用来防范滥用、意外的流量尖峰以及失控的重试循环。两个经典算法:固定窗口计数器实现极其廉价,但在窗口边界处会放过两倍的流量;滑动窗口很精确,却需要更多状态。我最喜欢的是令牌桶。令牌以恒定速率回填,每个请求消耗一个令牌,桶空了请求就被拒绝或者排队。它既能约束长期速率,又允许短时突发,这正好符合真实用户的行为模式。分布式场景下的难点在于计数器放在哪里,因为在负载均衡后面统计单个实例毫无意义,所以要把计数放在 Redis 里,用 Lua 脚本保证原子性。权衡是公平性与成本:按用户维度的配额很精确,但追踪成本高。这意味着实践中要在网关层按 API key 或用户 ID 限制,返回 429 并带上 Retry-After 头,同时要提前想清楚 Redis 挂掉时是放行还是拒绝。",
+    "keywords": ["token bucket", "quota", "window", "burst", "Redis"]
+  },
+  {
+    "concept": "Big-O Notation",
+    "stack": "algo",
+    "seconds": 45,
+    "en": "Big-O describes the growth of an algorithm's cost as input grows, deliberately ignoring constants and lower-order terms so you reason about the shape rather than exact milliseconds. Formally, f of n is O of g of n if there exists an upper bound: f stays below a constant multiple of g for sufficiently large n. The patterns I use in interviews: a single loop over n elements is O of n; nested independent loops multiply, giving O of n squared; halving the search space each step, as in binary search, gives O of log n; a divide-and-conquer recurrence like merge sort resolves to O of n log n; and permutations explode to factorial. Space complexity is counted separately, so recursion depth matters too. The trade-off is that Big-O hides constants, so an O of n algorithm with a huge constant can lose to an O of n log n one at realistic input sizes. What that means in practice is Big-O is the right tool for choosing between structurally different approaches, but always follow it with benchmarks on data that looks like your real data.",
+    "cn": "Big-O 描述的是算法的开销随输入规模增长的趋势,它刻意忽略常数项和低阶项,让你只关注增长的形态而不是具体的毫秒数。形式化地说,如果存在某个常数倍的上界,当 n 足够大时 f(n) 总被 g(n) 的倍数压住,那么 f(n) 就是 O(g(n))。面试里常用的几种规律:对 n 个元素的一层循环是 O(n);嵌套且独立的循环相乘,得到 O(n 平方);每一步都把搜索空间减半,就像二分查找那样,得到 O(log n);像归并排序这种分治递推解析出来是 O(n log n);而排列组合会爆炸到阶乘。空间复杂度要单独计算,所以递归深度也算在内。这里的陷阱是 Big-O 会隐藏常数,所以一个常数极大的 O(n) 算法,在真实数据规模下完全可能输给 O(n log n) 的算法。这意味着实践中,Big-O 是用来在架构性不同的方案之间做选择的正确工具,但之后一定要用贴近真实数据的压测来验证。",
+    "keywords": ["complexity", "growth", "upper bound", "space", "benchmark"]
+  },
+  {
+    "concept": "Hash Table",
+    "stack": "algo",
+    "seconds": 45,
+    "en": "A hash table maps keys to values with average O(1) lookup by turning the key into an array index through a hash function. Two problems are unavoidable. First, collisions, since many keys map to the same slot. The solutions are separate chaining, where each slot holds a list or a tree, and open addressing with linear or quadratic probing, where you search nearby slots for space. Second, resizing: once the load factor crosses roughly 0.7, collision probability rises sharply, so you allocate a bigger table and rehash every existing entry, an O of n cost amortized across many inserts. The trade-off is memory against speed, since a sparse table wastes space but keeps chains short. What that means in practice is the hash function must distribute values evenly, and the key must be immutable while it sits inside the table, because if its hash changes you will never be able to find it again.",
+    "cn": "哈希表通过哈希函数把键换算成数组下标,从而把键映射到值,平均查找复杂度是 O(1)。有两个问题无法回避。第一,冲突,因为很多键会映射到同一个槽位。解决办法有两种:一是链地址法,每个槽位挂一个链表或者树;二是开放寻址配合线性探测或二次探测,在邻近槽位里找空位。第二,扩容:一旦加载因子超过大约 0.7,冲突概率急剧上升,于是你要分配一张更大的表并把所有已有条目重新哈希,这是一次 O(n) 的开销,但被摊薄到了大量插入操作上。权衡存在于内存与速度之间:稀疏的表浪费空间但链短。这意味着实践中哈希函数必须分布均匀,而且键在表里的时候必须是不可变的,因为一旦它的哈希值变了,你就再也找不回这个元素了。",
+    "keywords": ["collision", "chaining", "probing", "load factor", "rehash"]
+  },
+  {
+    "concept": "Binary Search",
+    "stack": "algo",
+    "seconds": 45,
+    "en": "Binary search finds a target in a sorted array in O of log n by repeatedly halving the search interval. The mechanism is two pointers, lo and hi, with mid computed as lo plus hi minus lo over two, which avoids integer overflow in languages with fixed-width integers. If the value at the midpoint is the target you return it; if it is too small you discard the left half by moving lo to mid plus one, otherwise move hi to mid minus one, and repeat while lo is at most hi. The requirement is subtle but absolute: the data must be sorted by the exact same comparison you use for searching, and the predicate must be monotonic, which is precisely why binary search also works on the answer space of optimization problems, not just on arrays. The trade-off versus linear search is that sorting first costs O of n log n, so it only pays off with repeated queries. What that means in practice is I always check three things: off-by-one boundary conditions, whether the loop should use less-than or less-or-equal, and whether I need the lower bound or the upper bound variant.",
+    "cn": "二分查找通过不断把搜索区间减半,在有序数组里以 O(log n) 找到目标。机制是用 lo 和 hi 两个指针,中间值算成 lo 加上 hi 减 lo 再除二,这样在定长整型的语言里可以避免整数溢出。如果 mid 处的值正好等于目标就返回;如果偏小,就把左半边丢掉,让 lo 挪到 mid 加一;否则让 hi 挪到 mid 减一;然后只要 lo 不超过 hi 就继续。这里有个微妙却绝对的前提:数据必须按照与你查找时完全相同的比较规则有序,并且判断谓词必须是单调的;正因为如此,二分查找不仅能用在数组上,也能用在最优化问题的答案空间上。相比线性查找的权衡是:先排序要花 O(n log n),所以只有在重复查询很多次时才划算。这意味着在实践中我永远检查三件事:差一错误的边界、循环条件该用小于还是小于等于、以及我需要的到底是下界还是上界那个变体。",
+    "keywords": ["sorted", "midpoint", "monotonic", "boundary", "lower bound"]
+  },
+  {
+    "concept": "Dynamic Programming",
+    "stack": "algo",
+    "seconds": 55,
+    "en": "Dynamic programming solves problems having two properties: overlapping subproblems and optimal substructure, meaning you recompute the same small cases repeatedly and the global optimum is assembled from optimal sub-solutions. The two implementations are memoization, which is top-down recursion plus a cache, and tabulation, which fills a table bottom-up. I usually reach for tabulation because there is no recursion depth risk and it is easy to compress a two-dimensional table down to one dimension when each row only depends on the previous row, which is the standard space optimization. The real technique is defining state clearly: what do the indices mean, and what does the value in each cell represent? Then the transition, then the base cases. The trade-off is memory for time, although rolling arrays often recover most of it. What that means in practice is I always write the brute-force recurrence and verify it against small hand-checked examples before optimizing, because almost every dynamic programming mistake is a wrong state definition rather than a coding slip.",
+    "cn": "动态规划解决的是具备两个性质的问题:重叠子问题和最优子结构,意思是你会反复计算同样的小规模子案,而且全局最优解是由最优的子解拼出来的。两种实现方式是记忆化搜索,也就是自顶向下递归加缓存;以及递推制表,自底向上填表。我通常选后者,因为没有递归深度溢出的风险,而且当每一行只依赖上一行时,很容易把二维数组压缩成一维,这是标准的空间优化。真正的核心技巧在于把状态定义清楚:下标的含义是什么,每个格子里存的值代表什么;然后才是转移方程,最后是边界条件。权衡是用空间换时间,不过滚动数组通常能把空间省回来大部分。这意味着实践中,我一定会先写出暴力版的递推式,并用手工验算的小样例确认它是对的,然后再去做优化,因为动态规划里几乎每一个错误都是状态定义错了,而不是代码手滑。",
+    "keywords": ["memoization", "subproblem", "state", "transition", "optimal substructure"]
+  },
+  {
+    "concept": "Event Loop",
+    "stack": "frontend",
+    "seconds": 55,
+    "en": "The JavaScript event loop explains why single-threaded JavaScript can handle concurrency in a non-blocking way. The mechanism is that synchronous code runs on a call stack; when you hit anything asynchronous, like a timer, a network request, or a promise, the runtime hands it off and registers a callback, and when the operation completes its callback gets queued. The loop continuously checks: if the call stack is empty, it drains the microtask queue first, which is promises and queueMicrotask, then takes one macrotask such as setTimeout or IO, then drains microtasks again. That ordering is exactly why Promise callbacks always run before setTimeout even with zero delay. The trade-off is that any long-running synchronous function blocks everything, including rendering and input, so the whole page freezes. What that means in practice is never do heavy CPU work on the main thread; split it into chunks or move it to a Web Worker, and remember that awaiting yields control to the microtask queue, not to the browser's paint step.",
+    "cn": "JavaScript 的事件循环解释了为什么单线程的 JS 能在不阻塞的前提下处理并发。机制是这样的:同步代码跑在调用栈上;当你执行到异步的东西,比如定时器、网络请求或者 promise,运行时会把它交出去并登记一个回调,等操作完成时,这个回调就被放进队列。循环不停地检查:如果调用栈空了,它会先清空微任务队列,也就是 promise 和 queueMicrotask,然后取一个宏任务执行,比如 setTimeout 或者 IO,接着再清空一次微任务。这个顺序正好解释了为什么即便延迟写零,Promise 的回调也永远排在 setTimeout 之前执行。权衡在于:任何长时间运行的同步函数都会把一切堵住,包括渲染和用户输入,于是整个页面卡死。这意味着实践中绝对不要在主线程做繁重的 CPU 计算;把它切块或者丢给 Web Worker,而且要记住 await 让出的是控制权给微任务队列,而不是给浏览器的绘制阶段。",
+    "keywords": ["call stack", "callback", "microtask", "macrotask", "non-blocking"]
+  },
+  {
+    "concept": "Closure",
+    "stack": "frontend",
+    "seconds": 45,
+    "en": "A closure is created when a function remembers and can access variables from the scope where it was defined, even after that outer scope has already returned. The mechanism is lexical scope combined with the fact that inner functions hold a reference to their outer environment rather than copying values at creation time. That means closures capture variables, not snapshots, which is why the famous var-in-a-loop bug prints the same final value five times: all the callbacks share one single binding, and let fixes it by creating a fresh binding per iteration. The trade-off is power versus memory. Closures are how you get private state, function factories, and real encapsulation in JavaScript, but anything a closure references stays pinned in memory and cannot be garbage collected while the closure lives. What that means in practice is closures are the foundation of module patterns and hooks, but be careful attaching long-lived closures to DOM nodes or timers, because that is the classic source of memory leaks in single-page applications.",
+    "cn": "当一个函数记住并且能够访问它被定义时所在作用域里的变量,即便那个外层作用域已经返回了,这时候就产生了闭包。它的机制是词法作用域,加上内层函数持有的是外层环境的引用,而不是在创建时把值拷贝一份。这意味着闭包捕获的是变量本身,而不是快照,这也是为什么那个著名的循环里用 var 的 bug 会把同一个最终值打印五次:所有回调共享同一个绑定;改成 let 就好了,因为每次迭代都会创建新的绑定。权衡体现在能力与内存之间。闭包是你获得私有状态、函数工厂以及真正封装的手段,但闭包引用到的任何东西都会被钉在内存里,只要闭包还活着就无法被回收。这意味着实践中闭包是模块模式和 hooks 的基石,但把长生命周期的闭包挂到 DOM 节点或者定时器上要格外小心,因为那正是单页应用里内存泄漏最经典的来源。",
+    "keywords": ["scope", "binding", "capture", "private state", "memory leak"]
+  },
+  {
+    "concept": "Virtual DOM",
+    "stack": "frontend",
+    "seconds": 50,
+    "en": "The virtual DOM is an in-memory tree of plain JavaScript objects describing what the UI should look like, and it exists so that you avoid touching the real DOM, which is slow. The mechanism is reconciliation: when state changes, React builds a new virtual tree, diffs it against the previous one by comparing node types and keys, computes the minimal set of real DOM operations, and batches those mutations into one commit. The diffing assumptions are what bring it down from the theoretical O of n cubed to O of n: compare only within the same level, and treat a different element type as rebuild rather than patch. The trade-off is paying memory and CPU to construct and diff trees in exchange for predictable declarative code and far fewer layout thrashes. What that means in practice is keys matter enormously: always use stable unique IDs rather than array indexes, because with index keys an insertion near the top makes React think every child changed.",
+    "cn": "虚拟 DOM 是一棵存在内存里的普通 JavaScript 对象树,用来描述界面应该长什么样;它存在的意义就是让你尽量少去操作真实 DOM,因为那玩意很慢。机制是协调,也就是 reconciliation:当状态变化时,React 生成一棵新的虚拟树,通过比较节点类型和 key 来与上一棵做差异计算,得出最小化的真实 DOM 操作集合,并把这些变更批量提交。之所以能把理论上 O(n 立方) 的对比降到 O(n),靠的是两个前提:只在同层级之间比较,以及元素类型不同就重建而不是打补丁。权衡在于,你付出构建和对比这两棵树的内存与 CPU,换来可预测的声明式代码和少得多的布局抖动。这意味着在实践中 key 至关重要:永远用稳定的唯一 ID 而不是数组下标,因为用下标做 key 时,只要在顶部插入一条数据,React 就会以为每个子节点都变了。",
+    "keywords": ["diff", "reconciliation", "batch", "key", "declarative"]
+  },
+  {
+    "concept": "CORS",
+    "stack": "frontend",
+    "seconds": 45,
+    "en": "CORS, cross-origin resource sharing, is a browser security mechanism that relaxes the same-origin policy so a page on one domain can read responses from another. Importantly it is enforced by the browser, not by the server, and it is not protection for your server at all, since tools like curl ignore it completely. The mechanism: for simple requests the browser sends an Origin header and expects Access-Control-Allow-Origin back; for anything non-simple like PUT, a JSON content type, or a custom header, it first sends a preflight OPTIONS asking which methods and headers are permitted, and only proceeds if the server lists them. Cookies additionally require Allow-Credentials plus an exact, non-wildcard origin. The trade-off is that frustrated developers reach for wildcard origins or needless proxies. What that means in practice is whitelist specific origins per environment, remember that preflight responses are cacheable to save a round trip, and note that CORS blocks reading responses, not sending requests, so CSRF defence is a separate concern.",
+    "cn": "CORS,跨源资源共享,是一个浏览器安全机制,它放宽同源策略,让一个域名下的页面能够读取另一个域名的响应。很重要的一点是它由浏览器强制执行,而不是服务器,而且它完全不是用来保护服务器的,因为 curl 这类工具会彻底无视它。机制是这样的:对于简单请求,浏览器发出 Origin 头并期待服务端返回 Access-Control-Allow-Origin;对于非简单请求,比如 PUT、JSON 类型的 content type 或者自定义头,浏览器会先发一个 OPTIONS 预检,询问允许哪些方法和头,只有服务端明确列出之后才会真正发出请求。如果需要带 cookie,还额外要求 Allow-Credentials 加上精确匹配的、不能用通配的 origin。权衡在于被搞烦的开发者往往会直接点火星号或者架设不必要的代理。这意味着实践中要按环境白名单具体域名;记得预检响应是可缓存的,能省一次往返;还要分清 CORS 拦截的是读取响应而非发送请求,所以 CSRF 防护是另一回事。",
+    "keywords": ["origin", "preflight", "header", "credential", "browser"]
+  },
+  {
+    "concept": "JWT",
+    "stack": "security",
+    "seconds": 50,
+    "en": "A JWT is a compact token carrying claims, built from three base64 segments: header, payload, and signature. The mechanism is that the server signs the header and payload with a secret or a private key, and any service holding the matching key or public key can verify nobody tampered with it and then read the claims directly, without ever calling the issuer. That is what makes JWTs stateless and horizontally scalable across services. Two things follow immediately. The payload is encoded, not encrypted, so never put secrets in it, since anyone can decode base64; and statelessness means there is no natural revocation, so once issued a token stays valid until expiry, which forces short expirations plus a denylist for logout and incident response. The trade-off is convenience versus control: you avoid session storage but cannot instantly invalidate sessions. What that means in practice is verify the algorithm explicitly to avoid alg-confusion bugs, and treat JWTs as bearer tokens whose leakage means account takeover.",
+    "cn": "JWT 是一种携带声明的紧凑令牌,由三段 base64 组成:头部、载荷和签名。它的机制是:服务端用密钥或者私钥对头部和载荷做签名,任何持有对应密钥或公钥的服务都能验证内容没被篡改,然后直接读取声明,而完全不用回调签发方。这正是 JWT 无状态、可以横向扩展到多个服务的原因。由此立刻推出两点。第一,载荷只是编码,并不是加密,所以绝对别往里放机密,任何人用 base64 都能解出来;第二,无状态意味着没有天然的吊销机制,一旦签发就一直有效到过期为止,所以必须把过期时间设短,并配一个黑名单来支持登出和安全事件响应。这里的权衡是便利性与控制力:你省掉了会话存储,但也失去了即时作废会话的能力。这意味着实践中要显式校验算法以防 alg 混淆攻击,并且要把 JWT 当成持有者令牌看待,它一旦泄漏就等于账号被劫持。",
+    "keywords": ["signature", "claim", "stateless", "expiry", "revocation"]
+  },
+  {
+    "concept": "OAuth 2.0",
+    "stack": "security",
+    "seconds": 55,
+    "en": "OAuth 2.0 is an authorization framework letting a third-party app access a user's resources without ever seeing their password, and the key mental correction is that OAuth authorizes, it does not authenticate; OpenID Connect is the identity layer built on top of it. The mechanism in the authorization code flow: the app redirects the user to the provider, the user consents, the provider redirects back with a short-lived authorization code, and the app exchanges that code plus its client secret at the token endpoint for an access token and optionally a refresh token. Doing that exchange server-side keeps tokens out of browser history, and PKCE extends the same protection to public clients like mobile apps by binding the request to a one-time verifier. The trade-off is real complexity bought in exchange for delegated, revocable, narrowly scoped access. What that means in practice is validate the redirect URI exactly, use the state parameter to block CSRF, request minimal scopes, and never use the implicit flow any more.",
+    "cn": "OAuth 2.0 是一个授权框架,它让第三方应用可以在完全拿不到用户密码的情况下访问用户的资源;这里最关键的认识纠偏是:OAuth 做的是授权,不是认证,真正的身份认证层是建立在它之上的 OpenID Connect。授权码模式的机制是:应用把用户重定向到授权提供方,用户点了同意,提供方再带着一个短命的授权码跳转回来,应用拿着这个授权码加上自己的 client secret,到令牌端点去换取访问令牌,有时还有刷新令牌。把这个换取过程放在服务端做,可以避免令牌出现在浏览器历史里;而 PKCE 通过绑定一次性校验串,把同样的保护扩展到了手机 App 这类公共客户端上。权衡是用相当高的复杂度,换来可委派、可撤销、可精细化限制范围的访问授权。这意味着实践中要严格精确校验 redirect URI、用 state 参数防 CSRF、只申请最小必要 scope,并且绝对不要再用隐式模式了。",
+    "keywords": ["authorization code", "scope", "consent", "redirect", "token"]
+  },
+  {
+    "concept": "HTTPS and TLS Handshake",
+    "stack": "security",
+    "seconds": 55,
+    "en": "HTTPS is HTTP over TLS, and it gives you confidentiality, integrity, and server authentication. The TLS 1.3 handshake works like this. The client sends supported cipher suites and its key share; the server replies with the chosen suite and its own key share, and both sides derive a shared secret through elliptic-curve Diffie-Hellman key exchange. Because the key share travels in the very first flight, TLS 1.3 completes in one round trip instead of two, and everything after that, including certificates, is already encrypted. The certificate itself is what proves identity: the server signs the handshake transcript with its private key, and your browser validates the chain up to a trusted root, plus hostname and expiry. The trade-off is CPU spent on handshakes, mitigated by session resumption and zero round trip resumption in TLS 1.3, which itself trades some replay protection for speed. What that means in practice is force TLS everywhere with HSTS, and know that inside a service mesh, mutual TLS is what authenticates services to each other.",
+    "cn": "HTTPS 就是跑在 TLS 之上的 HTTP,它给你三样东西:机密性、完整性和服务端身份认证。TLS 1.3 的握手是这样进行的:客户端发出自己支持的密码套件和密钥共享数据;服务端回选定的套件和它自己的密钥共享,双方通过椭圆曲线的 Diffie-Hellman 推导出共享密钥。因为密钥共享数据在第一轮就带上,所以 TLS 1.3 只要一个往返就完成握手而不是两个,而且此后的一切,包括证书,都已经是加密的了。证书本身正是证明身份的东西:服务端用私钥对握手记录签名,浏览器则沿着证书链一路校验到可信根证书,同时检查域名和有效期。权衡在于握手消耗的 CPU,这一点靠会话复用来缓解,TLS 1.3 还有 0-RTT 恢复,代价是牺牲一部分重放保护来换速度。这意味着实践中要用 HSTS 强制全站 TLS,并且要知道在服务网格内部,服务之间的互认是靠双向 TLS 完成的。",
+    "keywords": ["handshake", "certificate", "cipher suite", "key exchange", "round trip"]
+  },
+  {
+    "concept": "Container versus Virtual Machine",
+    "stack": "devops",
+    "seconds": 50,
+    "en": "A container and a virtual machine both give you isolated environments, but they isolate at completely different layers. A VM virtualizes hardware: a hypervisor runs a full guest operating system with its own kernel per instance, heavy but strongly isolated. A container virtualizes the operating system: your process runs directly on the host kernel, isolated by Linux namespaces controlling what it can see, cgroups controlling how much CPU and memory it can use, plus a union filesystem providing image layers. That is the mechanism behind containers starting in milliseconds and weighing tens of megabytes instead of gigabytes. The trade-off is isolation depth versus efficiency: containers share one kernel, so a single kernel vulnerability affects everything on the host, and they are not a hard security boundary without extra hardening like seccomp and user namespaces. What that means in practice is containers are excellent packaging for microservices, while anything needing a different kernel or genuine multi-tenant isolation still belongs in a VM.",
+    "cn": "容器和虚拟机都提供隔离环境,但它们隔离的层次完全不同。虚拟机虚拟化的是硬件:hypervisor 上跑完整的客户机操作系统,每个实例都有自己的内核,重但是隔离强度高。容器虚拟化的是操作系统:你的进程直接跑在宿主机内核上,靠 Linux 的 namespace 控制它能看见什么、靠 cgroup 控制它能用多少 CPU 和内存,再加上一个联合文件系统提供镜像分层。这套机制正是容器能做到毫秒级启动、体积几十兆而不是几个 G 的原因。权衡在于隔离深度与效率之间:容器共享同一个内核,所以一个内核漏洞会影响宿主机上的一切,而且如果不额外用 seccomp、user namespace 等手段加固,它并不是一个硬安全边界。这意味着实践中容器是打包微服务的绝佳方式,但凡是要求不同内核版本、或者需要真正的多租户强隔离的场景,仍然应该放进虚拟机。",
+    "keywords": ["namespace", "cgroup", "image", "kernel", "isolation"]
+  },
+  {
+    "concept": "Kubernetes Pod",
+    "stack": "devops",
+    "seconds": 50,
+    "en": "A pod is the smallest deployable unit in Kubernetes, and the key insight is that it wraps one or more containers sharing a network namespace and optionally storage volumes, so they talk over localhost and share fate by always being scheduled onto the same node. You rarely create pods directly. Instead you declare a Deployment with a desired replica count, and the controller continuously reconciles actual state toward that desired state, quietly replacing any pod that dies. Services sit on top and give pods a stable virtual IP precisely because pod IPs are ephemeral, while Ingress routes external HTTP traffic into the cluster. The trade-off is enormous power bought with enormous conceptual surface: declarative reconciliation is the reason self-healing works, but debugging requires understanding controllers, selectors, probes, and scheduling together. What that means in practice is treat pods as cattle and not pets: keep them stateless and disposable, define readiness and liveness probes so bad instances are pulled from rotation automatically, and scale replicas rather than pod size.",
+    "cn": "Pod 是 Kubernetes 里最小的部署单元,这里最关键的认知是:它包装了若干个共享网络命名空间、也可以共享存储的容器,因此它们之间可以用 localhost 通信,并且因为总是被调度到同一个节点上而同生共死。实践中你很少直接创建 pod,而是声明一个带期望副本数的 Deployment,由控制器持续地做调谐,把实际状态拉向期望状态,哪个 pod 挂了就悄悄补一个。Service 之所以存在,是因为 pod 的 IP 是临时的,它提供一个稳定的虚拟 IP;而 Ingress 负责把外部 HTTP 流量引进集群。权衡在于:巨大的能力是用同样巨大的概念面换来的。声明式调谐正是自愈能力的原因,但排查问题需要你同时理解控制器、选择器、探针和调度。这意味着实践中要把 pod 当牲口而不是宠物:保持无状态、可随时丢弃;配好就绪和存活探针,让异常实例自动被摘除;要扩容就加副本数,而不是把 pod 变大。",
+    "keywords": ["deployment", "replica", "reconcile", "service", "probe"]
+  },
+  {
+    "concept": "CI/CD Pipeline",
+    "stack": "devops",
+    "seconds": 45,
+    "en": "CI/CD is the practice of automating everything between a developer's commit and production. Continuous integration means every merge triggers a build that compiles, runs unit tests, and lints, so breakage is caught within minutes; continuous delivery means the result is always in a deployable state; and continuous deployment takes the extra step of shipping automatically once the pipeline is green. The mechanism is a declarative pipeline of stages: build, test, package into an immutable image, deploy to staging, run integration tests, then promote to production with approvals or automated gates. The trade-off is setup effort and potentially slow pipelines versus dramatically faster feedback, because deployments become frequent and small, so the blast radius of any single release collapses and rollback becomes trivial. What that means in practice is keep the pipeline fast by parallelizing tests and caching dependencies, never let a red build linger, and use environment promotion so the exact artefact that was tested is the one actually deployed rather than a rebuild.",
+    "cn": "CI/CD 是把开发者的一次提交到生产上线之间的所有环节自动化的实践。持续集成指的是每次合并都触发一次构建,执行编译、单元测试和静态检查,让问题在几分钟内被发现;持续交付指的是产物随时处于可部署状态;持续部署则更进一步,流水线一旦全绿就自动发布。它的机制是一条声明式的流水线,分成若干阶段:构建、测试、打包成不可变镜像、部署到预发环境、跑集成测试,然后通过审批或自动化卡点晋升到生产。权衡是搭建成本和流水线可能变慢,换来的是快得多的反馈:因为发布变得频繁而且粒度小,任何一次发布的爆炸半径都被压缩到极小。这意味着实践中要通过并行化测试和缓存依赖来保持流水线够快,绝对不要让一次失败的构建长期悬着,并且要采用环境晋升的方式,确保上线的是被测试过的那个产物本身,而不是重新编译出来的新包。",
+    "keywords": ["pipeline", "artefact", "gate", "rollback", "promote"]
+  },
+  {
+    "concept": "Global Interpreter Lock",
+    "stack": "python",
+    "seconds": 45,
+    "en": "The GIL, or global interpreter lock, is a mutex in CPython ensuring that only one thread executes Python bytecode at a time. It exists because CPython's memory management, especially reference counting, was never made thread-safe, and locking one big interpreter lock was far simpler than fine-grained locking everywhere. The consequence is the famous rule: threading gives you concurrency for IO-bound work, since the lock is released around blocking calls and inside C extensions like NumPy, but it gives you zero parallelism for CPU-bound Python, so extra cores stay idle, which is exactly why multiprocessing and asyncio exist alongside it. The mechanism detail worth knowing is that switches happen every few milliseconds or on blocking calls, so threads interleave rather than truly run in parallel. The trade-off is single-threaded speed and easy C integration sold for multi-core scaling. What that means in practice is pick your tool by workload: asyncio for thousands of concurrent connections, processes for CPU-heavy work, threads mostly for glue code.",
+    "cn": "GIL,也就是全局解释器锁,是 CPython 里的一把互斥锁,它保证同一时刻只有一个线程在执行 Python 字节码。它之所以存在,是因为 CPython 的内存管理,尤其是引用计数,本身不是线程安全的,而锁住一整个解释器锁远比到处做细粒度加锁要简单得多。由此得到的著名结论是:对 IO 密集型任务,多线程确实给你并发,因为在阻塞调用时以及进入 NumPy 这类 C 扩展时锁会被释放;但对 CPU 密集型的 Python 代码,它给不了任何并行度,多余的核只能干看着,这正是 multiprocessing 和 asyncio 存在的原因。值得一提的机制细节是:切换每几毫秒或者在阻塞调用时发生,所以线程是交错执行而不是真正并行。权衡是用多核扩展能力,换来了单线程执行速度和方便的 C 集成。这意味着实践中要按负载选型:成千上万的并发连接用 asyncio,重计算用多进程,线程主要用来做胶水代码。",
+    "keywords": ["mutex", "bytecode", "parallelism", "IO-bound", "asyncio"]
+  },
+  {
+    "concept": "Goroutine versus Thread",
+    "stack": "go",
+    "seconds": 50,
+    "en": "A goroutine is a lightweight thread managed by the Go runtime rather than by the operating system. The mechanism is the G-M-P scheduler: G is the goroutine, M is the OS thread, and P is a logical processor holding a run queue, so the runtime multiplexes thousands of Gs onto a small number of Ms, and when a goroutine blocks on network IO the netpoller parks it and instantly runs another G on that same thread. Goroutines start with a growable stack of about two kilobytes versus megabytes for a thread, which is why hundreds of thousands of them are affordable. The trade-off is scheduler opacity: you cannot pin or prioritize goroutines, and a CPU-bound goroutine with no preemption points can starve others. What that means in practice is start goroutines freely to get concurrency around IO, but every goroutine needs a defined exit through context cancellation and WaitGroups, and prefer channels over sharing memory, following Go's rule of not communicating by sharing memory.",
+    "cn": "goroutine 是由 Go 运行时而不是操作系统管理的轻量级线程。它的机制是 G-M-P 调度模型:G 是 goroutine,M 是操作系统线程,P 是持有运行队列的逻辑处理器;运行时把成千上万个 G 复用到少量 M 上,当某个 goroutine 在网络 IO 上阻塞时,netpoller 会把它挂起,并在同一个线程上立刻跑另一个 G。goroutine 的初始栈是可增长的大约两 KB,而线程是 MB 级别的,这就是开着几十万个 goroutine 也负担得起的原因。权衡在于调度器对用户不透明:你没法绑定或者设置优先级,而一个没有抢占点的 CPU 密集 goroutine 可能会饿死其他任务。这意味着实践中可以放心地为并发 IO 大量起 goroutine,但每个 goroutine 都要有明确的退出路径,靠 context 取消和 WaitGroup 管理;并且优先用 channel 而不是共享内存,遵循 Go 那句不要用共享内存来通信的信条。",
+    "keywords": ["scheduler", "stack", "channel", "context", "concurrency"]
+  },
+  {
+    "concept": "Ownership and Borrowing",
+    "stack": "rust",
+    "seconds": 55,
+    "en": "Ownership is Rust's memory model and the reason it can guarantee memory safety without any garbage collector. The rules are: every value has exactly one owner, and when that owner goes out of scope the value is dropped automatically. Assignment moves ownership, so a real copy requires an explicit clone. Borrowing lets others use the value temporarily, and the borrow checker enforces one invariant that does all the work: you may have any number of immutable references or exactly one mutable reference, never both, and that is precisely what makes data races impossible to compile rather than merely unlikely at runtime. Lifetimes are how the compiler proves no reference can outlive the data it points to. The trade-off is genuine: you fight the compiler at first, and it rejects patterns you know are safe, pushing you toward smart pointers or interior mutability. What that means in practice is once it compiles, whole classes of bugs simply cannot happen, so the cost moves from debugging to thinking carefully up front.",
+    "cn": "所有权是 Rust 的内存模型,也是它能在没有任何垃圾回收的前提下保证内存安全的原因。规则是:每个值有且只有一个所有者,当所有者离开作用域时,值被自动 drop。赋值会转移所有权,所以真正想要拷贝必须显式 clone。借用让其他人临时使用这个值,而借用检查器只 enforce 一条不变量就搞定了一切:你可以有任意多个不可变引用,或者至多一个可变引用,二者不能同时存在;而这条规则正是让数据竞争在编译期就不可能发生的原因,而不是仅仅在运行时概率很低。生命周期则是编译器用来证明任何引用都不会活得比它指向的数据更久的手段。权衡是真实存在的:一开始你会反复和编译器打架,它还会拒绝一些你明明知道是安全的写法,逼你去用智能指针或者内部可变性。这意味着实践中,只要它编译通过了,整整一大类 bug 就成了不可能,于是成本从调试转移到了提前把事情想清楚。",
+    "keywords": ["ownership", "borrow checker", "lifetime", "move", "mutable"]
+  },
+  {
+    "concept": "RAII and Smart Pointers",
+    "stack": "cpp",
+    "seconds": 50,
+    "en": "RAII, resource acquisition is initialization, is the C++ idiom tying a resource's lifetime to an object's scope: you acquire in the constructor and release in the destructor, so when the object goes out of scope, including during exception unwinding, the resource is freed automatically, which is exactly why RAII gives you strong exception safety. The mechanism is deterministic destruction, which is exactly what separates C++ from garbage-collected languages where finalization timing is simply unpredictable. Smart pointers implement this idea. unique_ptr expresses exclusive ownership and moves rather than copies, so when it dies the object dies with it; shared_ptr keeps a reference count shared between all copies and frees the object when that count hits zero; and weak_ptr observes without contributing to the count, which is how you break reference cycles. The trade-off is small but real: reference counting costs atomic increments, and cycles where shared_ptr owners point at each other leak silently. What that means in practice is default to unique_ptr, use make_unique and make_shared, take references for non-owning parameters, and let scopes do the rest.",
+    "cn": "RAII,资源获取即初始化,是 C++ 里把资源生命周期绑定到对象作用域的惯用法:在构造函数里获取资源,在析构函数里释放,于是当对象离开作用域时,包括在异常栈展开的过程中,资源都会被自动释放。它的机制是确定性析构,这恰恰是把 C++ 和有垃圾回收的语言区分开的地方,后者的终结时机完全不可预测。智能指针就是对这个思想的实现。unique_ptr 表达独占所有权,只能移动不能拷贝,所以它消亡时对象随之消亡;shared_ptr 在所有副本之间维护一个引用计数,计数归零时释放对象;weak_ptr 则只观察而不贡献计数,这正是打破循环引用的手段。权衡不大但真实存在:引用计数要付出原子自增的成本,而两个互相持有 shared_ptr 的对象会静悄悄地泄漏。这意味着实践中默认用 unique_ptr,优先调用 make_unique 和 make_shared,非所有权的参数用引用传递,剩下的交给作用域去管。",
+    "keywords": ["destructor", "ownership", "unique_ptr", "reference count", "exception safety"]
+  },
+  {
+    "concept": "Overfitting",
+    "stack": "ml",
+    "seconds": 50,
+    "en": "Overfitting is when a model learns noise and quirks specific to the training data instead of the underlying pattern, so it scores beautifully on training data but generalizes poorly to anything new; the mirror failure, underfitting, is a model too simple to capture the signal at all. You diagnose it concretely by holding out a validation set and watching the gap: if training loss keeps falling while validation loss starts rising, you are overfitting, and you should stop at that turning point, which we call early stopping. The fixes follow directly from the cause: more or cleaner data, augmentation, a simpler model, regularization like L2 weight decay penalizing large weights, or dropout in neural networks so units cannot co-adapt. The trade-off is the classic bias-variance balance: every step that reduces variance tends to increase bias, so you tune until validation error bottoms out, because validation error is the best proxy we have for real generalization. What that means in practice is guard hard against leakage, especially computing scaling or imputation statistics over the full dataset before splitting, since that silently inflates your validation score.",
+    "cn": "过拟合指的是模型学到了训练数据里的噪声和特有怪癖,而不是底层的规律,于是它在训练集上漂亮得不行,在没见过的数据上惨不忍睹;与之相对的失败是欠拟合,也就是模型太简单,压根捕捉不到信号。判断方法很具体:留出一份验证集去看两条曲线的差距,如果训练损失还在下降而验证损失已经开始上升,那就是过拟合了,而你应该在这个拐点处停下,这就是我们说的早停。修复手段完全顺着病因来:更多或更干净的数据、数据增强、更简单的模型、像 L2 权重衰减那样惩罚过大的权重,或者在神经网络里用 dropout 让神经元无法互相依赖。权衡就是经典的偏差方差平衡:任何降低方差的动作往往都会抬高偏差,所以要一直调到验证误差见底为止。这意味着实践中要死守泄漏防线,尤其是不能在切分数据之前就用全量数据算出归一化或缺失值填充的统计量,那样会悄悄抬高你的验证分数。",
+    "keywords": ["variance", "regularization", "validation", "generalization", "dropout"]
+  },
+  {
+    "concept": "Retrieval-Augmented Generation",
+    "stack": "agent",
+    "seconds": 50,
+    "en": "RAG, retrieval-augmented generation, grounds a language model on external knowledge rather than relying purely on weights learned at training time. The mechanism is two phases. Offline you chunk documents, embed each chunk into vectors, and store them in a vector index. Online you embed the user's query, retrieve the most semantically similar chunks with approximate nearest neighbour search, stuff them into the prompt as context, and ask the model to answer using that context and ideally cite it. The trade-off versus fine-tuning is important: fine-tuning changes behaviour and style, but injected knowledge still decays and is expensive to refresh, whereas RAG keeps knowledge current, auditable through citations, and far cheaper to maintain. The cost is that retrieval quality becomes your ceiling, since bad chunking, weak embeddings, or missing reranking mean the model never sees the right passage. What that means in practice is invest in chunking strategy, hybrid keyword plus vector search, and reranking, and measure retrieval recall separately from answer quality.",
+    "cn": "RAG,检索增强生成,让语言模型立足于外部知识,而不是只依赖训练时学到的那些权重。它分两个阶段。离线阶段你把文档切块,把每个片段 embedding 成向量,存进向量索引。在线阶段你把用户的问题也向量化,用近似最近邻检索找出语义上最相似的片段,把它们作为上下文塞进 prompt,让模型基于这些上下文作答,理想情况下还要给出引用出处。它和微调的权衡很重要:微调改变的是行为和风格,而注入的知识依然会过时且刷新成本高昂;相比之下 RAG 能让知识保持新鲜、可通过引用溯源,维护成本也低得多。代价是检索质量成了天花板,因为切块太糟糕、embedding 太弱或者缺少重排序,模型就永远看不到正确的那段话。这意味着实践中要下功夫优化切块策略、做关键词加向量的混合检索、加一层重排序,并且把检索召回率与答案质量分开单独评估。",
+    "keywords": ["embedding", "chunk", "retrieval", "vector", "context"]
+  }
+]

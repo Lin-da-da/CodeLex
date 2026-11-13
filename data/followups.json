@@ -1,0 +1,542 @@
+[
+  {
+    "id": "fu-java-gc",
+    "stack": "java",
+    "topic": "Garbage Collection",
+    "chain": [
+      { "level": 1, "en": "How does the JVM decide which objects are garbage?", "cn": "JVM 如何判断哪些对象是垃圾？" },
+      { "level": 2, "en": "What happens during a stop-the-world pause, and how do you reduce it?", "cn": "STW 停顿期间发生了什么，你怎么减少它？" },
+      { "level": 3, "en": "Your service has 2-second GC pauses in production. Walk me through your debugging.", "cn": "你的服务线上出现 2 秒 GC 停顿，讲讲你怎么排查。" }
+    ],
+    "hintEn": "Answer in one line: reachability from GC roots, not reference counting. Then generational model, minor vs full GC, collector choice (G1/ZGC), and only then tuning flags like heap size and MaxGCPauseMillis.",
+    "hintCn": "一句话讲清从 GC Roots 出发的可达性分析（不是引用计数），再说分代模型、Minor/Full GC 区别、G1/ZGC 选型，最后才是堆大小和停顿目标这类调参。"
+  },
+  {
+    "id": "fu-java-concurrent-map",
+    "stack": "java",
+    "topic": "ConcurrentHashMap",
+    "chain": [
+      { "level": 1, "en": "How is ConcurrentHashMap different from wrapping a HashMap in synchronizedMap?", "cn": "ConcurrentHashMap 和 Collections.synchronizedMap 包一层有什么区别？" },
+      { "level": 2, "en": "What happens when two threads write to the same bucket at the same time?", "cn": "两个线程同时写同一个桶会发生什么？" },
+      { "level": 3, "en": "Your cache built on ConcurrentHashMap holds 10 million entries and throughput drops. Where do you look?", "cn": "你用 ConcurrentHashMap 做的缓存装了 1000 万条后吞吐下降，你往哪查？" }
+    ],
+    "hintEn": "Mention per-bin CAS then synchronized fallback, cooperative resizing via sizeCtl, and weak consistency of iterators. Compound ops are NOT atomic — use computeIfAbsent/merge. Big-map slowdowns come from GC pressure, hash collisions and no eviction.",
+    "hintCn": "讲清空桶 CAS、冲突时锁单个 bin、扩容线程协作、迭代器弱一致；复合操作并不原子，要用 computeIfAbsent/merge；大 map 变慢多因 GC 压力、hash 碰撞和没有淘汰策略。"
+  },
+  {
+    "id": "fu-java-threadpool",
+    "stack": "java",
+    "topic": "Thread Pool Sizing",
+    "chain": [
+      { "level": 1, "en": "Why use a thread pool instead of spawning a thread per request?", "cn": "为什么用线程池，而不是每个请求开一个线程？" },
+      { "level": 2, "en": "What happens when the queue is full and every thread is busy?", "cn": "队列满了、线程也全忙的时候会发生什么？" },
+      { "level": 3, "en": "Your pool rejected 5% of tasks during a traffic spike. Walk me through how you'd tune it.", "cn": "流量峰值时你的线程池拒绝了 5% 的任务，讲讲你怎么调。" }
+    ],
+    "hintEn": "Core vs max pool size and which queue you chose; a bounded queue plus a rejection policy beats an unbounded one that hides overload. Size by CPU-bound vs IO-bound, isolate pools per dependency, and monitor queue depth and rejection count.",
+    "hintCn": "讲清核心/最大线程数与队列选择：有界队列配拒绝策略比无界队列强，后者只会把过载藏起来。CPU 密集和 IO 密集配法不同，按依赖隔离线程池，监控队列深度与拒绝数。"
+  },
+  {
+    "id": "fu-java-hashmap",
+    "stack": "java",
+    "topic": "HashMap Internals",
+    "chain": [
+      { "level": 1, "en": "Walk me through how HashMap finds the value for a key.", "cn": "讲讲 HashMap 是怎么根据 key 找到 value 的。" },
+      { "level": 2, "en": "Why does a bad hashCode destroy performance, and when does a bucket turn into a tree?", "cn": "为什么糟糕的 hashCode 会把性能搞垮？桶什么时候会变成树？" },
+      { "level": 3, "en": "Two threads put into the same HashMap and it corrupts. What exactly breaks, and how do you fix it?", "cn": "两个线程同时 put 同一个 HashMap 把结构搞坏了，具体坏在哪，你怎么修？" }
+    ],
+    "hintEn": "Hash spread, index by (n-1)&hash, chaining on collision, treeify at 8 with table >= 64, resize at load factor 0.75. Concurrency breaks during resize rehash — data loss or a cyclic list. Fix with ConcurrentHashMap, not a bigger load factor.",
+    "hintCn": "讲清扰动函数、(n-1)&hash 定址、拉链解决冲突、链表长度≥8 且表≥64 时转红黑树、0.75 触发扩容；并发 put 在扩容 rehash 时会丢数据或成环，修法是换 ConcurrentHashMap 或加锁。"
+  },
+  {
+    "id": "fu-java-volatile",
+    "stack": "java",
+    "topic": "volatile & Memory Model",
+    "chain": [
+      { "level": 1, "en": "What does the volatile keyword actually guarantee?", "cn": "volatile 到底保证了什么？" },
+      { "level": 2, "en": "Why doesn't volatile make count++ thread-safe?", "cn": "为什么加了 volatile，count++ 依然线程不安全？" },
+      { "level": 3, "en": "You're building a config flag read by many threads. Would you use volatile? Walk me through it.", "cn": "你要做一个多线程读取的配置开关，会用 volatile 吗？讲讲你的思路。" }
+    ],
+    "hintEn": "volatile gives visibility and ordering (happens-before) but never atomicity; it inserts memory barriers and forbids reordering. Compound updates need AtomicInteger, LongAdder or a lock. volatile fits the one-writer-many-readers flag case.",
+    "hintCn": "volatile 只保证可见性和禁止重排（happens-before），不保证原子性，靠内存屏障实现。复合更新要用 AtomicInteger/LongAdder 或锁；一写多读的开关场景才是 volatile 的正解。"
+  },
+  {
+    "id": "fu-java-threadlocal",
+    "stack": "java",
+    "topic": "ThreadLocal",
+    "chain": [
+      { "level": 1, "en": "What is ThreadLocal actually for?", "cn": "ThreadLocal 到底是干什么的？" },
+      { "level": 2, "en": "Why is ThreadLocal dangerous when threads come from a pool?", "cn": "为什么线程来自线程池时，ThreadLocal 很危险？" },
+      { "level": 3, "en": "Your service started leaking memory after you added a request-scoped ThreadLocal. Walk me through the diagnosis.", "cn": "加了请求级的 ThreadLocal 之后服务开始内存泄漏，讲讲你怎么定位。" }
+    ],
+    "hintEn": "Each thread holds a ThreadLocalMap whose keys are weak references but values are strong, so pooled threads keep values alive forever after the key is collected. Always remove() in finally, or pass request context explicitly instead.",
+    "hintCn": "每个线程持有一个 ThreadLocalMap，key 是弱引用而 value 是强引用，key 被回收后 value 仍被池化线程强引用着，于是泄漏。必须 finally 里 remove()，或者干脆把请求上下文显式传参。"
+  },
+  {
+    "id": "fu-java-locks",
+    "stack": "java",
+    "topic": "synchronized vs ReentrantLock",
+    "chain": [
+      { "level": 1, "en": "What's the difference between synchronized and ReentrantLock?", "cn": "synchronized 和 ReentrantLock 有什么区别？" },
+      { "level": 2, "en": "When would you actually pick one over the other?", "cn": "什么情况下你会明确选其中一个？" },
+      { "level": 3, "en": "A lock is held for 200ms under load. How do you find who holds it and kill the contention?", "cn": "某个锁在压力下被持有 200ms，你怎么找出持有者并消除竞争？" }
+    ],
+    "hintEn": "JVM monitor versus AQS/CLH queue: Lock adds tryLock, fairness, interruptibility and multiple Conditions. synchronized has biased-to-heavy lock upgrade and is fine for simple cases. Diagnose with jstack BLOCKED stacks, then shrink the critical section or stripe the lock.",
+    "hintCn": "对比 monitor 与 AQS/CLH 队列：Lock 多了可超时、公平性、可中断和多条件队列；synchronized 有偏向→轻量→重量锁升级，简单场景够用。排查用 jstack 看 BLOCKED 线程栈，再缩小临界区或改分段锁。"
+  },
+  {
+    "id": "fu-java-oom",
+    "stack": "java",
+    "topic": "OOM & Memory Leaks",
+    "chain": [
+      { "level": 1, "en": "What kinds of OutOfMemoryError do you actually see in Java?", "cn": "Java 里你实际见过的 OOM 有哪几种？" },
+      { "level": 2, "en": "How do you find out what's holding the memory after a crash?", "cn": "崩溃之后你怎么找出是谁占着内存不放？" },
+      { "level": 3, "en": "Your pod restarted twice last night with heap OOM. Walk me through the whole investigation.", "cn": "你的 pod 昨晚因为堆 OOM 重启了两次，讲讲完整的排查过程。" }
+    ],
+    "hintEn": "Separate heap space, metaspace, direct buffer and unable-to-create-thread. Dump with -XX:+HeapDumpOnOutOfMemoryError and read the dominator tree in MAT, or jmap/jcmd live. Usual culprits are unbounded collections and caches; raising -Xmx is the last resort, not the fix.",
+    "hintCn": "先区分堆空间、元空间、直接内存、无法创建线程。用 HeapDumpOnOutOfMemoryError 落盘、MAT 看支配树，或 jmap/jcmd 在线看。常见元凶是无界集合/缓存，加大 -Xmx 是最后手段而不是解法。"
+  },
+  {
+    "id": "fu-spring-ioc",
+    "stack": "spring",
+    "topic": "IoC / Dependency Injection",
+    "chain": [
+      { "level": 1, "en": "What does Inversion of Control actually mean in Spring?", "cn": "Spring 里的控制反转到底指什么？" },
+      { "level": 2, "en": "Walk me through how Spring creates and wires a bean.", "cn": "讲讲 Spring 是怎么创建并装配一个 bean 的。" },
+      { "level": 3, "en": "You get a NoSuchBeanDefinitionException in production but not locally. How do you debug it?", "cn": "线上报 NoSuchBeanDefinitionException 但本地没事，你怎么查？" }
+    ],
+    "hintEn": "IoC means the container calls you, you don't call new. Lifecycle: BeanDefinition, instantiate, populate properties, init callbacks, ready. Production-only failures are usually component-scan paths, profiles, conditional beans or multiple candidates needing @Qualifier/@Primary.",
+    "hintCn": "IoC 是容器来调你，而不是你自己 new。生命周期是 BeanDefinition→实例化→属性填充→初始化回调→可用。只在生产出现多半是扫描路径、profile、条件装配差异，或多个实现没指定 @Qualifier/@Primary。"
+  },
+  {
+    "id": "fu-spring-transaction",
+    "stack": "spring",
+    "topic": "@Transactional",
+    "chain": [
+      { "level": 1, "en": "How does @Transactional work under the hood?", "cn": "@Transactional 底层是怎么实现的？" },
+      { "level": 2, "en": "Why doesn't @Transactional work when you call the method from inside the same class?", "cn": "为什么在同一个类内部调用事务方法时不生效？" },
+      { "level": 3, "en": "A transaction silently doesn't roll back in production. Walk me through what you check.", "cn": "线上有个事务静默地没有回滚，讲讲你查什么。" }
+    ],
+    "hintEn": "It's AOP proxy based, so self-invocation bypasses the proxy entirely. Rollback only happens on unchecked exceptions by default — add rollbackFor. Also check the method is public, the propagation behaviour, and whether the exception got swallowed by a try-catch.",
+    "hintCn": "基于 AOP 代理实现，同类内部调用会完全绕过代理。默认只在抛出未受检异常时回滚，受检异常要加 rollbackFor；另外要查方法是否 public、传播行为是否正确、异常是否被 try-catch 吞掉。"
+  },
+  {
+    "id": "fu-spring-aop",
+    "stack": "spring",
+    "topic": "AOP Proxies",
+    "chain": [
+      { "level": 1, "en": "What problem is AOP solving for you?", "cn": "AOP 帮你解决什么问题？" },
+      { "level": 2, "en": "What's the difference between a JDK dynamic proxy and CGLIB?", "cn": "JDK 动态代理和 CGLIB 有什么区别？" },
+      { "level": 3, "en": "Your @Aspect doesn't fire for one specific method. How do you figure out why?", "cn": "你的切面在某一个方法上不生效，你怎么找出原因？" }
+    ],
+    "hintEn": "AOP handles cross-cutting concerns: logging, transactions, security. JDK proxy needs an interface; CGLIB subclasses the target, so final classes and final methods can't be proxied. Debug the pointcut expression, the proxy mode, and whether the bean is proxied at all.",
+    "hintCn": "AOP 处理横切关注点：日志、事务、鉴权。JDK 代理要求目标有接口；CGLIB 靠继承子类，所以 final 类/方法代理不了。排查顺序是切点表达式、代理模式、这个 bean 到底有没有被代理。"
+  },
+  {
+    "id": "fu-spring-bean-scope",
+    "stack": "spring",
+    "topic": "Bean Scopes & Circular Dependency",
+    "chain": [
+      { "level": 1, "en": "What bean scopes does Spring support?", "cn": "Spring 支持哪些 bean 作用域？" },
+      { "level": 2, "en": "What goes wrong when you inject a prototype bean into a singleton?", "cn": "把原型 bean 注入到单例 bean 里会出什么问题？" },
+      { "level": 3, "en": "You hit a circular dependency at startup. Walk me through how you resolve it.", "cn": "启动时撞上循环依赖了，讲讲你怎么解决。" }
+    ],
+    "hintEn": "singleton, prototype, request, session. A singleton holds one prototype instance forever, so use ObjectProvider or a scoped proxy. Circular dependencies are a design smell: extract a third bean, restructure to constructor injection, or defer with lazy resolution.",
+    "hintCn": "单例、原型、request、session。单例注入原型后会永久持有同一个实例，要用 ObjectProvider 或作用域代理。循环依赖是设计坏味道：抽第三个 bean、改成构造注入重新分层，或用延迟注入解环。"
+  },
+  {
+    "id": "fu-spring-boot-autoconfig",
+    "stack": "spring",
+    "topic": "Boot Auto-configuration",
+    "chain": [
+      { "level": 1, "en": "How does Spring Boot know how to configure things automatically?", "cn": "Spring Boot 怎么知道要自动配置什么？" },
+      { "level": 2, "en": "What happens if you define your own bean of the same type?", "cn": "如果你自己也定义了一个同类型的 bean 会怎样？" },
+      { "level": 3, "en": "An auto-configured datasource behaves differently than you expect. Walk me through the debugging.", "cn": "自动配置的数据源行为跟你预期不一样，讲讲你怎么查。" }
+    ],
+    "hintEn": "Auto-configuration imports are conditional: @ConditionalOnClass, @ConditionalOnMissingBean, @ConditionalOnProperty. Your own bean wins because the condition no longer matches. Debug with the --debug conditions report, the actuator beans endpoint, and property binding order.",
+    "hintCn": "自动配置是条件装配：@ConditionalOnClass、@ConditionalOnMissingBean、@ConditionalOnProperty。你自己定义了同类型 bean，条件就不成立，默认配置让位。排查用 --debug 条件报告、actuator 的 beans 端点、看配置绑定优先级。"
+  },
+  {
+    "id": "fu-backend-idempotency",
+    "stack": "backend",
+    "topic": "API Idempotency",
+    "chain": [
+      { "level": 1, "en": "What does it mean for an API to be idempotent?", "cn": "一个接口幂等是什么意思？" },
+      { "level": 2, "en": "Why is a POST payment endpoint especially hard to make idempotent?", "cn": "为什么 POST 支付接口特别难做幂等？" },
+      { "level": 3, "en": "A user got charged twice after a client retry. Walk me through how you'd prevent it.", "cn": "客户端重试导致用户被扣款两次，讲讲你怎么避免。" }
+    ],
+    "hintEn": "Idempotent means repeating the same request leaves the same end state. Store an idempotency key with a unique constraint and replay the first stored response on duplicates. Combine with a state machine so a retry can't move an already-finished order backwards.",
+    "hintCn": "幂等是指同一个请求重复执行后终态一致。做法是把幂等键落库并加唯一索引，重复请求直接回放首次结果；再配合状态机，保证重试不会把已完成的订单再次推进。"
+  },
+  {
+    "id": "fu-backend-cache",
+    "stack": "backend",
+    "topic": "Cache Penetration / Avalanche",
+    "chain": [
+      { "level": 1, "en": "Why would you put a cache in front of your database?", "cn": "为什么要在数据库前面加一层缓存？" },
+      { "level": 2, "en": "What's the difference between cache penetration, breakdown and avalanche?", "cn": "缓存穿透、击穿、雪崩有什么区别？" },
+      { "level": 3, "en": "Your Redis hit rate dropped from 95% to 40% overnight. What do you check first?", "cn": "你的 Redis 命中率一夜之间从 95% 掉到 40%，你先查什么？" }
+    ],
+    "hintEn": "Penetration is querying keys that don't exist — bloom filter or cache empty results. Breakdown is one hot key expiring — mutex rebuild or logical expiry. Avalanche is many keys expiring together — jittered TTL, multi-level cache and circuit breaker.",
+    "hintCn": "穿透是查压根不存在的 key，用布隆过滤器或缓存空值；击穿是某个热点 key 失效，用互斥重建或逻辑过期；雪崩是大批 key 同时失效，靠 TTL 加随机抖动、多级缓存和熔断兜底。"
+  },
+  {
+    "id": "fu-backend-rate-limit",
+    "stack": "backend",
+    "topic": "Rate Limiting",
+    "chain": [
+      { "level": 1, "en": "Why rate-limit an API at all?", "cn": "为什么要给接口做限流？" },
+      { "level": 2, "en": "Compare fixed window, sliding window and token bucket for me.", "cn": "对比一下固定窗口、滑动窗口和令牌桶。" },
+      { "level": 3, "en": "Your limiter works on one node, but users bypass it across ten nodes. How do you fix it?", "cn": "单机限流没问题，但十台机器上线后用户绕过去了，你怎么修？" }
+    ],
+    "hintEn": "Fixed window allows double bursts at boundaries, sliding window smooths it, token bucket permits controlled bursts and is cheap. Across nodes the counter must be shared — Redis with a Lua script for atomicity — plus a local fallback if Redis is unavailable.",
+    "hintCn": "固定窗口在边界会放过两倍流量，滑动窗口更平滑，令牌桶允许可控突发且开销小。多机必须共享计数，用 Redis + Lua 保证原子性，同时要有 Redis 不可用时的本地降级策略。"
+  },
+  {
+    "id": "fu-backend-distributed-lock",
+    "stack": "backend",
+    "topic": "Distributed Lock",
+    "chain": [
+      { "level": 1, "en": "Why can't you just use a local lock when you have ten instances?", "cn": "有十个实例的时候，为什么不能只用本地锁？" },
+      { "level": 2, "en": "What can go wrong with a Redis-based lock?", "cn": "基于 Redis 的锁会出什么问题？" },
+      { "level": 3, "en": "Two workers ran the same scheduled job at once even with a lock on. Walk me through why.", "cn": "明明加了锁，两个 worker 还是同时跑了同一个定时任务，讲讲为什么。" }
+    ],
+    "hintEn": "Local locks only coordinate one JVM. A Redis lock needs SET NX PX in one atomic command, a unique token, and a Lua compare-and-delete on release. If the TTL expires before the work finishes, or a GC pause stretches the lease, use fencing tokens for real correctness.",
+    "hintCn": "本地锁只能协调单个 JVM。Redis 锁要用 SET NX PX 一次性原子设置、带唯一 token，释放时用 Lua 做比较再删。业务没做完 TTL 就到期、或 GC 停顿拉长租期都会丢锁，要保证正确得加 fencing token。"
+  },
+  {
+    "id": "fu-backend-timeout-retry",
+    "stack": "backend",
+    "topic": "Timeouts & Retries",
+    "chain": [
+      { "level": 1, "en": "Why set a timeout on every outbound call?", "cn": "为什么每个外部调用都要设超时？" },
+      { "level": 2, "en": "What happens if every service retries three times?", "cn": "如果每一层服务都重试三次会发生什么？" },
+      { "level": 3, "en": "A downstream slowdown cascaded into a full outage. Walk me through how retry caused it.", "cn": "下游变慢最后拖垮了全站，讲讲重试是怎么导致雪崩的。" }
+    ],
+    "hintEn": "Retries amplify load and create a retry storm exactly when the dependency is weakest. Bound retries with exponential backoff and jitter, spend from a retry budget, only retry idempotent operations, and pair it with a circuit breaker and bulkhead.",
+    "hintCn": "重试会在依赖最虚弱的时候放大流量，形成重试风暴。要限制次数并加指数退避与抖动、用重试预算封顶、只重试幂等操作，同时配熔断和隔离舱做快速失败。"
+  },
+  {
+    "id": "fu-backend-auth",
+    "stack": "backend",
+    "topic": "Sessions vs JWT",
+    "chain": [
+      { "level": 1, "en": "How is a session different from a JWT?", "cn": "session 和 JWT 有什么不同？" },
+      { "level": 2, "en": "Why is revoking a JWT such a hard problem?", "cn": "为什么 JWT 的失效（吊销）这么难做？" },
+      { "level": 3, "en": "You need to log a user out everywhere within one minute. Walk me through your design.", "cn": "你要让一个用户一分钟内全端下线，讲讲你的设计。" }
+    ],
+    "hintEn": "A session is server state keyed by an id, so you can delete it instantly; a JWT is self-contained and stays valid until it expires. Use short-lived access tokens plus refresh tokens, a revocation list or a token version field on the user row.",
+    "hintCn": "session 是服务端按 id 存的状态，删掉就立即失效；JWT 自包含，签发后在过期前一直有效。做法是短有效期 access token + refresh token，再加吊销名单或用户表上的 token 版本号做近实时失效。"
+  },
+  {
+    "id": "fu-backend-mq",
+    "stack": "backend",
+    "topic": "Message Queue Reliability",
+    "chain": [
+      { "level": 1, "en": "Why would you introduce a message queue?", "cn": "为什么要用消息队列？" },
+      { "level": 2, "en": "How do you make sure a message isn't lost or processed twice?", "cn": "你怎么保证消息不丢也不重复处理？" },
+      { "level": 3, "en": "Consumers keep creating duplicate orders. Walk me through how you guarantee exactly-once in practice.", "cn": "消费端一直生成重复订单，讲讲你实际怎么做到「只处理一次」。" }
+    ],
+    "hintEn": "Queues decouple services and absorb traffic spikes. Delivery is realistically at-least-once, so make consumers idempotent with a dedupe key or unique constraint. Ordering is only guaranteed per partition — partition by business key when order matters.",
+    "hintCn": "消息队列用来解耦和削峰。投递语义现实中是「至少一次」，所以消费端必须做幂等，用去重键或唯一索引兜住；顺序只在单个分区内保证，要保序就按业务键分区。"
+  },
+  {
+    "id": "fu-sd-url-shortener",
+    "stack": "system-design",
+    "topic": "URL Shortener",
+    "chain": [
+      { "level": 1, "en": "How would you design a URL shortener?", "cn": "你怎么设计一个短链服务？" },
+      { "level": 2, "en": "How do you generate short keys without collisions at scale?", "cn": "大规模下你怎么生成不冲突的短码？" },
+      { "level": 3, "en": "One link goes viral and takes 100k QPS. What breaks first and what do you do?", "cn": "有个链接爆了，打到 10 万 QPS，哪里先崩，你怎么办？" }
+    ],
+    "hintEn": "Base62 encode an incrementing id, or hash plus collision check, or a pre-generated key service. Discuss 301 versus 302. A viral key is a hot key: CDN plus multi-level cache and read replicas; watch write throughput and analytics fan-out.",
+    "hintCn": "短码可以用递增 id 转 base62、哈希加冲突校验，或预生成发号器；要讨论 301 与 302 的取舍。爆款链接本质是热点 key：靠 CDN + 多级缓存与读副本扛，写库和埋点扇出是真正的瓶颈。"
+  },
+  {
+    "id": "fu-sd-news-feed",
+    "stack": "system-design",
+    "topic": "News Feed / Timeline",
+    "chain": [
+      { "level": 1, "en": "How would you design a social news feed?", "cn": "你怎么设计一个社交信息流？" },
+      { "level": 2, "en": "Fan-out on write or fan-out on read — which one do you pick?", "cn": "写扩散还是读扩散，你选哪个？" },
+      { "level": 3, "en": "A celebrity with 10 million followers posts. Walk me through how your feed survives it.", "cn": "一个有 1000 万粉丝的大 V 发了条内容，讲讲你的系统怎么扛住。" }
+    ],
+    "hintEn": "Fan-out on write for ordinary users, on read or a hybrid for celebrities. Materialise timelines in a cache, cap the fan-out with async workers and rate limiting, and keep a read-time merge fallback for cold or celebrity-heavy feeds.",
+    "hintCn": "普通用户写扩散，大 V 用读扩散或混合策略。时间线预写进缓存，扩散用异步 worker 限速，冷启动和大 V 多的场景保留读时合并作为兜底。"
+  },
+  {
+    "id": "fu-sd-sharding",
+    "stack": "system-design",
+    "topic": "Database Sharding",
+    "chain": [
+      { "level": 1, "en": "When do you actually decide to shard a database?", "cn": "什么时候你才真的决定要分库分表？" },
+      { "level": 2, "en": "How do you pick a shard key?", "cn": "分片键怎么选？" },
+      { "level": 3, "en": "One shard is five times hotter than the others. Walk me through how you rebalance.", "cn": "某一个分片比其他热 5 倍，讲讲你怎么重新均衡。" }
+    ],
+    "hintEn": "Shard when one node can't take the writes or hold the data — it's a last resort, not a first move. The key must spread load and match your queries; avoid monotonically increasing keys. Hot shards get salted, split, or moved via consistent hashing with online migration.",
+    "hintCn": "单节点写不进去或装不下才分片，这是最后的手段而非首选。分片键要均匀且贴合查询模式，别用单调递增的键。热点分片靠加盐打散、拆键，或用一致性哈希虚拟节点做在线迁移。"
+  },
+  {
+    "id": "fu-sd-consistent-hashing",
+    "stack": "system-design",
+    "topic": "Consistent Hashing",
+    "chain": [
+      { "level": 1, "en": "What problem does consistent hashing solve?", "cn": "一致性哈希解决什么问题？" },
+      { "level": 2, "en": "Why do you need virtual nodes?", "cn": "为什么需要虚拟节点？" },
+      { "level": 3, "en": "You add a cache node and the hit rate tanks. Walk me through what's happening.", "cn": "你加了一台缓存节点，命中率反而暴跌，讲讲发生了什么。" }
+    ],
+    "hintEn": "Modulo hashing remaps almost every key when the node count changes, causing a thundering herd on the database; consistent hashing moves only about 1/N of keys. Virtual nodes fix uneven distribution and let you weight machines by capacity; new nodes start cold, so warm them up.",
+    "hintCn": "取模哈希在节点数变化时几乎全量重映射，会把流量全打回数据库；一致性哈希只迁移约 1/N 的 key。虚拟节点解决分布不均并按容量加权；新节点是冷缓存，要做预热。"
+  },
+  {
+    "id": "fu-sd-distributed-id",
+    "stack": "system-design",
+    "topic": "Distributed ID Generator",
+    "chain": [
+      { "level": 1, "en": "Why not just use database auto-increment as your primary key?", "cn": "为什么不直接用数据库自增主键？" },
+      { "level": 2, "en": "What are your options for generating IDs across many machines?", "cn": "多台机器生成 ID 有哪些方案？" },
+      { "level": 3, "en": "You're seeing duplicate IDs because of clock skew. Walk me through the fix.", "cn": "因为时钟回拨出现了重复 ID，讲讲你怎么修。" }
+    ],
+    "hintEn": "Auto-increment leaks business volume and becomes a single write bottleneck. UUIDv4 is uncoordinated but large and unordered; Snowflake packs timestamp, worker id and sequence; a segment allocator hands out ranges. Guard clock rollback by refusing to issue or persisting the last timestamp, and keep worker ids unique.",
+    "hintCn": "自增 id 会暴露业务量级并成为单点写瓶颈。UUID 无需协调但太大且无序；Snowflake 用时间戳+机器位+序列号；号段模式一次领一段。时钟回拨要拒绝发号或持久化上次时间戳，机器 id 必须唯一。"
+  },
+  {
+    "id": "fu-sd-load-balancer",
+    "stack": "system-design",
+    "topic": "Load Balancing",
+    "chain": [
+      { "level": 1, "en": "What does a load balancer actually do for you?", "cn": "负载均衡器到底替你做了什么？" },
+      { "level": 2, "en": "Round-robin, least-connections or hashing — when does each one win?", "cn": "轮询、最少连接、哈希，各自什么时候最优？" },
+      { "level": 3, "en": "Traffic is piling onto two of your ten instances. Walk me through how you diagnose it.", "cn": "流量全压在十台机器中的两台，讲讲你怎么排查。" }
+    ],
+    "hintEn": "Cover L4 versus L7, health checks and connection draining. Round-robin breaks with long-lived connections or uneven request cost; least-connections adapts; hashing gives affinity. Skew usually comes from sticky sessions, keep-alive pinning or slow health checks.",
+    "hintCn": "要讲清 L4 与 L7 的区别、健康检查和优雅下线。轮询遇上长连接或请求代价不均就会倾斜，最少连接能自适应，哈希用于会话保持。倾斜通常来自粘滞会话、长连接绑定或健康检查太迟钝。"
+  },
+  {
+    "id": "fu-sd-autocomplete",
+    "stack": "system-design",
+    "topic": "Search Autocomplete",
+    "chain": [
+      { "level": 1, "en": "How would you design search autocomplete?", "cn": "你怎么设计搜索联想词？" },
+      { "level": 2, "en": "How do you keep it under 50 milliseconds?", "cn": "你怎么把它压在 50 毫秒以内？" },
+      { "level": 3, "en": "A breaking-news term isn't showing up in suggestions. Walk me through why and how you fix it.", "cn": "一个突发新闻热词在联想里出不来，讲讲原因和怎么修。" }
+    ],
+    "hintEn": "Precompute top-k per prefix in a trie or sorted-term index and serve it from memory or CDN. Latency comes from fan-out depth and tail latency, so shard by prefix, terminate early and cache aggressively. Freshness needs a near-real-time pipeline separate from the offline job.",
+    "hintCn": "预先算好每个前缀的 top-k，用 Trie 或有序词索引存，放内存或 CDN。延迟主要来自扇出深度和长尾，做法是前缀分片、提前终止、重度缓存。热词新鲜度要靠独立实时链路，离线批跑跟不上。"
+  },
+  {
+    "id": "fu-sd-flash-sale",
+    "stack": "system-design",
+    "topic": "Flash Sale / Inventory",
+    "chain": [
+      { "level": 1, "en": "How would you design a flash-sale inventory system?", "cn": "你怎么设计一个秒杀库存系统？" },
+      { "level": 2, "en": "How do you make sure you never oversell?", "cn": "你怎么保证绝对不超卖？" },
+      { "level": 3, "en": "You still oversold 20 units at peak. Walk me through what went wrong.", "cn": "峰值时你还是超卖了 20 件，讲讲哪里出了问题。" }
+    ],
+    "hintEn": "Filter traffic upstream with tokens and rate limits, then deduct stock atomically — Redis Lua, or a conditional UPDATE where stock > 0 — then create orders asynchronously. Oversell comes from read-then-write races, cache/DB divergence and gaps in async reconciliation.",
+    "hintCn": "先用令牌和限流在上游把流量削掉，库存扣减必须原子：Redis Lua 或 where stock > 0 的条件更新，之后再异步下单。超卖来自先读后写的竞态、缓存与库不一致、以及异步对账的缺口。"
+  },
+  {
+    "id": "fu-db-index",
+    "stack": "db",
+    "topic": "B+ Tree Index",
+    "chain": [
+      { "level": 1, "en": "How does an index actually make a query faster?", "cn": "索引到底怎么让查询变快的？" },
+      { "level": 2, "en": "Then why not index every column?", "cn": "那为什么不把每一列都建索引？" },
+      { "level": 3, "en": "Your query has an index but still does a full scan. Walk me through why.", "cn": "你的查询明明有索引却还是全表扫描，讲讲为什么。" }
+    ],
+    "hintEn": "A B+ tree turns scans into O(log n) lookups and keeps leaves ordered for range scans. Extra indexes cost write amplification, space and optimizer time. Misses come from violating the leftmost prefix, wrapping the column in a function or implicit cast, low selectivity, or stale statistics.",
+    "hintCn": "B+ 树把扫描变成 O(log n) 查找，叶子有序还能做范围扫描。索引不是越多越好，写入放大、空间和优化器成本都在涨。不走索引常因违反最左前缀、列上套函数或隐式类型转换、区分度太低、统计信息过期。"
+  },
+  {
+    "id": "fu-db-isolation",
+    "stack": "db",
+    "topic": "Isolation Levels & MVCC",
+    "chain": [
+      { "level": 1, "en": "Walk me through the transaction isolation levels.", "cn": "讲讲事务的隔离级别。" },
+      { "level": 2, "en": "How does MVCC let readers avoid blocking on writers?", "cn": "MVCC 是怎么做到读不阻塞写的？" },
+      { "level": 3, "en": "You're getting phantom rows in a report query. What level and what locks do you need?", "cn": "报表查询出现了幻读，你需要什么隔离级别和什么锁？" }
+    ],
+    "hintEn": "Map read committed, repeatable read and serializable to dirty reads, non-repeatable reads and phantoms. MVCC keeps a version chain and gives each transaction a snapshot so reads never block writes. Killing phantoms needs gap or next-key locks — and those only work if the query actually uses an index.",
+    "hintCn": "把读已提交、可重复读、串行化分别对应到脏读、不可重复读、幻读。MVCC 靠版本链 + 事务快照实现读写不冲突。消除幻读要间隙锁或 next-key 锁，而它们生效的前提是查询真的走到了索引。"
+  },
+  {
+    "id": "fu-db-slow-query",
+    "stack": "db",
+    "topic": "Slow Query Diagnosis",
+    "chain": [
+      { "level": 1, "en": "A query suddenly got slow. Where do you start?", "cn": "一个查询突然变慢了，你从哪开始查？" },
+      { "level": 2, "en": "How do you actually read an EXPLAIN plan?", "cn": "你具体怎么看 EXPLAIN 的执行计划？" },
+      { "level": 3, "en": "It's fast in staging but slow in production. Walk me through your debugging.", "cn": "预发环境很快、生产很慢，讲讲你怎么排查。" }
+    ],
+    "hintEn": "Start with the slow query log and EXPLAIN: check type, key, rows, filtered and Extra for filesort or temporary tables. Then compare estimated versus actual row counts, look for lock waits and buffer pool pressure. Production differs by data volume, statistics, cache warmth and concurrency.",
+    "hintCn": "先查慢日志和 EXPLAIN：看 type、key、rows、filtered，Extra 里的 filesort 和临时表是重点。再对比预估行数与实际行数，查锁等待和缓冲池压力。生产和预发的差别在数据量、统计信息、缓存冷热和并发度。"
+  },
+  {
+    "id": "fu-db-deadlock",
+    "stack": "db",
+    "topic": "Locks & Deadlocks",
+    "chain": [
+      { "level": 1, "en": "What actually causes a deadlock?", "cn": "死锁到底是怎么产生的？" },
+      { "level": 2, "en": "How does the database resolve one?", "cn": "数据库是怎么解开死锁的？" },
+      { "level": 3, "en": "You're getting deadlocks every few minutes. Walk me through how you remove them.", "cn": "每隔几分钟就有一次死锁，讲讲你怎么彻底消除。" }
+    ],
+    "hintEn": "Four conditions, but in practice it's a circular wait from inconsistent lock ordering. The engine detects the wait-for cycle and rolls back the cheaper transaction, or waits for lock timeout. Fix by fixing the order, shortening transactions, adding indexes to shrink the lock range, and retrying.",
+    "hintCn": "理论上是四个必要条件，实际就是加锁顺序不一致形成了环形等待。数据库检测等待图后回滚代价较小的事务，或等锁超时。修法是统一加锁顺序、缩短事务、加索引缩小锁范围，再补上重试逻辑。"
+  },
+  {
+    "id": "fu-db-replication-lag",
+    "stack": "db",
+    "topic": "Read/Write Splitting & Lag",
+    "chain": [
+      { "level": 1, "en": "What is replication lag and where does it come from?", "cn": "主从延迟是什么，从哪来的？" },
+      { "level": 2, "en": "Why does a read right after a write go stale?", "cn": "为什么刚写完立刻读会读到旧数据？" },
+      { "level": 3, "en": "Users complain they post and don't see their own content. Walk me through the fix.", "cn": "用户抱怨发完看不到自己的内容，讲讲你怎么修。" }
+    ],
+    "hintEn": "Replicas apply the binlog or WAL asynchronously, so they trail by seconds under write load or long transactions. Read-your-writes breaks when reads are routed to replicas: read the primary for the writer's own data, wait for a GTID/LSN position, pin the session, or serve the fresh value from cache.",
+    "hintCn": "从库异步回放 binlog/WAL，写入压力大或长事务时会落后数秒。读走从库就破坏「读己所写」：可以让写者读主库、等 GTID/LSN 位点、会话内固定路由，或把刚写入的值直接放缓存返回。"
+  },
+  {
+    "id": "fu-db-online-ddl",
+    "stack": "db",
+    "topic": "Online Schema Change",
+    "chain": [
+      { "level": 1, "en": "Why is adding an index to a huge table risky?", "cn": "给一张大表加索引为什么有风险？" },
+      { "level": 2, "en": "What does an online schema change tool actually do?", "cn": "在线变更工具到底做了什么？" },
+      { "level": 3, "en": "You need to add a column to a 500-million-row table with zero downtime. Walk me through it.", "cn": "你要给 5 亿行的表加一个字段且不能停机，讲讲怎么做。" }
+    ],
+    "hintEn": "A blocking DDL takes locks and stalls replication. Online tools build a shadow table, copy rows in chunks while replaying binlog deltas, then swap names. Watch disk space, replica lag and chunk size, and make sure no long transaction is holding a metadata lock.",
+    "hintCn": "直接 DDL 会拿锁并拖慢主从。在线工具的做法是建影子表、分批拷贝存量数据、同时回放 binlog 增量，最后改名切换。要盯磁盘空间、复制延迟和批次大小，还要避免长事务占着元数据锁。"
+  },
+  {
+    "id": "fu-frontend-rerender",
+    "stack": "frontend",
+    "topic": "React Re-renders",
+    "chain": [
+      { "level": 1, "en": "When does a React component re-render?", "cn": "React 组件什么时候会重新渲染？" },
+      { "level": 2, "en": "Why doesn't wrapping everything in memo fix it?", "cn": "为什么把所有组件都套上 memo 还是没用？" },
+      { "level": 3, "en": "Your form drops keystrokes on every input. Walk me through how you debug the re-render storm.", "cn": "你的表单每次输入都掉字，讲讲你怎么排查重渲染风暴。" }
+    ],
+    "hintEn": "State, props, context or a parent render all trigger it. memo is defeated by new object or function identities and recreated children — use useCallback/useMemo or move state closer to where it's used. Find it with the Profiler and flame charts, not by guessing.",
+    "hintCn": "state、props、context 变化或父组件渲染都会触发。memo 失效通常是因为 props 是新对象/新函数、children 每次重建，要用 useCallback/useMemo 或把状态下沉到真正用到的地方。定位靠 Profiler 火焰图，别靠猜。"
+  },
+  {
+    "id": "fu-frontend-cors",
+    "stack": "frontend",
+    "topic": "CORS",
+    "chain": [
+      { "level": 1, "en": "What is CORS actually protecting against?", "cn": "CORS 到底在防什么？" },
+      { "level": 2, "en": "Why does a POST need a preflight but a simple GET doesn't?", "cn": "为什么 POST 要发预检请求，而简单的 GET 不用？" },
+      { "level": 3, "en": "Your cookie isn't sent cross-site anymore. Walk me through the fix.", "cn": "你的 cookie 跨站不再被带上了，讲讲怎么修。" }
+    ],
+    "hintEn": "CORS is a browser restriction on reading cross-origin responses — it does not protect your server. Preflight is required for non-simple methods or custom headers. For cookies you need credentials:'include', an exact Access-Control-Allow-Origin (no wildcard) and SameSite=None with Secure.",
+    "hintCn": "CORS 是浏览器对跨源读取的限制，并不是服务端防护。非简单方法或自定义请求头才会触发预检。要带 cookie 需要请求侧 credentials:'include'，响应侧源不能是通配符，且 cookie 必须 SameSite=None 加 Secure。"
+  },
+  {
+    "id": "fu-frontend-web-vitals",
+    "stack": "frontend",
+    "topic": "Core Web Vitals",
+    "chain": [
+      { "level": 1, "en": "What are the Core Web Vitals measuring?", "cn": "核心网页指标在衡量什么？" },
+      { "level": 2, "en": "What actually causes a bad LCP?", "cn": "到底是什么导致了糟糕的 LCP？" },
+      { "level": 3, "en": "Your LCP is 4 seconds on mobile. Walk me through how you bring it down.", "cn": "移动端 LCP 有 4 秒，讲讲你怎么把它降下来。" }
+    ],
+    "hintEn": "LCP for loading, INP for interactivity, CLS for visual stability. LCP suffers from slow server response, render-blocking CSS and JS, unoptimized hero images and client-only rendering. Fix with preload and priority hints, right-sized modern image formats, code splitting and caching.",
+    "hintCn": "LCP 衡量加载、INP 衡量交互响应、CLS 衡量视觉稳定性。LCP 差的常见原因是服务端慢、CSS/JS 阻塞渲染、首屏大图没优化、纯客户端渲染。优化靠预加载与优先级提示、现代图片格式与尺寸、代码分割和缓存。"
+  },
+  {
+    "id": "fu-go-goroutine-leak",
+    "stack": "go",
+    "topic": "Goroutine Leaks",
+    "chain": [
+      { "level": 1, "en": "What is a goroutine leak?", "cn": "什么是 goroutine 泄漏？" },
+      { "level": 2, "en": "How do you spot one in production?", "cn": "生产环境你怎么发现它？" },
+      { "level": 3, "en": "Your goroutine count grew to 200k overnight. Walk me through it.", "cn": "你的 goroutine 数一夜之间涨到 20 万，讲讲怎么回事。" }
+    ],
+    "hintEn": "A goroutine blocked forever on a channel send or receive, or on an HTTP call with no timeout. Detect with a NumGoroutine metric and the pprof goroutine profile showing the blocked stack. Fix with context cancellation, buffered channels, and timeouts on every outbound call.",
+    "hintCn": "协程永久卡在 channel 收发或没有超时的外部调用上。靠 NumGoroutine 指标和 pprof 的 goroutine profile 看阻塞栈来定位。修复靠 context 取消、合理的缓冲、以及每个外部调用都设超时。"
+  },
+  {
+    "id": "fu-go-channel",
+    "stack": "go",
+    "topic": "Channels & select",
+    "chain": [
+      { "level": 1, "en": "When do you reach for a channel instead of a mutex?", "cn": "什么时候你用 channel 而不是 mutex？" },
+      { "level": 2, "en": "What does select do when several channels are ready at once?", "cn": "多个 channel 同时就绪时 select 会怎么选？" },
+      { "level": 3, "en": "Your worker pool stops consuming when downstream slows down. Walk me through why and the fix.", "cn": "下游一慢你的 worker pool 就不消费了，讲讲原因和修法。" }
+    ],
+    "hintEn": "Channels pass ownership and signal; mutexes guard shared state. select picks uniformly at random among ready cases, and a nil channel blocks forever — that's how you disable a case. A blocked send is backpressure: bound the queue, honour context, and decide to drop, shed or persist.",
+    "hintCn": "channel 用于传递所有权和发信号，mutex 用于保护共享状态。select 在多个就绪分支里随机挑一个，nil channel 会永久阻塞，正好用来关掉分支。发送阻塞就是反压：要有界队列、遵循 context，并明确丢弃、降级还是落盘。"
+  },
+  {
+    "id": "fu-python-gil",
+    "stack": "python",
+    "topic": "GIL & Concurrency",
+    "chain": [
+      { "level": 1, "en": "What is the GIL, in one sentence?", "cn": "用一句话说说什么是 GIL。" },
+      { "level": 2, "en": "So can Python actually use multiple cores?", "cn": "那 Python 到底能不能用上多核？" },
+      { "level": 3, "en": "Your CPU-bound Python job won't scale past one core. Walk me through your options.", "cn": "你的 CPU 密集 Python 任务怎么也用不满第二个核，讲讲你的选择。" }
+    ],
+    "hintEn": "The GIL lets only one thread execute bytecode at a time, so threads help IO-bound work but never CPU-bound work. For CPU, use multiprocessing, native libraries that release the GIL like numpy, or push the hot loop into a service in another language; use asyncio for IO concurrency.",
+    "hintCn": "GIL 保证同一时刻只有一个线程执行字节码，所以多线程只利好 IO 密集、对 CPU 密集毫无帮助。CPU 密集用多进程、用会释放 GIL 的原生库（如 numpy），或把热路径下沉成其他语言的服务；IO 并发用 asyncio。"
+  },
+  {
+    "id": "fu-devops-pod-crash",
+    "stack": "devops",
+    "topic": "CrashLoopBackOff",
+    "chain": [
+      { "level": 1, "en": "What does CrashLoopBackOff actually mean?", "cn": "CrashLoopBackOff 到底是什么意思？" },
+      { "level": 2, "en": "How do you start debugging a pod that keeps restarting?", "cn": "一个 pod 一直重启，你从哪开始查？" },
+      { "level": 3, "en": "A pod is OOMKilled but its memory graph looks flat. Walk me through it.", "cn": "pod 被 OOMKilled 但内存曲线看着很平，讲讲你怎么看。" }
+    ],
+    "hintEn": "The kubelet keeps restarting a container that dies immediately, with exponential backoff. Check events, the previous container's logs and the exit code — 137 is OOM, 143 is SIGTERM. Memory spikes are often shorter than your scrape interval, and request/limit mismatch or page cache accounting hides the peak.",
+    "hintCn": "kubelet 反复重启一个立即退出的容器，并按指数退避拉长间隔。看 events、上一个容器的日志和退出码：137 是 OOM，143 是 SIGTERM。内存尖峰常常短于采集间隔，request/limit 配置不匹配和 page cache 计费也会把峰值藏起来。"
+  },
+  {
+    "id": "fu-devops-deploy",
+    "stack": "devops",
+    "topic": "Deploy & Rollback Strategy",
+    "chain": [
+      { "level": 1, "en": "Compare rolling, blue-green and canary deployments for me.", "cn": "对比一下滚动发布、蓝绿发布和金丝雀发布。" },
+      { "level": 2, "en": "Why isn't deploying the same thing as releasing?", "cn": "为什么说部署不等于发布？" },
+      { "level": 3, "en": "A bad release still reached production despite your canary. Walk me through what you'd change.", "cn": "尽管做了金丝雀，坏版本还是上了生产，讲讲你会改什么。" }
+    ],
+    "hintEn": "Rolling swaps instances gradually, blue-green swaps all traffic at once with double capacity, canary sends a slice and watches metrics. Feature flags decouple deploy from release. A canary that fails you probably had weak thresholds, too little traffic, no auto-rollback, or a non-backwards-compatible database change.",
+    "hintCn": "滚动是逐步替换实例，蓝绿是整体切流但要双倍资源，金丝雀是放小部分流量看指标。特性开关能把部署和发布解耦。金丝雀没拦住通常是阈值太松、流量太少、没有自动回滚，或者数据库变更不做向后兼容。"
+  },
+  {
+    "id": "fu-algo-two-sum",
+    "stack": "algo",
+    "topic": "Two Sum & Complexity",
+    "chain": [
+      { "level": 1, "en": "How would you solve Two Sum?", "cn": "Two Sum 你怎么解？" },
+      { "level": 2, "en": "What if the array is 10GB and doesn't fit in memory?", "cn": "如果数组有 10GB、内存放不下怎么办？" },
+      { "level": 3, "en": "Now this runs a billion times a second in production. Walk me through your design.", "cn": "现在这个操作每秒要被调用十亿次，讲讲你的设计。" }
+    ],
+    "hintEn": "HashMap gives O(n) time and O(n) space; sorting with two pointers gives O(n log n) time and O(1) extra space. Out of memory pushes you to external sorting or partitioned passes. At production scale, precompute and shard the index, move it closer to the caller, and consider trading exactness for constant memory.",
+    "hintCn": "哈希表是 O(n) 时间、O(n) 空间；排序 + 双指针是 O(nlogn) 时间、O(1) 额外空间。放不下内存就走外排序或分批多趟处理。生产规模要预建索引并分片、尽量靠近调用方，还要考虑用精确性换内存。"
+  },
+  {
+    "id": "fu-security-xss-csrf",
+    "stack": "security",
+    "topic": "XSS vs CSRF",
+    "chain": [
+      { "level": 1, "en": "What's the difference between XSS and CSRF?", "cn": "XSS 和 CSRF 有什么区别？" },
+      { "level": 2, "en": "Why doesn't escaping output protect you from CSRF?", "cn": "为什么转义输出挡不住 CSRF？" },
+      { "level": 3, "en": "A stored XSS slipped into production. Walk me through containment and the fix.", "cn": "一个存储型 XSS 上了生产，讲讲你怎么处置和修复。" }
+    ],
+    "hintEn": "XSS runs attacker-supplied script in the victim's browser; CSRF makes the browser send an authenticated request the user never intended. XSS is fixed with context-aware escaping plus a CSP; CSRF needs anti-CSRF tokens, SameSite cookies and Origin/Referer checks — escaping does nothing because the request itself is legitimate.",
+    "hintCn": "XSS 是攻击者的脚本在受害者浏览器里执行；CSRF 是诱导浏览器发出用户非本意的已认证请求。XSS 靠按上下文转义 + CSP 防；CSRF 要靠 token、SameSite cookie 和 Origin/Referer 校验——转义没用，因为那个请求本身是合法的。"
+  },
+  {
+    "id": "fu-ml-overfitting",
+    "stack": "ml",
+    "topic": "Overfitting & Offline/Online Gap",
+    "chain": [
+      { "level": 1, "en": "What is overfitting, and how do you detect it?", "cn": "什么是过拟合，你怎么发现它？" },
+      { "level": 2, "en": "Validation loss starts diverging from training loss. What do you do?", "cn": "验证集损失开始和训练集发散了，你怎么办？" },
+      { "level": 3, "en": "The model scores great offline and terribly online. Walk me through your debugging.", "cn": "模型离线指标很好、线上很糟，讲讲你怎么排查。" }
+    ],
+    "hintEn": "Overfitting is memorising noise, seen as a widening train/validation gap and falling generalisation. Respond with more or better data, augmentation, regularisation, dropout, early stopping or lower capacity. An offline/online gap points to data leakage, train/serve skew, distribution shift or label delay.",
+    "hintCn": "过拟合就是记住了噪声，表现为训练与验证差距持续拉大、泛化变差。应对手段是加数据、数据增强、正则化、dropout、早停或降低模型容量。离线好线上差要优先怀疑数据泄漏、训练/serving 特征不一致、分布偏移或标签延迟。"
+  }
+]

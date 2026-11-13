@@ -1,0 +1,122 @@
+[
+  {
+    "slug": "python-why-type-hints-matter",
+    "stackSlug": "python",
+    "title": "Why Type Hints Quietly Improve Your Python",
+    "difficulty": 3,
+    "contentMd": "Python has always been a dynamically typed language, which means you rarely declare the type of a variable. For years this felt like freedom. You could pass anything anywhere and the interpreter would only complain at runtime. As projects grew, however, that freedom turned into a source of confusion. A function that expected a list might receive a string, and the error would surface far from where the bug was born.\n\nType hints changed the conversation. They are optional annotations that describe what kind of value a function expects and returns. They do not change how the program runs, because Python itself ignores them at execution time. Instead, a separate tool such as mypy reads the hints and warns you before you ever run the code. This shift from runtime errors to editor-time feedback is enormous for a team.\n\nThe real benefit is not catching typos. It is communication. When you read a signature that says user_id: int and name: str, you immediately understand the contract without opening the implementation. New teammates onboard faster, and refactoring becomes far less frightening because the checker tells you every place that needs updating.\n\nSome developers worry that hints add noise. In practice, modern syntax keeps them light. You can use a simple int, a union with the pipe operator, or a literal type for a fixed set of choices. Start small, annotate the public functions first, and let the habit spread. The code you write today will be read by someone tomorrow, and hints are a gift to that future reader.",
+    "license": "original",
+    "category": "practice",
+    "contentCn": "Python 一直是一门动态类型语言，这意味着你很少需要声明变量的类型。多年来，这给人一种自由的感觉：你可以把任何东西传到任何地方，解释器只会在运行时提出异议。然而随着项目不断膨胀，这种自由渐渐变成了困惑的来源。一个本该接收列表的函数可能拿到一个字符串，而报错的位置往往远离 bug 产生的地方。\n\n类型注解改变了这一局面。它们是可选的标注，用来描述一个函数期望接收和返回什么样的值。它们不会改变程序的运行方式，因为 Python 本身在执行时会忽略这些标注。取而代之的是，mypy 这类独立的工具会读取这些注解，在你的代码运行之前就发出警告。这种从运行时错误转向编辑器即时反馈的转变，对一个团队来说意义重大。\n\n真正的好处不是抓住拼写错误，而是沟通。当你看到一个签名写着 user_id: int 和 name: str，你不用打开实现就能立刻明白这个契约。新同事上手更快，重构也不再那么让人恐惧，因为检查工具会告诉你所有需要同步修改的位置。\n\n有些开发者担心注解会增添噪音。实践中，现代语法让注解保持轻量：你可以只用一个简单的 int，用管道运算符写出联合类型，或者为一个固定选项集合标注字面量类型。从小处开始，先标注对外暴露的函数，然后让这个习惯自然扩散。你今天写下的代码，明天会被人阅读，而注解就是送给那位未来读者的一份礼物。",
+    "titleEn": "Why Type Hints Quietly Improve Your Python",
+    "titleCn": "类型注解如何悄悄改善你的 Python 代码"
+  },
+  {
+    "slug": "python-virtual-environments-explained",
+    "stackSlug": "python",
+    "title": "Demystifying Virtual Environments",
+    "difficulty": 2,
+    "contentMd": "If you have installed a Python package with pip and later watched another project break, you have met the problem that virtual environments solve. By default, pip installs libraries into one shared location on your machine. When two projects need different versions of the same library, they collide, and only one version can win.\n\nA virtual environment is an isolated folder that contains its own copy of the Python interpreter and its own site-packages directory. When it is active, every pip install goes into that folder instead of the global one. Project A can happily use Django 4 while Project B keeps Django 5, and neither knows the other exists.\n\nCreating one is simple. The built-in venv module builds the environment, and a small activate script switches your shell to use it. Once activated, the python and pip commands point at the isolated copy. When you finish work, you deactivate and return to the system interpreter.\n\nThe habit that matters is discipline. Always create a fresh environment for each project, and record your dependencies in a requirements file or a pyproject configuration. That way a colleague can rebuild the exact same setup with a single command. Modern tools such as uv and pipx make this even faster, but the underlying idea is unchanged: isolation prevents the silent version conflicts that waste afternoons. Treat environments as part of the project, not an afterthought, and your future self will thank you.",
+    "license": "original",
+    "category": "tooling",
+    "contentCn": "如果你曾经用 pip 安装过某个 Python 包，后来又眼睁睁看着另一个项目坏掉，那你已经遇上了虚拟环境要解决的问题。默认情况下，pip 会把库安装到机器上的同一个共享位置。当两个项目需要同一个库的不同版本时，它们就会冲突，最终只有一个版本能活下来。\n\n虚拟环境是一个隔离的目录，里面有自己的 Python 解释器副本和自己的 site-packages 目录。一旦它被激活，所有的 pip install 都会装进这个目录，而不是全局目录。项目 A 可以愉快地使用 Django 4，同时项目 B 继续用 Django 5，两者互不知晓对方的存在。\n\n创建一个虚拟环境很简单。内置的 venv 模块负责构建环境，一个小小的 activate 脚本则把你的 shell 切换到使用它。激活之后，python 和 pip 命令都指向那份隔离的副本。等工作结束时，你执行 deactivate，退回系统解释器。\n\n真正重要的习惯是自律。为每个项目都创建一个全新的环境，并把依赖记录在 requirements 文件或 pyproject 配置里。这样同事只需一条命令就能重建出完全相同的环境。像 uv 和 pipx 这样的现代工具让这件事更快，但底层理念并未改变：隔离能避免那些悄无声息的版本冲突，浪费你整个下午。把环境当作项目的一部分，而不是事后补丁，未来的你会感谢今天的自己。",
+    "titleEn": "Demystifying Virtual Environments",
+    "titleCn": "虚拟环境到底是怎么回事"
+  },
+  {
+    "slug": "python-asyncio-mental-model",
+    "stackSlug": "python",
+    "title": "Building a Mental Model of asyncio",
+    "difficulty": 4,
+    "contentMd": "Asyncio is easy to misuse because it looks like threading but behaves differently. The core idea is a single event loop that drives many coroutines. When a coroutine awaits something, it politely hands control back to the loop instead of blocking the whole thread. The loop then picks another coroutine that is ready to run. This cooperative style means you can handle thousands of open connections with one thread.\n\nThe keyword to understand is await. It marks the points where a coroutine might pause. If your code never awaits, it never yields, and the loop cannot serve anyone else. That is why calling a slow, blocking function inside an async function defeats the purpose. You must either await an async alternative or ship the blocking work to a thread pool with run_in_executor.\n\nConcurrency and parallelism are not the same here. Asyncio gives you concurrency, the appearance of doing many things at once, but it runs on a single core. For CPU-heavy math you still need processes. For I/O-heavy work, such as calling APIs or reading files, asyncio shines because most of the time is spent waiting, not computing.\n\nA clean pattern is to gather many tasks with asyncio.gather so they run concurrently, and to wrap shared state in an asyncio lock when needed. Start by converting one I/O bound script, watch it serve ten times the load, and the mental model will click into place.",
+    "license": "original",
+    "category": "concurrency",
+    "contentCn": "asyncio 很容易被误用，因为它看起来像多线程，行为却完全不同。它的核心思路是：用一个事件循环驱动许多协程。当一个协程 await 某个东西时，它会礼貌地把控制权交还给循环，而不是阻塞整个线程。循环随后挑选另一个已就绪的协程来运行。这种协作式风格意味着你用一个线程就能处理上千个打开的连接。\n\n需要理解的关键字是 await。它标记出协程可能暂停的位置。如果你的代码从不 await，它就不会让出控制权，循环也就无法服务其他人。这正是在 async 函数里调用一个缓慢的阻塞函数会适得其反的原因：你要么 await 一个异步替代方案，要么用 run_in_executor 把阻塞工作丢给线程池。\n\n在这里，并发和并行不是一回事。asyncio 给你的是并发——看起来像同时做了很多事——但它跑在单个核心上。对于 CPU 密集型的数学计算，你仍然需要多进程。对于 I/O 密集型工作，比如调用 API 或读取文件，asyncio 才大显身手，因为大部分时间都花在等待，而不是计算。\n\n一个清晰的模式是用 asyncio.gather 收集许多任务让它们并发运行，并在需要时用 asyncio 锁包住共享状态。先从把一个 I/O 密集型脚本改造开始，看着它承载十倍的负载而不改，心智模型自然就到位了。",
+    "titleEn": "Building a Mental Model of asyncio",
+    "titleCn": "建立 asyncio 的心智模型"
+  },
+  {
+    "slug": "python-dataclasses-vs-dicts",
+    "stackSlug": "python",
+    "title": "When to Reach for Dataclasses Instead of Dictionaries",
+    "difficulty": 3,
+    "contentMd": "Beginners often model structured data with dictionaries because they are fast to write. You create a dict, stuff in a few keys, and move on. This works for tiny scripts, but it grows fragile as the data travels through a larger program. A typo in a key name fails silently or raises a confusing KeyError far from the source.\n\nA dataclass gives you a named container with far less boilerplate than a hand-written class. You declare the fields and their types, and Python generates the initializer, a sensible representation, and equality checks for you. The result reads like a description of the data rather than a pile of bracket syntax. When you mistype a field name, the error appears immediately at construction time.\n\nThe benefit becomes clear when functions start accepting these objects. Instead of def process(d): with a comment explaining expected keys, you write def process(user: User): and the intent is self-documenting. Combined with type hints, a checker can verify that every caller passes the right shape.\n\nDataclasses also support defaults and the field helper for more control, such as a fresh list per instance. For data that crosses a trust boundary, pair them with a validation library so bad input is rejected early. Reach for a dict when the shape is truly open ended, but for records you control, a dataclass keeps the code honest and the bugs shallow.",
+    "license": "original",
+    "category": "practice",
+    "contentCn": "初学者常用字典来建模结构化数据，因为这样写起来很快：建一个 dict，塞进去几个键，就完事了。对小脚本而言这没问题，但随着数据在更大的程序里流转，它会变得越来越脆弱。键名拼错要么悄无声息地失败，要么在远离源头的地方抛出一个令人困惑的 KeyError。\n\ndataclass 给你的是一个有名字的容器，比手写类需要少得多的样板代码。你只需声明字段及其类型，Python 就会自动为你生成初始化方法、一个合理的字符串表示和相等性判断。结果读起来像是在描述数据，而不是一堆括号语法。当你把字段名拼错时，错误会在构造的那一刻立刻出现。\n\n当函数开始接收这些对象时，好处就变得非常明显。你不必再写 `def process(d):` 再加一句注释解释期望的键，而是写成 `def process(user: User):`，意图本身就写在代码里。结合类型注解，检查工具能验证每个调用方传入的结构是否正确。\n\ndataclass 还支持默认值，以及用于更精细控制的 field 辅助函数，比如让每个实例都拥有一份全新的列表。对于跨越信任边界的数据，可以再配上校验库，让非法输入在早期就被拒绝。当结构确实是开放的、不设上限时，用字典；但对于你自己掌控的记录，dataclass 能让代码保持诚实，把 bug 限制在很浅的地方。",
+    "titleEn": "When to Reach for Dataclasses Instead of Dictionaries",
+    "titleCn": "什么时候该用 dataclass 而不是字典"
+  },
+  {
+    "slug": "python-packaging-pyproject",
+    "stackSlug": "python",
+    "title": "The Road to a Clean pyproject.toml",
+    "difficulty": 4,
+    "contentMd": "For years, packaging a Python project meant juggling setup.py, setup.cfg, and requirements files, each with its own quirks. The community eventually agreed on a single source of truth called pyproject.toml. It is a plain text file written in the TOML format that describes your project, its dependencies, and the tools it uses.\n\nThe file has a few standard tables. The build system table tells pip how to build your package. The project table holds metadata such as the name, version, and the list of runtime dependencies. Beyond that, each tool you use, whether a linter, formatter, or test runner, stores its configuration in its own table, so everything lives in one place.\n\nThis consolidation removes a class of mistakes. You no longer forget to update one file because there is only one. When a teammate clones the repository, a single command installs both the project and the exact tools everyone agreed on. Reproducibility stops being a hope and becomes the default.\n\nGetting started does not require publishing to PyPI. Even an internal script benefits from declaring its dependencies explicitly. Begin with the name and the dependencies, then move tool settings in gradually. As your project matures, you can add an editable install so local changes are picked up without reinstalling. The file grows with you, and the clarity it brings is worth the small upfront effort.",
+    "license": "original",
+    "category": "tooling",
+    "contentCn": "多年来，给 Python 项目做打包意味着在 setup.py、setup.cfg 和各种 requirements 文件之间来回周旋，每一个都有自己的怪癖。社区最终达成了一个共识：采用一个名为 pyproject.toml 的唯一事实来源。它是一个用 TOML 格式书写的纯文本文件，用来描述你的项目、它的依赖，以及它所使用的工具。\n\n这个文件里有几个标准表。build-system 表告诉 pip 如何构建你的包；project 表保存名称、版本和运行时依赖列表等元信息。除此之外，你用到的每个工具——无论是 linter、格式化工具还是测试运行器——都把自己的配置放在各自的表里，于是一切都集中在一处。\n\n这种整合消除了一整类错误。因为只有一个文件，你不会再忘记更新某一个。当同事克隆仓库之后，一条命令就能同时装好项目本身和大家一致认可的精确工具版本。可复现性不再是奢望，而成了默认状态。\n\n上手并不需要把包发布到 PyPI。哪怕只是一个内部脚本，明确声明它的依赖也大有好处。先从名称和依赖写起，再逐步把工具配置迁移进来。随着项目成熟，你还可以加上可编辑安装，让本地改动无需重装就能生效。这个文件会和你一起成长，而它带来的清晰度，值得你付出最初那一点点成本。",
+    "titleEn": "The Road to a Clean pyproject.toml",
+    "titleCn": "通往干净的 pyproject.toml 之路"
+  },
+  {
+    "slug": "python-list-comprehensions",
+    "stackSlug": "python",
+    "title": "Reading List Comprehensions Without Fear",
+    "difficulty": 2,
+    "contentMd": "A list comprehension is one of the first features that makes Python feel different from other languages. At a glance it looks dense, but the pattern is simply a compact loop that builds a list. Once you learn to read it aloud, the syntax stops being intimidating.\n\nThe basic shape places the output expression first, then the loop, then an optional condition. So a line that says build a squared value for every number that is even reads almost like the English sentence describing it. The condition at the end acts as a filter, keeping only the items you want.\n\nComprehensions are not only for lists. You can build sets when you need uniqueness, and dictionaries when you want to map keys to values in one expression. There is also the generator expression, which looks nearly identical but produces values one at a time instead of building the whole collection in memory. That difference matters when the dataset is large.\n\nThe trap is nesting. A comprehension with two or three loops stacked together becomes hard to read, and at that point a plain for loop is kinder to your reviewers. Use the feature for clarity, not cleverness. If you cannot explain the line in a single breath, expand it into a normal loop. Your goal is code that the next person understands on a Monday morning, not a puzzle that shows off how little space you can use.",
+    "license": "original",
+    "category": "basics",
+    "contentCn": "列表推导式是最早让 Python 显得与其他语言不同的特性之一。它一眼看上去很密集，但这个模式本质上只是一个用来构建列表的紧凑循环。一旦你学会把它念出来，语法就不再吓人了。\n\n基本形状是把输出表达式放在最前面，然后是循环，最后是可省略的条件。所以一行写着“为每个偶数计算平方值”的代码，读起来几乎就像描述它的那句英文。末尾的条件充当过滤器，只保留你想要的那些项。\n\n推导式也不只用于列表：需要去重时可以构建集合，想用一个表达式把键映射到值时可以构建字典。还有生成器表达式，它看起来几乎一模一样，但一次只产出一个值，而不是把整个集合构建在内存里。当数据集很大时，这个差别很关键。\n\n陷阱在于嵌套。两三层循环叠在一起的推导式会变得难以阅读，到那时一个朴素的 for 循环对你的同事更友好。请用这个特性来表达清晰，而不是炫耀聪明。如果你没法一口气解释完那行代码，就把它展开成普通循环。你的目标是让下一个人在一个周一早晨就能看懂的代码，而不是一道用来展示你能省多少字符的谜题。",
+    "titleEn": "Reading List Comprehensions Without Fear",
+    "titleCn": "读懂列表推导式，不再畏惧"
+  },
+  {
+    "slug": "python-context-managers",
+    "stackSlug": "python",
+    "title": "What Context Managers Are Really Doing",
+    "difficulty": 3,
+    "contentMd": "You have probably written the with statement hundreds of times to open a file, yet the mechanism underneath is worth understanding. A context manager is any object that knows how to set something up and tear it down around a block of code. The with statement guarantees that the cleanup runs even if an error interrupts the block.\n\nThink of opening a file. Without a context manager you must remember to close it, and a raised exception could skip that step, leaking a handle. The with statement calls the manager's exit method for you, whether the block finished normally or threw an exception. This reliability is why the pattern spread to database connections, locks, and network sessions.\n\nYou can build your own with a class that defines enter and exit, or more simply with the contextmanager decorator, which turns a generator into a manager. The part before the yield is the setup, and the part after is the cleanup. This small structure keeps resource handling tidy and impossible to forget.\n\nThe mental shift is to treat setup and teardown as a single unit. Whenever a resource has a clear lifetime, a context manager should wrap it. Your code becomes shorter, safer, and easier to reason about, because the boring bookkeeping lives in one place instead of scattered across every call site.",
+    "license": "original",
+    "category": "practice",
+    "contentCn": "你大概已经写过几百次 with 语句来打开文件，但底层的机制值得理解。上下文管理器就是任何知道如何在一段代码前后完成搭建与拆除的对象。with 语句保证即使有错误打断代码块，清理动作依然会执行。\n\n以打开文件为例。没有上下文管理器时，你必须记得关闭它，而一个抛出的异常就可能跳过这一步，泄漏一个句柄。with 语句会替你调用管理器的退出方法，无论代码块是正常结束还是抛了异常。正是这种可靠性让这个模式扩散到数据库连接、锁和网络会话中。\n\n你可以用一个定义了 `__enter__` 和 `__exit__` 的类来实现自己的上下文管理器，或者更简单：用 contextmanager 装饰器把一个生成器变成管理器。yield 之前的部分是搭建，yield 之后的部分是清理。这个小结构让资源处理保持整洁，也变得不可能被遗忘。\n\n思维上的转变，是把搭建和拆除当成一个整体来看待。只要一个资源有明确的生命周期，就应该用上下文管理器把它包起来。你的代码会变得更短、更安全，也更容易推理，因为那些枯燥的记账工作被集中到了一处，而不是散落在每个调用点上。",
+    "titleEn": "What Context Managers Are Really Doing",
+    "titleCn": "上下文管理器究竟做了什么"
+  },
+  {
+    "slug": "python-pandas-for-beginners",
+    "stackSlug": "python",
+    "title": "A Gentle Start with pandas",
+    "difficulty": 3,
+    "contentMd": "When people say they use Python for data, they usually mean pandas. It is the library that turns messy tables into something you can slice, group, and summarize in a few lines. The two objects you meet first are the Series, a single column of values, and the DataFrame, a full table with rows and named columns.\n\nLoading data is usually one line, whether from a CSV, an Excel file, or a database query. Once the data is in a DataFrame, you can peek at the first rows, check the shape, and ask for basic statistics without writing a loop. The library is built so that operations apply across entire columns at once, which feels unusual until it becomes second nature.\n\nSelection is where beginners stumble. You can pick columns by name, filter rows with a condition, or choose both at once using labeled indexing. Grouping is the real power move: you tell pandas to split the data by a category, apply a calculation to each group, and combine the results back into a table. That one idea replaces dozens of manual loops.\n\nThe advice is to experiment interactively. Open a notebook, load a small dataset you care about, and try one operation at a time while watching the output. Resist the urge to memorize every method. Learn the handful you use daily, and reach for the documentation only when a specific task appears. Comfort with pandas compounds quickly, and soon the spreadsheet tasks that once took an hour take a minute.",
+    "license": "original",
+    "category": "practice",
+    "contentCn": "当人们说自己用 Python 做数据时，他们指的通常就是 pandas。正是这个库把杂乱无章的表格，变成你用几行代码就能切片、分组和汇总的东西。你最先遇到的两个对象是 Series——一列数值——以及 DataFrame——一张有行和具名列的完整表格。\n\n加载数据通常只需要一行，无论来自 CSV、Excel 文件还是数据库查询。数据进入 DataFrame 之后，你可以预览前几行、查看形状、获取基础统计，完全不需要写循环。这个库的设计让操作一次性作用于整列，一开始会感觉有些别扭，直到它变成你的第二天性。\n\n选数据是初学者最容易绊倒的地方。你可以按名字选列，用条件过滤行，或者用带标签的索引同时做两者。分组才是真正的高手招：你告诉 pandas 按某个类别切分数据，对每一组施加一种计算，再把结果合并回一张表。一个想法就替代了数十个手工循环。\n\n建议是交互式地做实验：打开一个 notebook，加载一份你在意的小数据集，一次试一个操作，同时盯着输出。克制住背下每个方法的冲动。掌握你每天真正会用的那几个，等遇到具体任务时再去查文档。对 pandas 的熟练度会迅速累积，曾经要花一小时的表格活儿，很快一分钟就能做完。",
+    "titleEn": "A Gentle Start with pandas",
+    "titleCn": "轻松上手 pandas"
+  },
+  {
+    "slug": "python-decorators-intuition",
+    "stackSlug": "python",
+    "title": "The Intuition Behind Decorators",
+    "difficulty": 3,
+    "contentMd": "A decorator looks like magic the first time you see one, but the idea is plain. In Python, functions are objects you can pass around. A decorator is simply a function that takes another function and returns a replacement, usually one that adds behavior before or after the original runs.\n\nThe at symbol is just sugar. Writing a line above a function that names a decorator means call that wrapper on the function below and rebind the name to the result. Nothing else happens. The original function is not destroyed; it is wrapped, the way you might wrap a gift without changing what is inside.\n\nWhy bother? Because it keeps cross-cutting behavior in one place. Logging, timing, access checks, and caching all repeat across many functions. Instead of copying that code into each one, you write it once in a decorator and attach it where needed. The business logic stays clean, and the extra behavior is visible as a single label at the top.\n\nWriting your own starts with a function that accepts a function, defines an inner function that calls it, and returns that inner. For more flexibility, decorators can accept their own arguments by adding one more layer. Once you see a decorator as a wrapper factory rather than a spell, you will start spotting dozens of places where it removes duplication and makes the intent obvious.",
+    "license": "original",
+    "category": "basics",
+    "contentCn": "第一次看到装饰器时，它看起来像魔法，但道理很朴素：在 Python 里，函数是可以随便传递的对象。装饰器就是一个接收另一个函数并返回替代品的函数，通常是在原函数运行前后加上一些行为。\n\n@ 符号只是语法糖。在函数上方写一行装饰器名字，意思是把那个包装器应用到下面的函数上，并把这个名字重新绑定到返回结果。除此之外什么都不会发生。原函数没有被销毁，只是被包了一层，就像你包礼物时不会改变里面的东西。\n\n为什么值得这么做？因为它把横切关注的行为集中到了一处。日志、计时、权限检查和缓存，这些逻辑会在许多函数里重复出现。你不必把同样的代码复制到每一个函数里，而是写一次装饰器，在需要的地方挂上。业务逻辑保持干净，额外行为则以一个标签的形式显式出现在函数顶部。\n\n自己动手写时，从一个接收函数的函数开始，在其中定义一个调用它的内部函数，再把这个内部函数返回出去。想要更多灵活性，就再加一层，让装饰器也能接受自己的参数。一旦你把装饰器看成“包装器工厂”而不是某种咒语，就会开始发现几十个它能消除重复、让意图显而易见的地方。",
+    "titleEn": "The Intuition Behind Decorators",
+    "titleCn": "装饰器背后的直觉"
+  },
+  {
+    "slug": "python-testing-pytest-basics",
+    "stackSlug": "python",
+    "title": "Writing Tests That Earn Their Keep with pytest",
+    "difficulty": 2,
+    "contentMd": "Testing often feels like extra work until the first bug it catches saves your evening. pytest is the tool most Python teams reach for because it asks so little of you. You write a function whose name starts with test, assert what should be true, and run the command. No classes to inherit, no boilerplate to memorize.\n\nThe heart of the framework is the assert statement. When an assertion fails, pytest shows you the values on both sides so the mismatch is obvious. This single feature removes the habit of printing variables and guessing. You state the expectation, and the tool tells you when reality disagrees.\n\nFixtures are the next idea worth learning. A fixture is a function that sets up the conditions a test needs, such as a temporary database or a sample object, and pytest injects it by name into any test that requests it. This keeps setup out of every test body and makes the tests easier to read and reuse.\n\nGood tests are small and focused. Each one should check one behavior, fail for a clear reason, and run quickly enough that you run them constantly. Resist testing implementation details that change often; aim at the behavior a caller depends on. Start with the functions you are most afraid to change, and let a green test suite become the safety net that lets you refactor with confidence rather than fear.",
+    "license": "original",
+    "category": "practice",
+    "contentCn": "测试常常让人觉得是额外负担，直到它抓到的第一个 bug 替你省下一个晚上。pytest 是大多数 Python 团队首选的工具，因为它对你的要求极少：写一个以 test 开头的函数，断言应该成立的事，然后跑一条命令。不用继承类，也不用背样板代码。\n\n框架的核心是 assert 语句。断言失败时，pytest 会把两边的值都展示出来，让不匹配之处一目了然。仅这一个特性就让你摆脱了打印变量再瞎猜的习惯：你只管陈述预期，工具会在现实与之不符时告诉你。\n\n下一个值得学的概念是 fixture。fixture 是一个函数，用来搭建测试所需的条件，比如一个临时数据库或一个示例对象；pytest 会按名字把它注入到任何请求它的测试中。这样准备逻辑不必写进每个测试体，测试也因此更容易阅读和复用。\n\n好的测试小而专注。每一个只检查一种行为，失败时原因明确，并且跑得足够快，让你愿意频繁执行。克制住去测试那些经常变动的实现细节，把目标对准调用方所依赖的行为。先从你最不敢改的函数开始，让绿色的测试套件成为那张安全网，让你能带着信心而不是恐惧去重构。",
+    "titleEn": "Writing Tests That Earn Their Keep with pytest",
+    "titleCn": "用 pytest 写出真正值得写的测试"
+  }
+]

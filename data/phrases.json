@@ -1,0 +1,422 @@
+[
+  {
+    "id": "intro-1",
+    "cat": "self-intro",
+    "en": "I'm a backend engineer with five years of experience building high-traffic Java services.",
+    "cn": "我是一名后端工程师，有五年构建高并发 Java 服务的经验。",
+    "note": "开场一句话讲清角色+年限+技术方向"
+  },
+  {
+    "id": "intro-2",
+    "cat": "self-intro",
+    "en": "I've been working mostly in Go and Kubernetes for the past three years, mainly on infrastructure tooling.",
+    "cn": "过去三年我主要用 Go 和 Kubernetes，做的是基础设施工具这块。",
+    "note": "用现在完成时强调持续到现在的状态"
+  },
+  {
+    "id": "intro-3",
+    "cat": "self-intro",
+    "en": "I started out as a front-end developer, but over time I moved towards full-stack work.",
+    "cn": "我一开始是做前端的，后来慢慢转向了全栈。",
+    "note": "转岗/转方向时的自然说法"
+  },
+  {
+    "id": "intro-4",
+    "cat": "self-intro",
+    "en": "Right now I'm on the payments team, where I look after the order and settlement services.",
+    "cn": "我目前在支付团队，负责订单和结算服务。",
+    "note": "负责某服务时用 look after 更自然"
+  },
+  {
+    "id": "intro-5",
+    "cat": "self-intro",
+    "en": "I lead a small team of four, so I split my time between coding and code review.",
+    "cn": "我带一个四个人的小组，所以时间一半写代码一半做评审。",
+    "note": "split my time between 表时间分配"
+  },
+  {
+    "id": "intro-6",
+    "cat": "self-intro",
+    "en": "My day-to-day is mostly about scaling our services and keeping latency predictable.",
+    "cn": "我日常工作主要是做服务扩容和保持延迟稳定。",
+    "note": "day-to-day 是高频口语词"
+  },
+  {
+    "id": "intro-7",
+    "cat": "self-intro",
+    "en": "Before this I spent two years at a startup, where I wore a lot of different hats.",
+    "cn": "在此之前我在一家创业公司待了两年，什么都干一点。",
+    "note": "wear many hats 表示身兼数职"
+  },
+  {
+    "id": "intro-8",
+    "cat": "self-intro",
+    "en": "I got into programming back in college, mostly out of curiosity about how things work under the hood.",
+    "cn": "我大学时开始写代码的，主要是好奇底层是怎么跑的。",
+    "note": "under the hood 指内部机制"
+  },
+  {
+    "id": "intro-9",
+    "cat": "self-intro",
+    "en": "The thing I enjoy most is digging into performance issues — that's kind of my specialty.",
+    "cn": "我最喜欢的是排查性能问题，算是我的专长吧。",
+    "note": "用 kind of 弱化语气更地道"
+  },
+  {
+    "id": "intro-10",
+    "cat": "self-intro",
+    "en": "I've shipped a couple of internal platforms that around twenty teams are using today.",
+    "cn": "我交付过两个内部平台，现在大概二十个团队在用。",
+    "note": "shipped 强调真正上线而非只是写完"
+  },
+  {
+    "id": "star-1",
+    "cat": "star",
+    "en": "The problem we were facing was that our checkout service kept timing out during peak hours.",
+    "cn": "当时我们的问题是结算服务在高峰期频繁超时。",
+    "note": "STAR 的 S：一句话交代背景痛点"
+  },
+  {
+    "id": "star-2",
+    "cat": "star",
+    "en": "I was asked to bring p99 latency down from about two seconds to under three hundred milliseconds.",
+    "cn": "我当时的任务是把 P99 延迟从两秒降到三百毫秒以内。",
+    "note": "T 用具体数字量化目标更有说服力"
+  },
+  {
+    "id": "star-3",
+    "cat": "star",
+    "en": "My role on that project was to redesign the caching layer and coordinate with two other teams.",
+    "cn": "我在那个项目里的职责是重新设计缓存层，并协调另外两个团队。",
+    "note": "说清个人职责边界，别用 we 一锅端"
+  },
+  {
+    "id": "star-4",
+    "cat": "star",
+    "en": "The first thing I did was add tracing so we could actually see where the time was going.",
+    "cn": "我做的第一件事是加链路追踪，好让时间花在哪一目了然。",
+    "note": "先观测再动手，是成熟工程师的标志"
+  },
+  {
+    "id": "star-5",
+    "cat": "star",
+    "en": "I proposed moving the hot path to a read-through cache, and we rolled it out behind a feature flag.",
+    "cn": "我建议把热点链路改成读穿透缓存，并用开关灰度上线。",
+    "note": "feature flag 是加分的工程细节"
+  },
+  {
+    "id": "star-6",
+    "cat": "star",
+    "en": "We hit a snag halfway through when we found the data wasn't consistent across regions.",
+    "cn": "中途我们卡了一下，发现跨区域的数据不一致。",
+    "note": "hit a snag 表遇到阻碍，比 problem 生动"
+  },
+  {
+    "id": "star-7",
+    "cat": "star",
+    "en": "Two weeks in, we realised the original approach wouldn't scale, so we went back to the drawing board.",
+    "cn": "两周后我们发现原方案撑不住规模，于是推倒重来。",
+    "note": "展示你会认错会调整"
+  },
+  {
+    "id": "star-8",
+    "cat": "star",
+    "en": "In the end we got p99 down to around 180 milliseconds, which was better than the target.",
+    "cn": "最后我们把 P99 压到约 180 毫秒，比目标还好。",
+    "note": "R 必须落到数字或用户可感知的结果"
+  },
+  {
+    "id": "star-9",
+    "cat": "star",
+    "en": "That change also cut our database CPU usage by roughly forty percent.",
+    "cn": "这个改动还让数据库 CPU 占用降了大约四成。",
+    "note": "补充副产品收益，显得视角全面"
+  },
+  {
+    "id": "star-10",
+    "cat": "star",
+    "en": "The biggest lesson for me was that measuring first saved us at least a month of guesswork.",
+    "cn": "我最大的收获是：先测量，省了我们至少一个月瞎猜的时间。",
+    "note": "反思收尾，面试官很吃这一套"
+  },
+  {
+    "id": "star-11",
+    "cat": "star",
+    "en": "Looking back, I'd probably push harder for load testing before we shipped it.",
+    "cn": "回头看，我可能会更坚持上线前做压测。",
+    "note": "适度自我批评，别过度贬低自己"
+  },
+  {
+    "id": "star-12",
+    "cat": "star",
+    "en": "After that, the same pattern was adopted by three other teams in the company.",
+    "cn": "之后，这个模式被公司另外三个团队采用了。",
+    "note": "用影响力证明方案普适"
+  },
+  {
+    "id": "explain-1",
+    "cat": "explain",
+    "en": "The way it works is that we write to the log first and then replay it asynchronously.",
+    "cn": "它的工作方式是：先写日志，再异步回放。",
+    "note": "解释机制最常用的开场句式"
+  },
+  {
+    "id": "explain-2",
+    "cat": "explain",
+    "en": "Let me walk you through how a request flows through the system.",
+    "cn": "我来给你讲一下一个请求在系统里是怎么流转的。",
+    "note": "讲端到端流程时的标准开场"
+  },
+  {
+    "id": "explain-3",
+    "cat": "explain",
+    "en": "Think of it as a queue that sits between the producer and the consumer.",
+    "cn": "可以把它理解成生产者和消费者之间的一条队列。",
+    "note": "用类比快速对齐认知"
+  },
+  {
+    "id": "explain-4",
+    "cat": "explain",
+    "en": "The reason we chose Kafka over RabbitMQ is that we needed replay and much higher throughput.",
+    "cn": "我们选 Kafka 而不是 RabbitMQ，是因为需要消息重放和高得多的吞吐。",
+    "note": "选型题必答：为什么是它而不是别的"
+  },
+  {
+    "id": "explain-5",
+    "cat": "explain",
+    "en": "The trade-off here is that we gain write performance but we lose strong consistency.",
+    "cn": "这里的取舍是：写性能上去了，但强一致性没了。",
+    "note": "系统设计面试的核心得分句"
+  },
+  {
+    "id": "explain-6",
+    "cat": "explain",
+    "en": "So basically every write goes through the leader, and the followers just replicate from it.",
+    "cn": "基本上每次写都走 leader，follower 从它同步数据。",
+    "note": "basically 用于把复杂事说简单"
+  },
+  {
+    "id": "explain-7",
+    "cat": "explain",
+    "en": "What that means in practice is that a user might see slightly stale data for a second or two.",
+    "cn": "这在实际中意味着用户可能会看到一两秒的旧数据。",
+    "note": "把技术后果翻译成用户感知"
+  },
+  {
+    "id": "explain-8",
+    "cat": "explain",
+    "en": "I'll skip the low-level details for now, but happy to go deeper if you'd like.",
+    "cn": "底层细节我先跳过，你想深入的话我随时可以讲。",
+    "note": "主动控制深度，面试节奏由你把握"
+  },
+  {
+    "id": "explain-9",
+    "cat": "explain",
+    "en": "To put it another way, we're trading memory for a much simpler design.",
+    "cn": "换个说法，我们是用内存换一个简单得多的设计。",
+    "note": "对方没听懂时换个角度重讲"
+  },
+  {
+    "id": "explain-10",
+    "cat": "explain",
+    "en": "The key insight is that most of these rows never change once they're written.",
+    "cn": "关键在于这些行一旦写入基本就不会再变。",
+    "note": "引出设计动机，显得有洞察"
+  },
+  {
+    "id": "explain-11",
+    "cat": "explain",
+    "en": "There's a single point of failure here, so the obvious fix is to put a load balancer in front.",
+    "cn": "这里存在单点故障，显而易见的解法是在前面加个负载均衡。",
+    "note": "先指出问题再给方案"
+  },
+  {
+    "id": "explain-12",
+    "cat": "explain",
+    "en": "At ten thousand QPS this design holds up fine, but beyond that we'd need to shard the database.",
+    "cn": "在一万 QPS 下这套设计撑得住，再高就要分库分表了。",
+    "note": "谈方案边界和扩展触发点"
+  },
+  {
+    "id": "explain-13",
+    "cat": "explain",
+    "en": "I should mention that this only works because our access pattern is read-heavy.",
+    "cn": "需要提一句，这能成立是因为我们是读多写少。",
+    "note": "主动交代前提，体现严谨"
+  },
+  {
+    "id": "explain-14",
+    "cat": "explain",
+    "en": "So to sum up the flow: the client hits the gateway, the gateway fans out to three services, and then we aggregate.",
+    "cn": "总结一下流程：客户端打到网关，网关扇出到三个服务，然后我们做聚合。",
+    "note": "讲完用一句话串起来收尾"
+  },
+  {
+    "id": "clarify-1",
+    "cat": "clarify",
+    "en": "Just to make sure I understand — you're asking about read latency, not write latency, right?",
+    "cn": "确认一下我理解对了——你问的是读延迟不是写延迟，对吧？",
+    "note": "复述+反问，避免答非所问"
+  },
+  {
+    "id": "clarify-2",
+    "cat": "clarify",
+    "en": "Could you clarify what you mean by 'scalable'? Do you mean handling more traffic or more data?",
+    "cn": "你能明确一下「可扩展」指什么吗？是扛更多流量还是更多数据？",
+    "note": "把模糊需求拆成选择题"
+  },
+  {
+    "id": "clarify-3",
+    "cat": "clarify",
+    "en": "Before I dive in, can I ask a couple of clarifying questions about the requirements?",
+    "cn": "在开始之前，我能先问几个关于需求的问题吗？",
+    "note": "系统设计面试开场必背"
+  },
+  {
+    "id": "clarify-4",
+    "cat": "clarify",
+    "en": "Are we talking about users globally, or is this mainly for one region?",
+    "cn": "我们说的是全球用户，还是主要面向一个地区？",
+    "note": "问规模与范围收缩问题边界"
+  },
+  {
+    "id": "clarify-5",
+    "cat": "clarify",
+    "en": "I want to make sure I'm solving the right problem here. Is the main pain point the cost, or the reliability?",
+    "cn": "我想确认一下我在解决正确的问题：核心痛点是成本还是稳定性？",
+    "note": "逼出真实约束条件再动手"
+  },
+  {
+    "id": "clarify-6",
+    "cat": "clarify",
+    "en": "If I'm hearing you correctly, the constraint is that we can't change the client SDK. Is that right?",
+    "cn": "如果我没听错的话，约束是不能改客户端 SDK，对吗？",
+    "note": "确认硬约束，别踩雷"
+  },
+  {
+    "id": "clarify-7",
+    "cat": "clarify",
+    "en": "Sorry, I didn't quite catch that. Could you say it again a bit slower?",
+    "cn": "抱歉，我刚没太听清。能麻烦你再说慢一点吗？",
+    "note": "没听懂直接说，别硬猜"
+  },
+  {
+    "id": "clarify-8",
+    "cat": "clarify",
+    "en": "Does that answer your question, or would you like me to go into more detail?",
+    "cn": "这回答你的问题了吗，还是需要我再展开讲讲？",
+    "note": "答完回头确认，非常加分"
+  },
+  {
+    "id": "clarify-9",
+    "cat": "clarify",
+    "en": "I'm going to assume roughly a million daily active users for now — I can revisit that if it's off.",
+    "cn": "我先假设日活大约一百万，如果估错了我再调。",
+    "note": "主动假设并把假设说出口"
+  },
+  {
+    "id": "clarify-10",
+    "cat": "clarify",
+    "en": "Let me rephrase my answer, because I don't think I was very clear just now.",
+    "cn": "我重新组织一下回答，刚才讲得不够清楚。",
+    "note": "自己救场，比被追问强得多"
+  },
+  {
+    "id": "filler-1",
+    "cat": "filler",
+    "en": "That's a great question. Let me think about it for a second.",
+    "cn": "这是个好问题，让我稍微想一下。",
+    "note": "最常用的缓冲句，赢 3-5 秒"
+  },
+  {
+    "id": "filler-2",
+    "cat": "filler",
+    "en": "Hmm, that's an interesting one. Give me a moment to think through the approach.",
+    "cn": "嗯，这个挺有意思的，给我点时间理一下思路。",
+    "note": "卡住时别沉默，Thinking 要出声"
+  },
+  {
+    "id": "filler-3",
+    "cat": "filler",
+    "en": "Off the top of my head, I'd probably start by looking at the data model, though I'd want to verify that.",
+    "cn": "我初步想法是先看看数据模型，当然这个我得再验证一下。",
+    "note": "词穷时的坦率表达+留退路"
+  },
+  {
+    "id": "filler-4",
+    "cat": "filler",
+    "en": "I don't have that number memorised, but I can walk you through how I'd estimate it.",
+    "cn": "这个数字我记不准，但我可以讲讲我会怎么估算。",
+    "note": "不会背数据时展示估算能力"
+  },
+  {
+    "id": "filler-5",
+    "cat": "filler",
+    "en": "I haven't worked with that specific tool, but I've used something quite similar.",
+    "cn": "我没用过这个具体工具，但用过很类似的。",
+    "note": "别直接说不会，转向可迁移经验"
+  },
+  {
+    "id": "filler-6",
+    "cat": "filler",
+    "en": "Bear with me for a second while I sketch this out.",
+    "cn": "稍等我一下，我画个草图。",
+    "note": "边写边说，化解冷场尴尬"
+  },
+  {
+    "id": "filler-7",
+    "cat": "filler",
+    "en": "Let me take a step back, because I think I'm getting too deep into the weeds.",
+    "cn": "我退一步重讲，我觉得刚才钻得太细了。",
+    "note": "发现自己跑偏时的自救句"
+  },
+  {
+    "id": "wrap-1",
+    "cat": "wrap",
+    "en": "So that's broadly how I'd approach it — I'd love to hear your thoughts though.",
+    "cn": "大致上我会这么做——不过我也很想听听你的想法。",
+    "note": "把话筒交回面试官"
+  },
+  {
+    "id": "wrap-2",
+    "cat": "wrap",
+    "en": "I can stop there, or I can keep going into the failure modes if that's useful.",
+    "cn": "我可以先讲到这，如果你觉得有用我也可以继续讲故障处理。",
+    "note": "给出选项，让面试官选"
+  },
+  {
+    "id": "wrap-3",
+    "cat": "wrap",
+    "en": "That covers the main points — is there anything specific you'd like me to expand on?",
+    "cn": "主要点就是这些，有什么你想让我再展开的吗？",
+    "note": "收尾+开放提问"
+  },
+  {
+    "id": "wrap-4",
+    "cat": "wrap",
+    "en": "I think I've covered what I wanted to say. Happy to take any questions.",
+    "cn": "我想说的差不多就这些，随时可以回答你的问题。",
+    "note": "简洁收束，适合答题环节"
+  },
+  {
+    "id": "wrap-5",
+    "cat": "wrap",
+    "en": "Before we wrap up, could you tell me a bit about what the team is working on these days?",
+    "cn": "在结束之前，能讲讲团队最近在做什么吗？",
+    "note": "反问环节：问业务而非福利"
+  },
+  {
+    "id": "wrap-6",
+    "cat": "wrap",
+    "en": "One thing I'm curious about is how you handle on-call — is it something engineers rotate through?",
+    "cn": "我比较好奇的是你们的值班怎么安排，是工程师轮流的吗？",
+    "note": "问工作方式，显示你真的在意"
+  },
+  {
+    "id": "wrap-7",
+    "cat": "wrap",
+    "en": "Thanks for taking the time today — I really enjoyed the conversation, and I'm quite excited about this role.",
+    "cn": "感谢您今天的时间——聊得很愉快，我对这个岗位也很感兴趣。",
+    "note": "结尾表达兴趣，别忘致谢"
+  }
+]

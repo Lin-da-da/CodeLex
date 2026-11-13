@@ -1,0 +1,323 @@
+[
+  {
+    "concept": "JVM Memory Model",
+    "stack": "java",
+    "seconds": 55,
+    "en": "So the JVM memory model is not really about how memory is laid out; it is the spec that defines when a write by one thread becomes visible to another. That matters because each thread may keep values in its own working memory, so without rules you get stale reads and weird reordering. The core mechanism is happens-before. If one action happens-before another, the second is guaranteed to see the first. You get it from synchronized blocks, volatile writes and reads, thread start and join, and Lock acquisition. The other piece is as-if-serial: the compiler and CPU may reorder freely as long as single-threaded results stay the same, which is why double-checked locking was broken before volatile was enforced. In practice, I mostly rely on higher-level tools, concurrent collections, executors, immutable objects, instead of reasoning about raw visibility. I care because concurrency bugs that come from a missing happens-before are invisible in tests and only show up under production load.",
+    "cn": "JVM 内存模型其实讲的不是内存怎么布局,而是一份规范,它定义了一个线程的写入什么时候对另一个线程可见。这很重要,因为每个线程都可能把值缓存在自己的工作内存里,没有规则就会出现脏读和奇怪的重排序。核心机制是 happens-before。如果动作 A happens-before 动作 B,那么 B 一定能看到 A 的结果。你可以通过 synchronized 块、volatile 的写和读、线程 start 和 join、以及 Lock 的获取来建立这种关系。另一块是 as-if-serial:编译器和 CPU 可以自由重排序,只要单线程下的结果不变,这就是为什么在 volatile 语义被强化之前,双重检查锁定是坏的。实践中我更依赖高层工具,并发集合、线程池、不可变对象,而不是自己去推导可见性。我关心这个,是因为缺少 happens-before 导致的并发 bug 在测试里根本看不见,只会在生产负载下暴露。",
+    "keywords": ["happens-before", "visibility", "reordering", "volatile", "as-if-serial"]
+  },
+  {
+    "concept": "Class Loading and Parent Delegation",
+    "stack": "java",
+    "seconds": 55,
+    "en": "Class loading is the process of turning a class file into a live Class object in the JVM, through loading, linking, and initialization. The part interviewers love is parent delegation. Every loader except the bootstrap one has a parent, and when you ask it to load a class it asks the parent first. Only if the parent fails does it try itself. So it goes bootstrap, then platform, then application, then your custom loader. That gives you two things: classes are not loaded twice, and core classes like java.lang.String cannot be faked by code in your classpath. The trade-off is that a parent cannot see classes in a child loader, which is why you get ClassNotFoundException in plugin or SPI setups. That is also why JDBC and Tomcat break the rule on purpose and use thread context class loaders. I care because most weird class conflicts come from loader boundaries, not from missing jars.",
+    "cn": "类加载就是把一个 class 文件变成 JVM 里活的 Class 对象的过程,分为加载、链接和初始化。面试官最爱问的是双亲委派。除了启动类加载器,每个加载器都有一个父加载器;当你请求它加载一个类时,它会先委托给父加载器。只有父加载器加载失败,它才自己尝试。顺序是启动类加载器、平台类加载器、应用类加载器,最后才是你的自定义加载器。这带来两个好处:类不会被重复加载,而且 java.lang.String 这类核心类不会被你 classpath 里的代码伪造。代价是父加载器看不到子加载器里的类,这正是插件或 SPI 场景里出现 ClassNotFoundException 的原因。这也是 JDBC 和 Tomcat 故意打破这个规则、改用线程上下文类加载器的原因。我关心这个,是因为大多数诡异的类冲突都来自加载器边界,而不是少了 jar 包。",
+    "keywords": ["classloader", "delegation", "bootstrap", "linking", "SPI"]
+  },
+  {
+    "concept": "ThreadPool Parameters and Rejection",
+    "stack": "java",
+    "seconds": 55,
+    "en": "A ThreadPoolExecutor is basically six numbers plus a queue and a policy: core pool size, max pool size, keep-alive time, the work queue, the thread factory, and the rejection handler. The counterintuitive part is the order. Tasks go to core threads first, then into the queue, and only when the queue is full does the pool grow to max. So a big LinkedBlockingQueue means you will almost never create threads beyond core, and max size silently does nothing. When the queue is full and max is reached, the rejection policy kicks in. Abort throws, CallerRuns makes the caller run the task, which is a nice natural backpressure, Discard drops it, and DiscardOldest drops the head. In practice I bound the queue deliberately, name my threads, and prefer CallerRuns for bursty traffic. I care because an unbounded queue with an unbounded pool is exactly how servers quietly die under load.",
+    "cn": "ThreadPoolExecutor 本质上就是六个数字,再加一个队列和一个策略:核心线程数、最大线程数、存活时间、工作队列、线程工厂和拒绝策略。反直觉的地方在于执行顺序。任务先交给核心线程,然后进队列,只有当队列满了,线程池才会扩容到最大线程数。所以如果你用一个很大的 LinkedBlockingQueue,就几乎永远不会创建超过核心数的线程,最大线程数静默失效。当队列满且线程数也到顶时,拒绝策略就登场了。Abort 直接抛异常,CallerRuns 让提交任务的线程自己执行,这是一种很自然的反压,Discard 丢弃,DiscardOldest 丢弃队头。实践中我会刻意设置有界队列、给线程起名字,并且在突发流量下优先选 CallerRuns。我关心这个,是因为无界队列配上无界线程池,正是服务器在负载下悄悄死掉的方式。",
+    "keywords": ["core-pool-size", "work-queue", "rejection", "backpressure", "CallerRuns"]
+  },
+  {
+    "concept": "synchronized vs ReentrantLock",
+    "stack": "java",
+    "seconds": 55,
+    "en": "Both give you mutual exclusion and visibility, and both are reentrant, so a thread can take the same lock again. synchronized is a keyword on the monitor built into every object; the JVM handles lock upgrade from biased, to lightweight, to heavyweight, and it releases automatically when you exit the block. ReentrantLock is a class, so you must unlock in a finally block, but in exchange you get real features: tryLock with a timeout, lockInterruptibly, an optional fairness mode, and multiple Condition queues instead of one wait set. In practice I still reach for synchronized first. It is shorter, it cannot leak a lock, and it is fast enough since the JVM optimized it hard. I only switch when I actually need timed waits, fairness, or several conditions, like in a bounded buffer. The key point is that clearer code usually beats a more powerful primitive.",
+    "cn": "两者都提供互斥和可见性,而且都是可重入的,也就是说同一个线程可以再次获取这把锁。synchronized 是关键字,基于每个对象内置的 monitor;JVM 负责锁升级,从偏向锁到轻量级锁再到重量级锁,并且退出代码块时自动释放。ReentrantLock 是一个类,所以你必须在 finally 里 unlock,但换来的是真正的能力:带超时的 tryLock、lockInterruptibly、可选的公平模式,以及多个 Condition 队列而不是只有一个等待集合。实践中我还是优先用 synchronized。它更短,不会漏掉释放,而且 JVM 对它做了大量优化,性能完全够用。只有当我确实需要定时等待、公平性或者多个条件队列时才会换,比如实现有界缓冲区。关键在于,更清晰的代码通常胜过更强大的原语。",
+    "keywords": ["monitor", "reentrant", "tryLock", "fairness", "condition"]
+  },
+  {
+    "concept": "volatile and Visibility",
+    "stack": "java",
+    "seconds": 50,
+    "en": "volatile gives you two guarantees and exactly two. First, visibility: a write to a volatile field is immediately flushed, and any later read sees it, so threads never read a stale cached value. Second, ordering: it prevents reordering around it, and a volatile write happens-before every subsequent read of that same field. What it does not give you is atomicity. Count plus plus is still read, add, write, so two threads can still lose updates. That means volatile is right for a flag, a config switch, or publishing an immutable object, and wrong for counters, where you want AtomicInteger or a lock. The classic uses are the stop flag in a worker loop, and the fixed double-checked locking singleton, which only became safe once the memory model was corrected in Java 5. I care because people reach for volatile when the real problem is a compound action.",
+    "cn": "volatile 给你两个保证,而且只有两个。第一是可见性:对 volatile 字段的写入会立刻刷新,之后任何读取都能看到它,所以线程不会读到过期的缓存值。第二是有序性:它禁止了围绕它的重排序,并且 volatile 写 happens-before 之后对同一字段的读。它不给你的是原子性。count++ 仍然是读、加、写三步,所以两个线程依然会丢失更新。这意味着 volatile 适合做标志位、配置开关或者发布一个不可变对象,但不适合做计数器,那里你需要 AtomicInteger 或者锁。经典用法是工作循环里的停止标志,以及修好之后的双重检查锁定单例,它只有在 Java 5 修正内存模型之后才真正安全。我关心这个,是因为很多人遇到问题就上 volatile,而真正的问题是复合操作。",
+    "keywords": ["visibility", "ordering", "atomicity", "happens-before", "flag"]
+  },
+  {
+    "concept": "ThreadLocal and Memory Leak",
+    "stack": "java",
+    "seconds": 50,
+    "en": "ThreadLocal gives each thread its own copy of a variable, which is a clean way to pass request context or a date formatter without touching every method signature. It works because each Thread holds a ThreadLocalMap, keyed by a weak reference to the ThreadLocal itself and a strong reference to the value. That combination is where the leak comes from. If the ThreadLocal object is garbage collected, the key becomes null, but the value is still strongly held, and in a pooled thread that entry can live forever. Across a big pool and a big value, your heap grows with no obvious owner. So the rule is simple: always call remove in a finally block once the request or task is done, and never store huge objects there. I care because this is one of those leaks that only shows up after days of uptime.",
+    "cn": "ThreadLocal 给每个线程一份自己的变量副本,这是一种很干净的方式来传递请求上下文或者日期格式化器,而不用改遍所有方法签名。它的原理是每个 Thread 持有一个 ThreadLocalMap,key 是指向 ThreadLocal 本身的弱引用,value 是强引用。正是这个组合带来了泄漏。如果 ThreadLocal 对象被回收了,key 就变成 null,但 value 仍然被强引用持有,而在一个池化的线程里,这条 entry 可能永远存在。线程池够大、value 够大,你的堆就悄悄涨起来,而且找不到明显的责任人。所以规则很简单:请求或任务结束后,一定要在 finally 里调用 remove,并且绝不在里面放大对象。我关心这个,因为这种泄漏只有在系统连续运行好几天之后才看得出来。",
+    "keywords": ["threadlocal", "weak-reference", "remove", "heap", "pool"]
+  },
+  {
+    "concept": "HashMap Resize and Red-Black Tree",
+    "stack": "java",
+    "seconds": 55,
+    "en": "A HashMap is an array of buckets indexed by hash, and resize is what keeps lookups fast. When size exceeds capacity times load factor, usually 0.75, the array doubles and every entry is rehashed into a new position, which is why you should size a map up front if you know roughly how many entries you will store. Collisions used to mean a linked list, so a bad hash turned a lookup into a linear scan. Since Java 8, when a bucket passes eight entries and the table is large enough, that list is treeified into a red-black tree, so the worst case goes from linear to log n. It de-treeifies back to a list when the bucket shrinks below six. The trade-off is memory and comparison cost, because tree nodes need comparable keys. I care because hash flooding was a real denial of service attack.",
+    "cn": "HashMap 本质上是一个按哈希定位的桶数组,而扩容是让查找保持快速的原因。当元素数量超过容量乘以负载因子,通常是 0.75,数组就会翻倍,每个元素都要重新哈希到新位置,这就是为什么如果你大致知道要存多少个元素,就应该提前指定容量。以前冲突意味着链表,所以一个糟糕的哈希会把查找退化成线性扫描。从 Java 8 开始,当某个桶超过 8 个元素并且表足够大时,这个链表会被树化成红黑树,最坏情况就从线性变成对数级。当桶缩到 6 个以下时又会退化回链表。代价是内存和比较开销,因为树节点要求 key 可比较。我关心这个,是因为哈希洪水攻击曾经是真实的拒绝服务攻击手段。",
+    "keywords": ["load-factor", "resize", "rehash", "treeify", "collision"]
+  },
+  {
+    "concept": "Reflection and Annotations",
+    "stack": "java",
+    "seconds": 55,
+    "en": "Reflection lets code inspect and manipulate classes, methods, and fields at runtime, and annotations are the metadata you hang on them. A framework scans the classpath, reads annotations like Autowired or Entity, then uses reflection to build instances, inject fields, and invoke methods. That is basically the whole magic behind Spring, JPA, and JUnit. The cost is real though: reflective calls are slower, they bypass compile-time checking, and setAccessible can break encapsulation and trip the module system. You also lose IDE refactoring support, because a string is not a reference. So the rule I follow is that frameworks may use reflection freely, but business code should not. The key point is that annotations by themselves do nothing at all; something has to read them, at compile time or at runtime, and that reader is where the behavior actually lives. I care because most framework magic becomes obvious once you know who reads the annotation.",
+    "cn": "反射让代码可以在运行时检查和操作类、方法、字段,而注解是你挂在它们上面的元数据。框架扫描 classpath,读取 Autowired、Entity 这类注解,然后用反射创建实例、注入字段、调用方法。这基本上就是 Spring、JPA 和 JUnit 背后全部的魔法。但代价是真实的:反射调用更慢,绕过了编译期检查,而且 setAccessible 会破坏封装并在模块系统上踩坑。你还会失去 IDE 重构的支持,因为字符串不是引用。所以我遵循的规则是:框架可以随意用反射,业务代码不行。关键在于,注解本身什么也不做;必须有东西去读取它,编译期或运行期,而那个读取者才是行为真正存在的地方。我关心这个,是因为一旦你知道是谁在读注解,大多数框架魔法就变得一目了然。",
+    "keywords": ["reflection", "annotation", "classpath", "setAccessible", "metadata"]
+  },
+  {
+    "concept": "Checked vs Unchecked Exceptions",
+    "stack": "java",
+    "seconds": 50,
+    "en": "In Java, checked exceptions extend Exception but not RuntimeException, and the compiler forces you to catch or declare them. Unchecked ones extend RuntimeException or Error and can be thrown anywhere. Checked ones make sense when the caller can genuinely recover, like a file that may not exist or a timeout you can retry; the signature makes that failure part of the contract. The problem is that in layered code, forcing every layer to declare or wrap an exception it cannot handle produces noise, so you get swallowed catch blocks and empty logs. That is why modern Java mostly leans on unchecked exceptions for programming errors and infrastructure failures, and handles them once at the boundary. In practice I use checked exceptions sparingly, never swallow, and always wrap with context and keep the cause. I care because exception design decides whether failures are visible or lost.",
+    "cn": "在 Java 里,受检异常继承 Exception 但不继承 RuntimeException,编译器强制你捕获或者声明抛出。非受检异常继承 RuntimeException 或 Error,可以在任何地方抛出。受检异常适用于调用方确实能恢复的场景,比如文件可能不存在、超时可以重试;方法签名把这种失败变成了契约的一部分。问题在于,在分层代码里,强制每一层都去声明或包装一个它根本处理不了的异常,只会制造噪音,于是就出现了空 catch 块和空日志。这就是为什么现代 Java 大多用非受检异常表达程序错误和基础设施故障,然后在边界处统一处理一次。实践中我很少用受检异常,绝不吞掉异常,而且总是带上上下文包装并保留 cause。我关心这个,因为异常设计决定了失败是可见的还是被丢掉的。",
+    "keywords": ["checked", "unchecked", "signature", "wrap", "cause"]
+  },
+  {
+    "concept": "CompletableFuture",
+    "stack": "java",
+    "seconds": 55,
+    "en": "CompletableFuture is Java's composable async type. You run work on a pool, and instead of blocking on get, you chain callbacks: thenApply to transform, thenCompose to flatten another future, thenCombine to join two, and exceptionally or handle to recover. The key difference from a raw Future is that you describe what happens next rather than waiting, which is what makes it non-blocking. You choose the executor explicitly, otherwise everything lands on the common ForkJoinPool, which can starve if you block inside. Timeouts are worth calling out: older Java has no timeout on get, so people wrap it with orTimeout or a scheduled fallback. In practice I use it for fan-out, calling three services and combining the results. The trade-off is that deeply chained code gets hard to debug and stack traces lose meaning. I care because it is the cleanest way to express parallelism in plain Java.",
+    "cn": "CompletableFuture 是 Java 里可组合的异步类型。你把工作提交到线程池,然后不是阻塞在 get 上,而是串联回调:thenApply 做转换,thenCompose 展平另一个 future,thenCombine 合并两个,exceptionally 或 handle 做恢复。它和原始 Future 的关键区别在于,你描述的是接下来做什么,而不是干等,这正是它非阻塞的原因。你要显式指定 executor,否则所有任务都会落到公共的 ForkJoinPool 上,如果你在里面阻塞,它就会被拖死。超时也值得一提:老版本 Java 的 get 没有超时,所以大家用 orTimeout 或者定时回退来包一层。实践中我用它做扇出,比如同时调三个服务再合并结果。代价是链得太深之后很难调试,堆栈也失去意义。我关心这个,因为它是纯 Java 里表达并行最干净的方式。",
+    "keywords": ["thenApply", "thenCompose", "executor", "async", "fan-out"]
+  },
+  {
+    "concept": "Spring Bean Lifecycle",
+    "stack": "spring",
+    "seconds": 55,
+    "en": "A Spring bean goes through a predictable life: the container reads definitions, instantiates, populates properties, calls aware callbacks like BeanNameAware and ApplicationContextAware, then runs BeanPostProcessors before init, then your init method, either PostConstruct or afterPropertiesSet, and finally the bean is ready. Post-processors are where the interesting stuff lives: that is how AOP wrapping, validation, and configuration binding happen. On shutdown, PreDestroy and DisposableBean run, but only if the context closes cleanly. The practical gotcha is ordering: in the constructor, injection has not happened yet, so your fields are still null, and calling a proxied method during init can bypass the proxy. So I put setup work in PostConstruct, not in the constructor. I care because lifecycle mistakes are exactly why people see null fields or silently skipped transactions right at startup.",
+    "cn": "一个 Spring bean 的生命周期是可预测的:容器读取定义、实例化、填充属性、调用 BeanNameAware 和 ApplicationContextAware 这类 aware 回调,然后执行 BeanPostProcessor 的前置处理,再执行你的初始化方法,也就是 PostConstruct 或 afterPropertiesSet,最后这个 bean 才就绪。有意思的东西基本都在后置处理器里:AOP 代理包装、校验、配置绑定都是这么发生的。关闭时,PreDestroy 和 DisposableBean 会执行,但前提是容器正常关闭。实践中的坑在于顺序:在构造函数里,注入还没发生,字段还是 null,而且在初始化期间调用一个被代理的方法可能绕过代理。所以我把初始化逻辑放在 PostConstruct 里,而不是构造函数。我关心这个,因为生命周期用错了,正是启动时空字段或者事务静默失效的原因。",
+    "keywords": ["instantiate", "postprocessor", "postconstruct", "predestroy", "injection"]
+  },
+  {
+    "concept": "Transaction Propagation",
+    "stack": "spring",
+    "seconds": 55,
+    "en": "Propagation answers one question: when a transactional method calls another one, do they share a transaction or start a new one? Required is the default and joins the existing one, or creates one if none exists. RequiresNew always suspends the current one and starts a fresh, independent transaction, which is what you want for audit logs that must survive an outer rollback. Nested uses savepoints, so inner work can roll back without killing the outer one. Supports runs in whatever exists, NotSupported suspends it, and Never throws if one is active. The trap everyone hits is self-invocation: calling a transactional method from inside the same class bypasses the proxy, so the new propagation simply never applies. And you cannot join two different data sources into one physical transaction without a JTA coordinator. I care because wrong propagation silently turns a rollback into a partial write.",
+    "cn": "传播行为只回答一个问题:当一个事务方法调用另一个事务方法时,它们是共用同一个事务,还是新开一个?Required 是默认值,有事务就加入,没有就新建。RequiresNew 总是挂起当前事务并启动一个全新的独立事务,这正是审计日志需要的,因为它必须在外层回滚时依然留下记录。Nested 使用保存点,所以内层可以回滚而不影响外层。Supports 有就用、没有就不用,NotSupported 挂起当前事务,Never 在已有事务时直接抛异常。所有人都会踩的坑是自调用:在同一个类内部调用事务方法会绕过代理,所以新的传播行为根本不会生效。另外,没有 JTA 协调器的情况下,你不可能把两个不同数据源纳入同一个物理事务。我关心这个,因为传播行为用错,会把一次回滚静默变成部分写入。",
+    "keywords": ["propagation", "requires-new", "nested", "savepoint", "proxy"]
+  },
+  {
+    "concept": "Circular Dependency and Three-Level Cache",
+    "stack": "spring",
+    "seconds": 55,
+    "en": "Spring resolves most circular dependencies between singletons using three caches, and it is easier than it sounds. The singleton cache holds fully built beans, an early cache holds raw instances that are constructed but not yet populated, and a factory cache holds a factory that can produce the early reference, including an AOP proxy. When A needs B and B needs A, Spring creates A, immediately puts a factory for it into the third cache, then starts filling A's fields, finds it needs B, creates B, and B can now grab the early reference of A. That is why field injection hides the cycle: it works at startup but leaves you a design smell. Constructor injection cannot be solved this way, so Spring throws. The trade-off is that early exposure leaks a half-built object, and it only works for singletons. I care because this fails loudly right when I refactor.",
+    "cn": "Spring 用三级缓存解决了大多数单例之间的循环依赖,原理比听起来简单。一级缓存放完全创建好的 bean,二级缓存放已经构造但还没填充属性的早期对象,三级缓存放的是一个工厂,它能产出早期引用,包括 AOP 代理。当 A 依赖 B、B 又依赖 A 时,Spring 先创建 A,立刻把它的工厂放进三级缓存,然后开始填充 A 的字段,发现需要 B,于是创建 B,而 B 这时就能拿到 A 的早期引用。这就是为什么字段注入会掩盖循环依赖:启动时能跑起来,但留下了设计上的坏味道。构造器注入没法这样解决,所以 Spring 直接抛异常。代价是提前暴露了一个半成品对象,而且它只对单例有效。我关心这个,因为它总是在我重构的时候响亮地失败。",
+    "keywords": ["circular-dependency", "singleton", "early-reference", "proxy", "constructor-injection"]
+  },
+  {
+    "concept": "Spring Boot Auto Configuration",
+    "stack": "spring",
+    "seconds": 55,
+    "en": "Auto-configuration is how Boot turns a dependency on your classpath into working beans, so you skip most XML and Java config. It starts with EnableAutoConfiguration, which loads candidate configurations from a file that lists them, then each one is guarded by conditions: ConditionalOnClass, ConditionalOnMissingBean, ConditionalOnProperty, and so on. If the class is present and you have not defined your own bean, Boot creates one with sensible defaults. Order matters, and a few phases run before your beans so that yours always win. The practical tools are the auto-configuration report, which tells you what matched and why something did not, and simply declaring my own bean to override the default. The trade-off is that magic hides wiring, so debugging means learning to read that report. I care because most questions of the form why is my bean behaving differently are just an auto-configuration I did not know about.",
+    "cn": "自动配置就是 Boot 把你 classpath 上的一个依赖变成可用 bean 的方式,于是你省掉了绝大部分 XML 和 Java 配置。它从 EnableAutoConfiguration 开始,从一个清单文件里加载候选配置类,然后每个配置类都由条件守卫:ConditionalOnClass、ConditionalOnMissingBean、ConditionalOnProperty 等等。如果类存在,而且你自己没有定义同名 bean,Boot 就用一个合理的默认值创建它。顺序很重要,有几个阶段会先于用户 bean 执行,这样你自己的 bean 永远能覆盖默认。实用的工具是自动配置报告,它会告诉你哪些条件匹配了、哪些没有,以及为什么;另一个就是自己声明一个 bean 直接覆盖默认值。代价是这种魔法把装配过程藏了起来,所以调试意味着你必须学会读那份报告。我关心这个,因为大多数「为什么我的 bean 行为不一样」的问题,背后都只是一个我不知道的自动配置。",
+    "keywords": ["auto-configuration", "conditional", "classpath", "starter", "override"]
+  },
+  {
+    "concept": "Spring MVC Request Flow",
+    "stack": "spring",
+    "seconds": 55,
+    "en": "One HTTP request in Spring MVC travels a fairly fixed path. It hits the servlet container, then the DispatcherServlet, which is the front controller. It asks HandlerMapping which controller method matches the URL, picks a HandlerAdapter, and calls it. Argument resolvers and message converters turn the request into Java objects and back; that is where Jackson parses JSON and where validation runs. The handler returns a ModelAndView, or for REST an object with ResponseBody, which a converter serializes. Exceptions bubble up to HandlerExceptionResolvers, which is how ControllerAdvice produces a consistent error body. Interceptors wrap the whole thing, so auth, logging, and timing live there. The key point is that every step is a strategy interface on DispatcherServlet, so I can plug in my own. I care because when a 400 or a 415 shows up, I know exactly which converter to blame.",
+    "cn": "在 Spring MVC 里,一次 HTTP 请求走的是一条相当固定的路径。它先到 servlet 容器,然后进入 DispatcherServlet,也就是前端控制器。它通过 HandlerMapping 询问哪个控制器方法匹配这个 URL,挑一个 HandlerAdapter 来调用它。参数解析器和消息转换器负责把请求变成 Java 对象、再把结果变回去,Jackson 解析 JSON 和参数校验都发生在这一步。处理器返回 ModelAndView,或者 REST 场景下返回一个带 ResponseBody 的对象,由转换器序列化。异常会向上冒泡到 HandlerExceptionResolvers,这正是 ControllerAdvice 能统一输出错误体的原因。拦截器包裹整个流程,所以鉴权、日志和耗时统计都放在那里。关键在于每一步都是 DispatcherServlet 上的策略接口,所以我可以插自己的实现。我关心这个,因为当出现 400 或 415 时,我清楚该找哪个转换器。",
+    "keywords": ["dispatcherservlet", "handlermapping", "converter", "interceptor", "controller-advice"]
+  },
+  {
+    "concept": "AOP Proxy and Failure Cases",
+    "stack": "spring",
+    "seconds": 55,
+    "en": "Spring AOP wraps your bean in a proxy and calls interceptors around the method, which is how transactions, caching, and security work without touching your code. By default it uses a JDK dynamic proxy if your bean implements an interface, otherwise CGLIB subclassing. Either way, the proxy is a separate object sitting in front of yours. That single fact explains every classic failure. Self-invocation bypasses the proxy, so a transactional method calling another one in the same class gets no new transaction. Private and final methods cannot be intercepted. Calling a method from the constructor is too early, and CGLIB cannot proxy a final class at all. Also, if you catch the exception inside the method, the transaction advice never sees it, so there is no rollback. The fix is to split the logic into another bean, or inject self. I care because AOP bugs look exactly like the annotation was ignored.",
+    "cn": "Spring AOP 把你的 bean 包在一个代理里,并在方法周围调用拦截器,这就是事务、缓存和安全能在不改动你代码的前提下生效的原因。默认情况下,如果 bean 实现了接口就用 JDK 动态代理,否则用 CGLIB 子类化。不管哪种,代理都是一个独立的对象,挡在你的对象前面。仅仅这一个事实就能解释所有经典失效场景。自调用绕过了代理,所以同一个类里的事务方法调用另一个事务方法,不会开启新事务。private 和 final 方法无法被拦截。在构造函数里调用方法时机太早,而且 CGLIB 根本无法代理 final 类。另外,如果你在方法内部把异常 catch 掉了,事务通知就看不到异常,也就不会回滚。解决办法是把逻辑拆到另一个 bean,或者注入自身代理。我关心这个,因为 AOP 的 bug 看起来就跟注解被无视了一模一样。",
+    "keywords": ["aop", "proxy", "cglib", "self-invocation", "rollback"]
+  },
+  {
+    "concept": "Idempotency Design",
+    "stack": "backend",
+    "seconds": 55,
+    "en": "Idempotency means doing the same request more than once has the same effect as doing it once, and you absolutely need it once clients retry and networks lie. The usual design is a client-supplied idempotency key stored with the request result. On retry you look up the key: if it is done, return the stored response; if it is in flight, tell the caller to wait; otherwise process and record. Alternatives depend on the write: a unique index on a business key for inserts, a state machine so a paid order cannot be paid again, or an optimistic version column that rejects stale updates. The trade-off is storage plus a cleanup policy, because keys cannot live forever. The key point is that the key must be scoped to the user and the operation, not global, or you will suppress a genuinely different request. I care because retries are a fact of life, not an edge case.",
+    "cn": "幂等性指的是同一个请求执行多次和执行一次的效果相同;一旦客户端会重试、网络会说谎,你就必须要有它。常见的设计是客户端提供一个幂等键,服务端把它和请求结果一起存下来。重试时先查这个键:如果已经完成,就返回存好的响应;如果还在处理中,就让调用方等待;否则就处理并记录。其他方案取决于写操作的类型:插入用业务唯一索引,支付类用状态机保证已支付订单不能再次支付,或者用乐观锁版本号拒绝过期更新。代价是存储成本和清理策略,因为键不可能永久保留。关键在于幂等键必须限定在用户和操作范围内,而不是全局的,否则你会把一个完全不同的请求给吞掉。我关心这个,因为重试是常态,不是边缘情况。",
+    "keywords": ["idempotency-key", "retry", "unique-index", "state-machine", "optimistic-lock"]
+  },
+  {
+    "concept": "Distributed Lock",
+    "stack": "backend",
+    "seconds": 55,
+    "en": "A distributed lock coordinates processes that share nothing but Redis or a database, and you need it because a synchronized block only works inside one JVM. With Redis, the standard approach is a set with NX and an expiry, plus a unique value so only the owner can delete it, and a Lua script to make check and delete atomic. The problems are real though. If your task runs longer than the expiry, another client grabs the lock while you are still running, so you need a renewal thread or fencing tokens. A single Redis instance has no failover safety, which is exactly why fencing tokens exist. A database unique index or a Zookeeper ephemeral node is simpler and sometimes more correct. In practice I prefer to avoid the lock entirely with optimistic updates or a queue. The key point is that a lock is a coordination tax you pay on every call.",
+    "cn": "分布式锁用来协调那些除了 Redis 或数据库之外什么都不共享的进程,你需要它是因为 synchronized 块只在单个 JVM 内有效。用 Redis 时,标准做法是 set 加 NX 和过期时间,同时写入一个唯一值,保证只有持有者能删除,并用 Lua 脚本让「检查再删除」变成原子操作。但问题也是真实的。如果你的任务执行时间超过了过期时间,另一个客户端就会在你还在跑的时候抢到锁,所以你需要续期线程或者 fencing token。单实例 Redis 没有故障转移安全性,这正是 fencing token 存在的意义。数据库唯一索引或者 Zookeeper 临时节点更简单,有时也更正确。实践中我更倾向用乐观更新或者队列彻底绕开锁。关键在于,锁是你在每次调用上都要付的协调税。",
+    "keywords": ["redis", "setnx", "fencing-token", "renewal", "atomic"]
+  },
+  {
+    "concept": "Rate Limiting Algorithms",
+    "stack": "backend",
+    "seconds": 55,
+    "en": "Rate limiting protects a service from bursts it cannot absorb, and the choice is mostly about traffic shape versus simplicity. A fixed window counter is trivial but lets double the rate through at the boundary, because a burst at 11:59 and another at 12:00 both pass. A sliding window, either log-based or with sub-buckets, smooths that out. Token bucket is my default: tokens refill at a steady rate, the bucket holds a burst allowance, and a request either takes a token or gets rejected. Leaky bucket is the mirror image, it smooths output at a constant rate. For a cluster you need shared state in Redis, usually a Lua script so check and decrement are atomic, and the trade-off is extra latency on every call. I care because a limit without a good rejection response just moves the outage to my clients.",
+    "cn": "限流保护服务免受它消化不了的突发流量冲击,选择算法基本就是在流量形状和实现简单之间权衡。固定窗口计数器最简单,但会在边界放过两倍的量,因为 11:59 的突发和 12:00 的突发都能通过。滑动窗口,无论是日志式还是分桶式,都能把这个尖峰抹平。令牌桶是我的默认选择:令牌以固定速率补充,桶里留着一定突发余量,请求要么拿到令牌要么被拒绝。漏桶正好相反,它以恒定速率平滑输出。集群场景下你需要把状态放到 Redis 里,通常用 Lua 脚本保证检查和扣减是原子的,代价是每次调用都多一次网络往返。我关心这个,因为只有限流而没有像样的拒绝响应,等于把故障转移给了我的调用方。",
+    "keywords": ["token-bucket", "leaky-bucket", "sliding-window", "quota", "redis"]
+  },
+  {
+    "concept": "Circuit Breaker and Degradation",
+    "stack": "backend",
+    "seconds": 55,
+    "en": "A circuit breaker sits in front of a flaky downstream call and stops you from hammering something that is already broken. It has three states. Closed means traffic flows and failures are counted; once the failure rate crosses a threshold it trips to Open, where calls fail fast without touching the network at all, which gives the dependency room to recover. After a wait it goes Half-Open and lets a few probe requests through; if they succeed it closes, otherwise it opens again. Degradation is the second half of the story: when you are open you need a fallback, a cached value, a default, or a reduced feature, otherwise failing fast is just failing. The trade-off is tuning thresholds and deciding what stale data you can tolerate. I care because without a breaker, one slow dependency thread-starves my whole service.",
+    "cn": "熔断器位于对不稳定下游调用的前面,阻止你继续猛砸一个已经坏掉的服务。它有三个状态。Closed 表示流量正常通过并统计失败;一旦失败率跨过阈值就跳到 Open,这个状态下调用直接快速失败,完全不碰网络,从而给被依赖方留出恢复空间。等待一段时间之后进入 Half-Open,放少量探测请求过去;成功就关闭,失败就再次打开。降级是故事的另一半:处于打开状态时你需要一个兜底方案,缓存值、默认值或者降级功能,否则快速失败就只是失败而已。权衡在于阈值怎么调,以及你能容忍多旧的数据。我关心这个,因为没有熔断器,一个慢依赖就会把我的整个服务的线程耗尽。",
+    "keywords": ["circuit-breaker", "half-open", "fallback", "threshold", "timeout"]
+  },
+  {
+    "concept": "Cache Penetration Breakdown Avalanche",
+    "stack": "backend",
+    "seconds": 55,
+    "en": "Three cache failures get mixed up all the time. Penetration is when someone queries a key that exists in neither cache nor database, so every request hits the DB; you fix it with a bloom filter or by caching a short-lived null. Breakdown is when one hot key expires and a thundering herd rebuilds it at once; a mutex or a logical expiry with a single refresh solves that. Avalanche is when a whole batch of keys expires together, or the cache node itself dies, and the database takes the full load and falls over. The fixes there are randomized TTLs, a multi-level cache, and graceful degradation. The trade-off is always staleness versus load. The key point is that expiry is a design decision, not a default. I care because the database is usually the one component I cannot scale quickly.",
+    "cn": "三种缓存故障总是被人搞混。穿透是指有人查询一个缓存和数据库里都不存在的 key,于是每个请求都会打到数据库;解决办法是布隆过滤器,或者把空值也短暂缓存起来。击穿是指某个热点 key 过期,一瞬间大量请求同时去重建它;用互斥锁或者逻辑过期加单线程刷新就能解决。雪崩是指一大批 key 同时过期,或者缓存节点本身挂了,数据库承受全部流量然后被打垮。对应的办法是给 TTL 加随机值、做多级缓存、以及优雅降级。权衡永远在数据的新鲜度和后端负载之间。关键在于过期时间是设计决策,而不是默认值。我关心这个,因为数据库通常是我唯一没法快速扩容的组件。",
+    "keywords": ["penetration", "breakdown", "avalanche", "bloom-filter", "ttl"]
+  },
+  {
+    "concept": "Database Sharding",
+    "stack": "backend",
+    "seconds": 55,
+    "en": "Sharding splits one logical table across many databases or tables when a single node runs out of write capacity, storage, or connections. You pick a shard key, usually tenant or user id, and route with a hash or a range. Hash spreads load evenly but makes range queries painful; range keeps ordering but creates a hot spot on the newest shard. Then two hard problems appear. Queries without the shard key must fan out and merge, which gets slow fast, and joins or transactions across shards either do not work or need an application-level saga. Rebalancing is the other one, which is why consistent hashing or a mapping table beats simple modulo. I care because sharding is irreversible in practice: you can add an index later, but re-sharding a live system is a whole project.",
+    "cn": "分库分表是在单节点写容量、存储或连接数不够时,把一张逻辑表拆到多个库或多个表里。你要选一个分片键,通常是租户 id 或用户 id,然后用哈希或者范围来路由。哈希分布均匀但范围查询很痛苦;范围保序却会在最新的分片上形成热点。接下来会出现两个难题。不带分片键的查询必须扇出再合并,很快就变慢;而跨分片的 join 或事务要么根本不可用,要么只能在应用层用 saga 实现。另一个难题是再平衡,这正是为什么一致性哈希或者映射表比简单取模更好。我关心这个,因为分库分表在实践中几乎不可逆:索引可以后加,但给一个线上系统重新分片是一个完整的项目。",
+    "keywords": ["shard-key", "hash", "range", "fan-out", "rebalance"]
+  },
+  {
+    "concept": "CAP Theorem",
+    "stack": "system-design",
+    "seconds": 55,
+    "en": "CAP says that when the network partitions, a distributed store must choose between consistency and availability; you cannot have both. Consistency here means every read sees the latest write, and availability means every request to a live node gets a response. In practice partition tolerance is not a choice, networks do fail, so the real question is what you do during those minutes. A CP system refuses or errors on the minority side to avoid divergence, which is what you want for balances. An AP system keeps serving, possibly stale, and reconciles later, which is fine for feeds and carts. It is not even a whole-system property; different data in the same application can make different choices. The trade-off usually shows up as latency, because strong coordination costs round trips. I care because CAP is really a vocabulary for arguing about which failure mode is acceptable.",
+    "cn": "CAP 说的是,当网络发生分区时,一个分布式存储必须在一致性和可用性之间做出选择,不可能两者兼得。这里的一致性指每次读都能看到最新的写入,可用性指每个发往存活节点的请求都能得到响应。实践中分区容错性并不是一个选项,网络确实会坏,所以真正的问题是那几分钟里你怎么办。CP 系统会在少数派一侧拒绝请求或报错,避免数据分叉,这正是账户余额需要的。AP 系统继续提供服务,可能是旧数据,之后再对账,这对信息流和购物车是可接受的。它甚至不是整个系统的属性,同一个应用里不同的数据可以做出不同的选择。权衡通常表现为延迟,因为强协调需要额外的网络往返。我关心这个,因为 CAP 其实是一套用来讨论「哪种故障模式可以接受」的语言。",
+    "keywords": ["cap", "consistency", "availability", "partition", "trade-off"]
+  },
+  {
+    "concept": "Consistent Hashing",
+    "stack": "system-design",
+    "seconds": 50,
+    "en": "Consistent hashing solves one problem: with plain modulo hashing, adding or removing a cache node remaps almost every key, so your entire cache goes cold at once. Instead you hash both nodes and keys onto the same ring, and a key walks clockwise to the next node. Now removing a node only moves the keys that belonged to it, which is a fraction of the total. The second trick is virtual nodes: each physical node appears at many points on the ring, which balances load and stops one node from owning a huge arc. The trade-off is that lookup needs a bit more bookkeeping, and you still need replication for availability. It is used by distributed caches, Dynamo-style stores, and some load balancers. I care because it turns scaling the cache from an incident into a routine operation.",
+    "cn": "一致性哈希只解决一个问题:用普通取模哈希时,增减一个缓存节点会让几乎每一个 key 重新映射,于是整个缓存瞬间变冷。它的做法是把节点和 key 都哈希到同一个环上,key 沿顺时针方向走到下一个节点。这样一来,移除一个节点只会迁移原本属于它的那些 key,只占总量的一小部分。第二个技巧是虚拟节点:每个物理节点在环上出现很多次,这样既能均衡负载,也能避免某个节点独占一大段弧。代价是查找需要多维护一点结构,而且你仍然需要副本来保证可用性。分布式缓存、Dynamo 风格的存储以及一些负载均衡器都在用它。我关心这个,因为它把缓存扩容从一次事故变成了例行操作。",
+    "keywords": ["hash-ring", "virtual-node", "rebalance", "cache", "remap"]
+  },
+  {
+    "concept": "Load Balancing Strategies",
+    "stack": "system-design",
+    "seconds": 50,
+    "en": "A load balancer spreads traffic across instances, and the strategy matters more than the product. Round robin is fair but assumes every request costs the same, which is rarely true. Least connections is better when request times vary a lot. Consistent hashing routes the same key to the same instance, which buys you cache locality and session affinity. Then there is the layer question: L4 balances by connection and is fast, while L7 understands HTTP, so it can route by path, header, or cookie and terminate TLS. You also need real health checks, slow start for warmup, and retries with jitter so a failing instance does not get hammered. The trade-off is that affinity improves your hit rate but makes imbalance and failover uglier. I care because bad balancing shows up as one hot box and nine idle ones.",
+    "cn": "负载均衡器把流量分散到多个实例上,而策略比产品本身更重要。轮询很公平,但它假设每个请求成本相同,现实中很少成立。请求耗时差异大时,最少连接更合适。一致性哈希把同一个 key 路由到同一个实例,换来的是缓存局部性和会话亲和。然后是层级问题:四层按连接转发,速度快;七层能理解 HTTP,所以可以按路径、请求头或 cookie 路由,还能终结 TLS。你还需要真正的健康检查、预热用的慢启动,以及带抖动的重试,避免把故障实例继续打爆。权衡在于亲和性提高了命中率,却让不均衡和故障转移变得更难看。我关心这个,因为负载没做好,表现就是一台机器烫得要死、另外九台闲着。",
+    "keywords": ["round-robin", "least-connections", "affinity", "health-check", "l7"]
+  },
+  {
+    "concept": "CDN and Edge Cache",
+    "stack": "system-design",
+    "seconds": 55,
+    "en": "A CDN is a set of edge nodes that serve content from close to the user, so you cut latency and keep traffic off your origin. Static assets are the easy case: cache by URL with a long TTL and put a content hash in the filename, which makes invalidation trivial because a new deploy means a new URL. Dynamic content can also be cached at the edge with short TTLs, cache keys that include things like language or device, and stale-while-revalidate so users rarely wait. Invalidation is the hard part: purges are eventually consistent and cost money, so versioned URLs beat purging. The trade-off is hit ratio versus freshness. The key point is to decide per endpoint what staleness you can tolerate. I care because a good CDN configuration is the cheapest latency win I will ever get.",
+    "cn": "CDN 是一组边缘节点,从离用户更近的地方提供内容,这样既降低延迟,又让流量不打到源站。静态资源是最简单的情况:按 URL 缓存,TTL 设长一点,并在文件名里带上内容哈希,这样失效就变得毫无成本,因为一次新发布意味着一个新 URL。动态内容同样可以在边缘缓存,用较短的 TTL、把语言或设备等因素放进缓存键,再配合 stale-while-revalidate,让用户几乎不用等待。失效是难点:刷新是最终一致的,而且花钱,所以带版本号的地址比主动刷新更好。权衡在于命中率和新鲜度之间。关键是为每个接口单独决定能容忍多旧的数据。我关心这个,因为一套配好的 CDN 是我能拿到的最廉价的延迟优化。",
+    "keywords": ["edge", "ttl", "invalidation", "stale-while-revalidate", "origin"]
+  },
+  {
+    "concept": "Saga vs Two Phase Commit",
+    "stack": "system-design",
+    "seconds": 55,
+    "en": "Both patterns keep data consistent across services, and they sit at opposite ends. Two-phase commit has a coordinator: it asks every participant to prepare and lock, then commits or rolls back all of them. It gives strong consistency, but it is blocking and slow, and a coordinator crash can leave resources locked, so it suits a few reliable participants rather than a busy microservice chain. Saga replaces that with a sequence of local transactions, each with a compensating action. If step three fails, you run compensations for steps two and one. It is eventually consistent and far more scalable, but you must design compensation for every step, make retries idempotent, and accept that other services may read intermediate states. In practice I use sagas for long business flows and avoid 2PC entirely. I care because there is no such thing as free consistency.",
+    "cn": "这两种模式都是为了让跨服务的数据保持一致,而它们处在两个极端。两阶段提交有一个协调者:它先让所有参与者预提交并加锁,然后统一提交或回滚。它提供强一致性,但是阻塞且慢,而且协调者崩溃可能让资源一直锁着,所以它适合少数可靠的参与者,而不是繁忙的微服务链路。Saga 用一连串本地事务取代它,每一步都配一个补偿动作。如果第三步失败,就依次执行第二步和第一步的补偿。它是最终一致的,扩展性也强得多,但你必须为每一步设计补偿、让重试保持幂等,并接受其他服务可能读到中间状态。实践中我对长业务流程用 saga,完全不用 2PC。我关心这个,因为从来就没有免费的一致性。",
+    "keywords": ["saga", "2pc", "compensation", "coordinator", "eventual-consistency"]
+  },
+  {
+    "concept": "Short Link System Design",
+    "stack": "system-design",
+    "seconds": 55,
+    "en": "A URL shortener is a classic read-heavy design. You generate a short code, store the mapping to the long URL, and redirect with a 301 or a 302. The interesting choices are code generation and storage. Base62 encoding of a database id is simple but sequential, so people can guess; a random code or a hash with a uniqueness check avoids that. You can also pre-generate keys from a counter service. Reads dwarf writes by orders of magnitude, so a cache in front of the store is essential, ideally with hot links pre-warmed. Use 301 when you want browsers to cache the redirect permanently, and 302 when you need click analytics. Then add expiry, abuse checks, and rate limits. The trade-off is that 301 kills your analytics. I care because it forces almost every core trade-off: id generation, cache, and read amplification.",
+    "cn": "短链系统是一个典型的读多写少的设计。你生成一个短码,把它到长链接的映射存起来,然后用 301 或 302 做重定向。有意思的选择在短码生成和存储上。把数据库自增 id 做 base62 编码很简单,但结果是连续的,别人可以猜;随机短码或者哈希加唯一性校验可以避开这个问题。你也可以用计数器服务预先生成一批 key。读请求比写请求高出几个数量级,所以存储前面必须有缓存,最好还能预热热点链接。想让浏览器永久缓存重定向就用 301,需要统计点击数据就用 302。然后再加上过期时间、滥用检测和限流。权衡在于 301 会让你的统计分析全部失效。我关心这个,因为它几乎逼着你面对所有核心权衡:ID 生成、缓存和读放大。",
+    "keywords": ["short-url", "base62", "301", "redirect", "cache"]
+  },
+  {
+    "concept": "B+ Tree Index",
+    "stack": "db",
+    "seconds": 55,
+    "en": "A B+ tree is the index structure behind most relational databases, and it exists because disks are slow and trees must be shallow. It is a balanced, high-fanout tree: each node holds hundreds of keys, so three or four levels can index hundreds of millions of rows, which means three or four I/Os per lookup. Internal nodes only hold keys for navigation; every actual row pointer lives at the leaf level, and the leaves are linked together, which is why range scans are cheap and why ORDER BY can be satisfied by walking the list. Insert and delete keep the tree balanced through splits and merges, so it stays short. The trade-off is write cost, because every index must be updated on insert. I care because the leaf list explains why composite index column order matters so much.",
+    "cn": "B+ 树是大多数关系型数据库背后的索引结构,它存在的理由是磁盘很慢,而树必须很矮。它是一棵高扇出的平衡树:每个节点存放几百个 key,所以三到四层就能索引几亿行数据,也就是一次查找只要三到四次 I/O。内部节点只存用于导航的 key,真正指向行的指针全部在叶子层,而且叶子节点之间是链表相连的,这就是为什么范围扫描很便宜,也是为什么 ORDER BY 可以靠遍历这个链表完成。插入和删除通过分裂与合并维持树的平衡,让它一直保持矮胖。代价是写入成本,因为每次插入都要更新所有索引。我关心这个,因为叶子链表正好解释了为什么联合索引的列顺序如此重要。",
+    "keywords": ["b+tree", "fanout", "leaf", "range-scan", "composite-index"]
+  },
+  {
+    "concept": "Transaction Isolation Levels",
+    "stack": "db",
+    "seconds": 55,
+    "en": "Isolation levels trade correctness for concurrency by allowing or forbidding specific anomalies. Read Uncommitted lets you see another transaction's uncommitted writes, a dirty read. Read Committed, the default in Postgres, only shows committed data, but the same query can return different rows inside one transaction. Repeatable Read guarantees the rows you already read will not change, though new matching rows can still appear, which is the phantom problem. Serializable means the outcome equals some serial order, usually implemented with conflict detection and aborts. The key point is that these levels describe read phenomena, not which lock is taken; modern engines mostly use MVCC, so readers do not block writers. The trade-off is retry logic, because higher levels mean more aborts. I care because picking a level is really picking which bug I am willing to handle.",
+    "cn": "隔离级别通过允许或禁止特定的异常现象,在正确性和并发度之间做取舍。读未提交允许你看到另一个事务尚未提交的写入,也就是脏读。读已提交是 Postgres 的默认值,只展示已提交的数据,但同一个查询在一个事务内可能返回不同的行。可重复读保证你已经读到的那些行不会变化,但新插入的匹配行仍然可能出现,这就是幻读问题。串行化意味着结果等价于某种串行执行顺序,通常靠冲突检测和中止事务来实现。关键在于这些级别描述的是读现象,而不是加了哪种锁;现代引擎大多使用 MVCC,所以读不会阻塞写。代价是重试逻辑,因为级别越高,中止就越多。我关心这个,因为选择隔离级别其实是在选择我愿意处理哪种 bug。",
+    "keywords": ["isolation", "dirty-read", "phantom", "serializable", "mvcc"]
+  },
+  {
+    "concept": "MVCC",
+    "stack": "db",
+    "seconds": 55,
+    "en": "MVCC, multi-version concurrency control, is how modern databases get readers to not block writers. Instead of overwriting a row, an update writes a new version, and each version carries the transaction id that created it and the one that deleted it. A transaction takes a snapshot, then decides visibility by comparing those ids against the set of transactions that were active when it started. That is why you can read a stable view while someone else commits changes, and why a write still has to take a row lock and may wait or abort. Space is reclaimed later by vacuum or purge once no snapshot can possibly need the old version. The trade-off is table bloat and long-running transactions holding back cleanup. I care because MVCC explains both why a count can be cheap and why my table keeps growing.",
+    "cn": "MVCC,也就是多版本并发控制,是现代数据库让读不阻塞写的办法。更新一行时不是覆盖它,而是写入一个新版本,每个版本都带着创建它的事务 id 和删除它的事务 id。事务会先取一个快照,然后通过把这些 id 与它启动时活跃的事务集合做比较,来决定某个版本是否可见。这就是为什么你可以在别人提交修改的同时读到一个稳定的视图,也是为什么写操作仍然要拿行锁、可能需要等待或者被中止。旧版本占用的空间会在没有任何快照可能需要它时,由 vacuum 或 purge 回收。代价是表膨胀,以及长事务会拖住清理工作。我关心这个,因为 MVCC 既解释了为什么 count 有时很便宜,也解释了为什么我的表一直变大。",
+    "keywords": ["mvcc", "snapshot", "version", "visibility", "vacuum"]
+  },
+  {
+    "concept": "Slow Query Optimization",
+    "stack": "db",
+    "seconds": 55,
+    "en": "When a query is slow I follow a fixed order rather than guessing. First get the real execution plan with EXPLAIN ANALYZE, and compare estimated versus actual row counts, because a bad estimate usually means stale statistics or a skewed distribution. Then look at access type: a full scan of a big table, or a join that explodes row counts. Next check whether an index is actually usable: composite column order, the leftmost prefix rule, and any function or implicit cast on the indexed column that silently kills it. Then reduce data early, add a covering index, or paginate with keyset instead of OFFSET. Last resort is changing the schema: denormalize, precompute, or archive. The trade-off is that every index speeds reads and slows writes. I care because the plan never lies, while my intuition does.",
+    "cn": "当一个查询很慢时,我会按固定顺序排查,而不是靠猜。先用 EXPLAIN ANALYZE 拿到真实执行计划,并对比预估行数和实际行数,因为预估不准通常意味着统计信息过期或者数据分布倾斜。然后看访问类型:大表上的全表扫描,或者行数被放大的 join。接着检查索引是否真的可用:联合索引的列顺序、最左前缀原则,以及索引列上是否有函数或隐式类型转换悄悄让索引失效。然后尽早减少数据量、加覆盖索引,或者用 keyset 分页替代 OFFSET。最后才是改表结构:反范式化、预计算或者归档历史数据。权衡在于每个索引都加快读、拖慢写。我关心这个,因为执行计划从不说谎,而我的直觉会说谎。",
+    "keywords": ["explain", "execution-plan", "covering-index", "leftmost-prefix", "keyset"]
+  },
+  {
+    "concept": "Database Connection Pool",
+    "stack": "db",
+    "seconds": 50,
+    "en": "Opening a database connection is expensive: TCP, TLS, authentication, session setup. A pool keeps a set of ready connections, so a request borrows one, uses it, and returns it instead of paying that cost every time. The numbers that matter are minimum and maximum size, connection timeout, idle timeout, and a validation query. Sizing is the counterintuitive part: more connections is not better, because the database has finite cores and every active query contends for locks and cache, so a small pool often beats a huge one. You also want leak detection, because a forgotten connection silently starves everyone, which is why I always close in a finally or use try-with-resources. The trade-off is waiting versus overloading the database. I care because pool misconfiguration looks exactly like a slow database.",
+    "cn": "建立一个数据库连接是很贵的:TCP、TLS、认证、会话初始化。连接池维护一批现成的连接,请求借走一个、用完再归还,而不是每次都付一遍这个成本。需要关注的参数有最小和最大连接数、获取连接超时时间、空闲超时,以及校验查询。容量规划是反直觉的部分:连接不是越多越好,因为数据库的核数有限,每个活跃查询都在争抢锁和缓存,所以一个小的连接池通常胜过很大的连接池。你还需要泄漏检测,因为一个被忘记归还的连接会静默地把所有人都饿死,这也是为什么我总是在 finally 里关闭,或者用 try-with-resources。权衡在于等待与压垮数据库之间。我关心这个,因为连接池配错,看起来跟数据库慢一模一样。",
+    "keywords": ["pool", "max-size", "leak", "timeout", "connection"]
+  },
+  {
+    "concept": "Virtual DOM and Diff",
+    "stack": "frontend",
+    "seconds": 50,
+    "en": "The virtual DOM is a plain JavaScript description of the UI, so a render produces a tree of objects instead of touching the real DOM, which is slow. When state changes, the framework builds a new tree, diffs it against the previous one, and applies only the minimal set of real DOM mutations. The diff is heuristic: compare by type, and if the type changed, replace the whole subtree; otherwise compare props and recurse. For lists you supply a stable key, so the algorithm can detect moves instead of rewriting every child, and a bad key like an array index silently destroys that optimization. The trade-off is that diffing and allocation cost something, which is why newer frameworks compile much of it away. I care because keys and unnecessary re-renders are the two things I actually debug day to day.",
+    "cn": "虚拟 DOM 就是用普通 JavaScript 对象描述 UI,所以一次渲染产出的是一棵对象树,而不是去操作那个很慢的真实 DOM。当状态变化时,框架会构建一棵新树,与旧树做 diff,然后只把最小的那组真实 DOM 变更应用上去。diff 是启发式的:先比较类型,类型变了就整棵子树替换;否则比较 props 然后递归。对于列表,你要提供稳定的 key,这样算法才能识别出元素只是移动了,而不是重写每个子节点;而用数组下标当 key 会静默地毁掉这个优化。代价是 diff 和对象分配本身也有开销,这正是新一些的框架把这些编译掉的原因。我关心这个,因为 key 和多余的重渲染是我日常真正在调试的两件事。",
+    "keywords": ["virtual-dom", "diff", "key", "reconciliation", "re-render"]
+  },
+  {
+    "concept": "Browser Event Loop",
+    "stack": "frontend",
+    "seconds": 55,
+    "en": "The event loop is why JavaScript is single-threaded but still non-blocking. There is a call stack, and tasks from a queue run one at a time. A setTimeout callback, a click handler, and a network response all become macrotasks. Between macrotasks the engine drains the microtask queue completely, and that is where promise callbacks live, so then always runs before the next timer. Rendering happens between tasks when the browser decides there is a frame. This explains two classic bugs: a long synchronous loop blocks everything, so the page freezes and rendering never happens, and microtask recursion starves the loop just as badly. In practice I split heavy work into chunks, use requestAnimationFrame for visual updates, and never assume setTimeout zero runs immediately. I care because most why is my UI janky questions are really about starving this loop.",
+    "cn": "事件循环正是 JavaScript 单线程却能非阻塞的原因。有一个调用栈,任务队列里的任务一次只执行一个。setTimeout 回调、点击处理器、网络响应都会变成宏任务。在宏任务之间,引擎会把微任务队列彻底清空,而 promise 回调就在微任务里,所以 then 永远先于下一个定时器执行。渲染发生在任务之间,由浏览器判断是否需要出一帧。这解释了两个经典问题:一个长同步循环会阻塞一切,页面卡死而且渲染永远不会发生;而微任务的递归同样会把循环饿死。实践中我把重活切成小块,视觉更新用 requestAnimationFrame,并且绝不假设 setTimeout 0 会立刻执行。我关心这个,因为大多数「我的界面为什么卡」的问题,本质上都是在饿死这个循环。",
+    "keywords": ["event-loop", "macrotask", "microtask", "promise", "render"]
+  },
+  {
+    "concept": "CORS",
+    "stack": "frontend",
+    "seconds": 55,
+    "en": "CORS is a browser security rule, not a server one, and that detail matters. Without it, a script on one origin could read responses from another origin using the user's cookies. So for cross-origin requests the browser checks response headers like Access-Control-Allow-Origin, and only hands the response to your JavaScript if they allow it. Simple requests go straight out; anything with a custom header, a PUT, or a JSON content type triggers a preflight OPTIONS that must also be answered with the allowed methods and headers. Credentials are stricter: you need Allow-Credentials true and a specific origin, never a wildcard. The thing people get wrong is that the server already processed the request before the response was blocked, so CORS does not protect your API, it protects the user. I care because it wastes half a day of debugging every time.",
+    "cn": "CORS 是一条浏览器安全规则,而不是服务端规则,这个细节很重要。没有它,一个源上的脚本就能带着用户的 cookie 去读取另一个源的响应。所以对于跨域请求,浏览器会检查响应头里的 Access-Control-Allow-Origin 之类的字段,只有对方允许,才会把响应交给你的 JavaScript。简单请求直接发出去;凡是带自定义头、用 PUT 或者 JSON 内容类型的,都会先触发一个 OPTIONS 预检,而预检也必须回答允许的方法和请求头。带上凭证时限制更严:需要 Allow-Credentials 为 true 并且指定具体的源,绝不能用通配符。人们最容易搞错的一点是,服务端其实已经处理了这个请求,只是响应被拦下了,所以 CORS 保护的不是你的 API,而是用户。我关心这个,因为它每次都要浪费我半天调试时间。",
+    "keywords": ["cors", "origin", "preflight", "credentials", "options"]
+  },
+  {
+    "concept": "Python GIL",
+    "stack": "python",
+    "seconds": 50,
+    "en": "The GIL is a mutex inside CPython that lets only one thread execute Python bytecode at a time. It exists to make memory management and C extensions safe without fine-grained locking everywhere. So what people say is true: threads do not give you CPU parallelism in CPython. But it is not always the bottleneck, because the lock is released during I/O and inside many C extensions, so threaded I/O works fine and libraries like NumPy release it for heavy math. That leads to the practical rule: for I/O-bound work use threads or asyncio, and for CPU-bound work use multiprocessing or push the hot loop into native code. Removing the GIL has been the hard part for years because single-threaded performance still matters. I care because choosing the wrong concurrency model silently wastes every core I paid for.",
+    "cn": "GIL 是 CPython 内部的一把互斥锁,它让同一时刻只有一个线程能执行 Python 字节码。它存在的意义是让内存管理和 C 扩展变得安全,而不用到处加细粒度锁。所以大家说的是对的:在 CPython 里线程并不能带来 CPU 并行。但它并不总是瓶颈,因为在 I/O 期间以及很多 C 扩展内部,这把锁是会被释放的,所以多线程 I/O 完全没问题,而 NumPy 这类库在做重计算时也会释放它。由此得到一条实践规则:I/O 密集型用线程或 asyncio,CPU 密集型用多进程,或者把热点循环下推到原生代码。多年来移除 GIL 一直很困难,因为单线程性能仍然是重要的。我关心这个,因为选错并发模型会静默地浪费掉我花钱买的每一个核。",
+    "keywords": ["gil", "cpython", "bytecode", "multiprocessing", "asyncio"]
+  },
+  {
+    "concept": "defer panic recover",
+    "stack": "go",
+    "seconds": 50,
+    "en": "In Go, defer schedules a function to run when the surrounding function returns, and deferred calls run in last-in-first-out order. It is the standard cleanup idiom: you open a file and immediately defer close, so the cleanup sits right next to the acquisition and still runs on every return path, including the error paths. Arguments are evaluated at the defer statement, not when it executes, which is the classic gotcha. panic stops normal execution and unwinds the stack, running deferred functions on the way up; if nothing recovers, the program crashes with a stack trace. recover only works when it is called directly inside a deferred function, and it stops the panic and returns the value passed to it. The trade-off is that panics are for genuinely unrecoverable bugs, not ordinary error handling, where you return an error. I care because defer is what makes Go error paths readable.",
+    "cn": "在 Go 里,defer 会把一个函数安排在外层函数返回时执行,并且多个 defer 调用以后进先出的顺序执行。它是标准的清理范式:你打开一个文件,立刻 defer 关闭它,这样清理代码就紧挨着获取代码,而且在任何返回路径上都会执行,包括出错的分支。参数是在 defer 语句处求值的,而不是在实际执行时,这是最经典的坑。panic 会中止正常执行并展开栈,沿途执行 defer 的函数;如果没有人 recover,程序就带着堆栈信息崩溃。recover 只有在被 defer 的函数里直接调用才有效,它会终止 panic 并返回传给 panic 的值。权衡在于 panic 只用于真正不可恢复的 bug,而不是普通的错误处理,后者应该返回 error。我关心这个,因为 defer 正是让 Go 的错误路径变得可读的东西。",
+    "keywords": ["defer", "panic", "recover", "stack-unwinding", "cleanup"]
+  },
+  {
+    "concept": "Docker Image Layers",
+    "stack": "devops",
+    "seconds": 50,
+    "en": "A Docker image is a stack of read-only layers, one per instruction in the Dockerfile, plus a thin writable container layer on top. Layers are content-addressed and cached, so a rebuild skips unchanged instructions and a push only uploads missing layers, which is why the order of instructions matters so much. Put stable things first, like the base image and dependency installation, and put frequently changing source code last, so edits do not invalidate the expensive dependency cache. You also want a small base image, a proper dockerignore so your local junk does not end up in the image, and multi-stage builds to throw the compiler away. The trade-off is that every RUN creates a layer, so chaining commands keeps the image small while separate ones improve cache hits. I care because image size is directly deploy time.",
+    "cn": "Docker 镜像是一堆只读层的堆叠,Dockerfile 里每条指令一层,最上面再加一层很薄的可写容器层。层是内容寻址并且会被缓存的,所以重新构建时会跳过未变化的指令,推送时只上传缺失的层,这就是为什么指令顺序如此重要。把稳定的东西放前面,比如基础镜像和依赖安装,把频繁变动的源码放最后,这样代码改动就不会让昂贵的依赖缓存失效。你还应该选一个小的基础镜像、配好 dockerignore 以免本地垃圾被打包进去,并且用多阶段构建把编译器扔掉。权衡在于每条 RUN 都会产生一层,所以把命令串起来能让镜像更小,而拆开则能提高缓存命中率。我关心这个,因为镜像大小直接等于部署时间。",
+    "keywords": ["layer", "cache", "dockerfile", "multi-stage", "dockerignore"]
+  },
+  {
+    "concept": "Kubernetes Pod Scheduling",
+    "stack": "devops",
+    "seconds": 55,
+    "en": "Scheduling is the control plane deciding which node a pod lands on. The flow is filtering then scoring: the scheduler drops nodes that cannot satisfy the pod, because of insufficient allocatable CPU or memory, a node selector or affinity rule that does not match, a taint the pod does not tolerate, or a volume that cannot attach. Then it scores the survivors, preferring balanced resource usage and spreading replicas across zones, and binds the best one. What actually changes behavior in practice is requests and limits, because requests drive scheduling while limits are only enforced at runtime. Pod priority and preemption decide who gets evicted when the cluster is full. The trade-off is packing tightly to save money versus leaving headroom for bursts. I care because most pending pods are just requests that were set too high.",
+    "cn": "调度就是控制平面决定一个 Pod 落在哪个节点上。流程是先过滤再打分:调度器先剔除那些无法满足 Pod 的节点,原因可能是可分配 CPU 或内存不足、node selector 或亲和性规则不匹配、节点上有 Pod 不容忍的污点,或者卷无法挂载。然后它给剩下的节点打分,倾向于资源使用均衡以及把副本分散到多个可用区,最后绑定得分最高的那个。实践中真正影响行为的是 requests 和 limits,因为 requests 决定调度,而 limits 只在运行时才生效。Pod 优先级和抢占决定了集群满的时候谁被驱逐。权衡在于是紧密装箱省钱,还是留出余量应对突发。我关心这个,因为大多数 Pending 的 Pod 只是 requests 设得太高了。",
+    "keywords": ["scheduler", "requests", "limits", "affinity", "taint"]
+  }
+]
+

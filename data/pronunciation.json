@@ -1,0 +1,338 @@
+[
+  {
+    "term": "SQL",
+    "ipa": "/ˈsiːkwəl/",
+    "common": "逐个字母念成 S-Q-L",
+    "correct": "读作 sequel，一个词带过",
+    "tipCn": "sequel 与逐字母两种都常见，团队内统一即可。",
+    "ex": "We tuned the SQL query and cut the response time in half."
+  },
+  {
+    "term": "NoSQL",
+    "ipa": "/ˌnoʊ ˈsiːkwəl/",
+    "common": "后半部念成 S-Q-L",
+    "correct": "读作 no sequel",
+    "tipCn": "跟 SQL 保持同一种读法，别混着用。",
+    "ex": "We moved the reporting data to a NoSQL store because the schema kept changing."
+  },
+  {
+    "term": "API",
+    "ipa": "/ˌeɪ piː ˈaɪ/",
+    "common": "连读成 阿皮 一个词",
+    "correct": "按字母 A-P-I 分读，重音在 I",
+    "tipCn": "三个字母要分开，重音落在最后那个 I 上。",
+    "ex": "Our public API returns paginated JSON by default."
+  },
+  {
+    "term": "URL",
+    "ipa": "/ˌjuː ɑːr ˈel/",
+    "common": "含混地念成一整个词",
+    "correct": "按字母 U-R-L 分读",
+    "tipCn": "R 要卷舌读到 /ɑːr/，别吞掉。",
+    "ex": "Please paste the URL of the failing request into the ticket."
+  },
+  {
+    "term": "GUI",
+    "ipa": "/ˈɡuːi/",
+    "common": "念成 G-U-I 三个字母",
+    "correct": "读作 gooey，一个词",
+    "tipCn": "同类还有 SQL、JSON，缩写早已变成一个词。",
+    "ex": "The GUI layer calls the same REST endpoints that the CLI uses."
+  },
+  {
+    "term": "JSON",
+    "ipa": "/ˈdʒeɪsən/",
+    "common": "读成 J-son 或 杰森",
+    "correct": "读作 JAY-son，重音在前",
+    "tipCn": "和人名 Jason 同音，重音在第一个音节。",
+    "ex": "Serialize the response body as JSON before sending it out."
+  },
+  {
+    "term": "YAML",
+    "ipa": "/ˈjæməl/",
+    "common": "念成 亚摩 或 Y-A-M-L",
+    "correct": "读作 YAH-mul，重音在前",
+    "tipCn": "后半部分弱读成 /məl/，别读出完整的摩尔。",
+    "ex": "All deployment values live in a single YAML file."
+  },
+  {
+    "term": "JWT",
+    "ipa": "/ˈdʒɒt/",
+    "common": "逐个字母念 J-W-T",
+    "correct": "读作 jot，一个短音节",
+    "tipCn": "口语里几乎都说 jot，正式场合可读字母。",
+    "ex": "The gateway validates the JWT before forwarding the request upstream."
+  },
+  {
+    "term": "OAuth",
+    "ipa": "/ˈoʊ ɔːθ/",
+    "common": "auth 部分读成 奥斯",
+    "correct": "读作 OH-awth，两段分开",
+    "tipCn": "th 要轻咬舌，别读成 /s/ 或 /z/。",
+    "ex": "Users sign in through OAuth instead of keeping a local password."
+  },
+  {
+    "term": "gRPC",
+    "ipa": "/ˌdʒiː ɑːr piː ˈsiː/",
+    "common": "g 读成中文的哥",
+    "correct": "读作 G-R-P-C，g 读 /dʒiː/",
+    "tipCn": "后面的 RPC 与 API 一样逐字母读，重音在 C。",
+    "ex": "Our internal services talk to each other over gRPC."
+  },
+  {
+    "term": "ASCII",
+    "ipa": "/ˈæski/",
+    "common": "重音后移读成 as-KEY",
+    "correct": "读作 ASS-kee，重音在前",
+    "tipCn": "第一音节重读，尾音 /i/ 短促收住。",
+    "ex": "Keep the config file in plain ASCII to avoid encoding issues."
+  },
+  {
+    "term": "CRUD",
+    "ipa": "/krʌd/",
+    "common": "逐字母念 C-R-U-D",
+    "correct": "读作 crud，一个音节",
+    "tipCn": "取自增删改查四个词的首字母，已成词。",
+    "ex": "This service only exposes basic CRUD endpoints for now."
+  },
+  {
+    "term": "IDE",
+    "ipa": "/ˌaɪ diː ˈiː/",
+    "common": "念成 aid 一个词",
+    "correct": "按字母 I-D-E 分读",
+    "tipCn": "重音落在最后的 E，别和 aid 混淆。",
+    "ex": "My IDE flags the unused import while I am still typing."
+  },
+  {
+    "term": "CLI",
+    "ipa": "/ˌsiː el ˈaɪ/",
+    "common": "念成 clee 一个词",
+    "correct": "按字母 C-L-I 分读",
+    "tipCn": "逐字母读最稳妥，别读成单音节的 clee。",
+    "ex": "We shipped a CLI so teams can script the deployment themselves."
+  },
+  {
+    "term": "AWS",
+    "ipa": "/ˌeɪ ˈdʌbəljuː ˈes/",
+    "common": "W 读成打不溜",
+    "correct": "逐字母读，W 读 double-u",
+    "tipCn": "W 是 /ˈdʌbəljuː/，尾音要带出来。",
+    "ex": "Our staging cluster runs entirely on AWS."
+  },
+  {
+    "term": "UTF-8",
+    "ipa": "/ˌjuː tiː ˈef ˈeɪt/",
+    "common": "末尾的 8 读成中文八",
+    "correct": "读作 U-T-F eight",
+    "tipCn": "数字读英文 eight，字母部分一个一个念。",
+    "ex": "Make sure the source file is saved as UTF-8."
+  },
+  {
+    "term": "cache",
+    "ipa": "/kæʃ/",
+    "common": "按拼写读成 ketch 或 卡池",
+    "correct": "读作 cash，一个音节",
+    "tipCn": "cache 与 cash 完全同音，靠上下文区分。",
+    "ex": "Hot keys stay in cache so we rarely hit the database."
+  },
+  {
+    "term": "daemon",
+    "ipa": "/ˈdiːmən/",
+    "common": "读成 达蒙 或 da-mon",
+    "correct": "读作 DEE-mun，重音在前",
+    "tipCn": "运维口语普遍说 DEE-mun，别读出两个重音。",
+    "ex": "The daemon restarts itself a few seconds after a crash."
+  },
+  {
+    "term": "queue",
+    "ipa": "/kjuː/",
+    "common": "尾巴拖出多余的元音",
+    "correct": "读作 Q，一个音节收住",
+    "tipCn": "后面 ue 全不发音，直接收在 /kjuː/。",
+    "ex": "Each message waits in the queue until a worker picks it up."
+  },
+  {
+    "term": "regex",
+    "ipa": "/ˈredʒeks/",
+    "common": "重音后移读成 re-GEKS",
+    "correct": "读作 REG-ex，重音在前",
+    "tipCn": "几种读法都存在，REG-ex 最不容易被挑。",
+    "ex": "This regex matches any six-digit verification code."
+  },
+  {
+    "term": "algorithm",
+    "ipa": "/ˈælɡərɪðəm/",
+    "common": "中间的 th 读成 s",
+    "correct": "读作 AL-go-ri-thm，重音在首",
+    "tipCn": "th 轻咬舌；全词四个音节，别拖长。",
+    "ex": "Switching to binary search brought the algorithm down to O(log n)."
+  },
+  {
+    "term": "asynchronous",
+    "ipa": "/eɪˈsɪŋkrənəs/",
+    "common": "重音放在开头的 A 上",
+    "correct": "读作 ay-SINK-ruh-nus，重音在第二",
+    "tipCn": "重点落在 SINK，结尾 -nous 弱读。",
+    "ex": "The report is generated by an asynchronous background job."
+  },
+  {
+    "term": "synchronous",
+    "ipa": "/ˈsɪŋkrənəs/",
+    "common": "读成 sin-CROW-nus",
+    "correct": "读作 SINK-ruh-nus，重音在首",
+    "tipCn": "与 asynchronous 的重音位置刚好相反。",
+    "ex": "That synchronous call blocks the request thread until it returns."
+  },
+  {
+    "term": "integer",
+    "ipa": "/ˈɪntɪdʒər/",
+    "common": "末音拖成 哥儿",
+    "correct": "读作 IN-ti-jer，重音在首",
+    "tipCn": "别和 integrate 混读，尾音是 /dʒər/。",
+    "ex": "The API only accepts an integer offset, not a string."
+  },
+  {
+    "term": "architecture",
+    "ipa": "/ˈɑːrkɪtektʃər/",
+    "common": "重音放在 TECT 上",
+    "correct": "读作 AR-ki-tek-cher，重音在首",
+    "tipCn": "ch 读 /tʃ/，结尾弱读成 /tʃər/。",
+    "ex": "We moved to an event-driven architecture last quarter."
+  },
+  {
+    "term": "parameter",
+    "ipa": "/pəˈræmɪtər/",
+    "common": "重音放在第一音节 PA-",
+    "correct": "读作 puh-RAM-i-ter，重音在第二",
+    "tipCn": "别和 perimeter 混读，两者重音都在第二音节。",
+    "ex": "Add a timeout parameter so callers can tune the behaviour."
+  },
+  {
+    "term": "variable",
+    "ipa": "/ˈveriəbl/",
+    "common": "读成 var-I-able",
+    "correct": "读作 VAIR-ee-uh-bl，重音在首",
+    "tipCn": "词尾读 /əbl/，别读出两个音节的 able。",
+    "ex": "Every variable in this scope is tied to the current request."
+  },
+  {
+    "term": "compiler",
+    "ipa": "/kəmˈpaɪlər/",
+    "common": "读成 COM-pi-ler",
+    "correct": "读作 kum-PIE-ler，重音在第二",
+    "tipCn": "与 compile 一样，重音都落在 PIE 上。",
+    "ex": "The compiler caught the unused variable before we even ran it."
+  },
+  {
+    "term": "suite",
+    "ipa": "/swiːt/",
+    "common": "念成 苏伊特 三个音节",
+    "correct": "读作 sweet，与 sweet 同音",
+    "tipCn": "test suite 里的 suite 别念成 suit。",
+    "ex": "The full test suite finishes in about ninety seconds."
+  },
+  {
+    "term": "slash",
+    "ipa": "/slæʃ/",
+    "common": "元音含混读成 shlash",
+    "correct": "读作 slash，元音同 cat",
+    "tipCn": "a 读 /æ/，尾音 /ʃ/ 干净收住。",
+    "ex": "The URL uses a forward slash to separate each path segment."
+  },
+  {
+    "term": "backslash",
+    "ipa": "/ˈbækslæʃ/",
+    "common": "直接用中文说斜杠",
+    "correct": "读作 BACK-slash，重音在前",
+    "tipCn": "与 slash 的 / 相反，说英文时别含糊带过。",
+    "ex": "Escape each quote with a backslash inside the string literal."
+  },
+  {
+    "term": "iterate",
+    "ipa": "/ˈɪtəreɪt/",
+    "common": "重音后移读成 I-te-RATE",
+    "correct": "读作 IT-uh-rate，重音在首",
+    "tipCn": "只有 reiterate 才把重音放到 rate 上。",
+    "ex": "We iterate over the result set and build an id-to-name map."
+  },
+  {
+    "term": "immutable",
+    "ipa": "/ɪˈmjuːtəbl/",
+    "common": "重音放在第一音节 IM-",
+    "correct": "读作 im-MYOO-tuh-bl，重音在第二",
+    "tipCn": "mutable 重音在首，加 im- 后反而后移。",
+    "ex": "Every immutable object here is safe to share between threads."
+  },
+  {
+    "term": "naive",
+    "ipa": "/naɪˈiːv/",
+    "common": "按拼音念成奈夫",
+    "correct": "读作 ny-EEV，两个音节",
+    "tipCn": "中间有轻微停顿，别读成单音节。",
+    "ex": "The naive approach works fine until the dataset grows."
+  },
+  {
+    "term": "facade",
+    "ipa": "/fəˈsɑːd/",
+    "common": "把 c 读成 /k/",
+    "correct": "读作 fuh-SAH D，重音在后",
+    "tipCn": "源自法语，c 读 /s/，尾音浊化即可。",
+    "ex": "We hid the legacy payment API behind a thin facade."
+  },
+  {
+    "term": "latency",
+    "ipa": "/ˈleɪtənsi/",
+    "common": "重音后移读成 la-TEN-cy",
+    "correct": "读作 LAY-ten-see，重音在首",
+    "tipCn": "第一个 a 读长音 /eɪ/，别读成短音。",
+    "ex": "Caching that lookup dropped our p99 latency to twelve milliseconds."
+  },
+  {
+    "term": "heuristic",
+    "ipa": "/hjʊˈrɪstɪk/",
+    "common": "开头的 h 直接丢掉",
+    "correct": "读作 hyoo-RIS-tik，重音在第二",
+    "tipCn": "hj 要连读成 /hjʊ/，不能只读一个 h。",
+    "ex": "We used a simple heuristic to pick the retry interval."
+  },
+  {
+    "term": "throughput",
+    "ipa": "/ˈθruːpʊt/",
+    "common": "拆成 through put 两个词",
+    "correct": "连读 THROO-put，重音在首",
+    "tipCn": "th 轻咬舌，别读成 s 或 f。",
+    "ex": "Batching writes nearly doubled the throughput of the pipeline."
+  },
+  {
+    "term": "record",
+    "ipa": "/ˈrekərd/ (名) /rɪˈkɔːrd/ (动)",
+    "common": "名词也读成 re-CORD",
+    "correct": "名词 REK-erd，动词 re-KORD",
+    "tipCn": "名词重音在前，动词重音在后。",
+    "ex": "Each record will record the latency of that single request."
+  },
+  {
+    "term": "object",
+    "ipa": "/ˈɑːbdʒekt/ (名) /əbˈdʒekt/ (动)",
+    "common": "名词读成 ob-JECT",
+    "correct": "名词 OB-jekt，动词 ob-JEKT",
+    "tipCn": "名词重音在前，动词重音在后，与 record 同理。",
+    "ex": "Nobody will object if we cache that object between requests."
+  },
+  {
+    "term": "attribute",
+    "ipa": "/ˈætrɪbjuːt/ (名) /əˈtrɪbjuːt/ (动)",
+    "common": "名词动词都念成一个音",
+    "correct": "名词重音AT，动词重音TRIB",
+    "tipCn": "名词读作AT-ri-byoot，动词读作uh-trib-yoot，重音位置不同。",
+    "ex": "We added an expiry attribute to every token payload."
+  },
+  {
+    "term": "delegate",
+    "ipa": "/ˈdelɪɡət/ (名) /ˈdelɪɡeɪt/ (动)",
+    "common": "词尾都读成 /ɡeɪt/",
+    "correct": "名词尾 /ɡət/，动词尾 /ɡeɪt/",
+    "tipCn": "名词尾音弱读，动词尾音才读出 gate。",
+    "ex": "Please delegate this migration to whoever owns that service."
+  }
+]

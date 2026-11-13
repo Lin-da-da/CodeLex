@@ -1,0 +1,272 @@
+[
+  {
+    "id": "bq-conflict-disagree-teammate",
+    "cat": "conflict",
+    "qEn": "Tell me about a time you disagreed with a teammate on a technical decision.",
+    "qCn": "讲一次你与同事在技术决策上意见不合的经历。",
+    "aEn": "Sure. On my last team we were building a notification service, and my teammate wanted to push everything through a message queue, while I thought a simple scheduled job was enough. My task was to ship the first version before the end of the quarter, and we had already spent two days arguing in design review. So I suggested we stop debating opinions and define what we actually needed. I wrote down the peak QPS we expected, the retry requirements, and the operational cost of running a queue cluster. We brought those numbers to the team, and it turned out the queue was only really needed for one of the five use cases. We agreed to start with the scheduled job and add the queue later for that one path. We shipped in three weeks instead of six, and the simpler design held up at about 200 requests per second. Six months later we did add the queue, but only where it was actually justified.",
+    "aCn": "好的。我上一家公司做通知服务时，同事希望所有流程都走消息队列，而我认为一个简单的定时任务就够了。我的任务是在季度结束前交付第一版，而我俩已经在设计评审上争论了两天。于是我提议停止争论观点，先把我们真正需要的东西定义清楚。我把预期的峰值 QPS、重试要求，以及维护一个队列集群的运维成本都写了下来。我们把这些数据拿到团队里讨论，结果发现五个用例里其实只有一个真正需要队列。于是我们一致同意先用定时任务，后面再为那一条链路加队列。最终我们用三周而不是六周完成交付，这个更简单的设计在大约每秒 200 个请求下依然稳定。六个月后我们确实加了队列，但只加在真正有必要的地方。",
+    "tips": "STAR 四段；结尾用数据收口，给对方留台阶"
+  },
+  {
+    "id": "bq-conflict-push-back-deadline",
+    "cat": "conflict",
+    "qEn": "Describe a time you had to push back on a deadline.",
+    "qCn": "讲一次你不得不对截止日期提出异议的经历。",
+    "aEn": "Yes. About a year ago, my manager committed to launching a new billing flow in four weeks, right before a major customer demo. I had done the initial estimate, and I knew four weeks was not realistic if we wanted the migration to be safe. I asked for a short meeting and brought three things: the task breakdown, the two pieces with real unknowns, which were the legacy invoice data and the payment gateway sandbox, and a proposal. Instead of just saying no, I offered to cut scope: launch the new flow for new customers only, and migrate existing accounts the following month. We agreed on a six-week timeline with the reduced scope. We hit that date and the demo went fine. More importantly, we had zero billing incidents during the cutover, and the old accounts were migrated two weeks later without any downtime.",
+    "aCn": "有的。大约一年前，我的主管承诺在四周内上线一套新的计费流程，正好赶在一场重要客户演示之前。我做过初步估算，很清楚如果要保证迁移安全，四周是不现实的。于是我申请开一个短会，并带了三样东西：任务拆分、两个真正存在未知数的部分（历史发票数据和支付网关沙箱），以及一份替代方案。我没有直接说不行，而是主动提出缩减范围：新流程只对新客户开放，存量账户下个月再迁移。我们最终就缩减范围后的六周时间表达成一致。我们按时交付，演示也很顺利。更重要的是，切换过程中零计费事故，存量账户在两周后完成迁移，且没有任何停机。",
+    "tips": "拒绝要给替代方案，用范围换时间"
+  },
+  {
+    "id": "bq-conflict-code-review",
+    "cat": "conflict",
+    "qEn": "Tell me about a time you disagreed with someone during a code review.",
+    "qCn": "讲一次你在代码评审中与别人意见不合的经历。",
+    "aEn": "Sure. A teammate submitted a pull request that added a caching layer to our user profile API. It was clever, but the cache key did not include the tenant ID, and we are a multi-tenant product. I left a comment explaining that one tenant could read another tenant's data, which is a serious problem. He pushed back and said the service was only used internally, so it was fine. Rather than keep arguing in the thread, I jumped on a quick call and wrote a ten-line test that fetched a profile as tenant A and then as tenant B, showing the wrong data coming back. Once he saw the failing test, he agreed immediately. We fixed the key, and I also added a lint rule so any new cache key has to be built through a helper that forces you to pass the tenant. That rule has since caught the same mistake three or four times in other services.",
+    "aCn": "好的。有位同事提交了一个给用户资料接口加缓存层的 PR。实现很巧妙，但缓存 key 里没有包含租户 ID，而我们的产品是多租户的。我留言指出一个租户可能会读到另一个租户的数据，这是个严重问题。他反驳说这个服务只在内部使用，所以没问题。我没有继续在评论里争论，而是快速拉了个会，并写了一个十行的测试：先以租户 A 拉取资料，再以租户 B 拉取，结果确实返回了错误数据。他看到这个失败的测试后立刻同意了。我们修复了 key，我还加了一条 lint 规则，要求所有新的缓存 key 必须通过强制传入租户的辅助函数来构造。这条规则后来在其他服务里又拦下了三四次同样的错误。",
+    "tips": "用可复现的测试代替口头争论"
+  },
+  {
+    "id": "bq-conflict-manager-disagree",
+    "cat": "conflict",
+    "qEn": "Tell me about a time you disagreed with your manager.",
+    "qCn": "讲一次你与主管意见不合的经历。",
+    "aEn": "I have. My manager wanted us to rewrite our reporting module in a new framework because the old code was ugly. I understood the frustration, but a full rewrite would have taken roughly three months, and we already had three other commitments that quarter. I asked if I could spend two days on a spike first. I measured what actually hurt: report generation took about eight seconds, and most of that was one N+1 query, not the framework. I showed him a prototype where I fixed the query and added pagination, and the time dropped to under 400 milliseconds. He agreed to postpone the rewrite. We shipped the fix in a week, support tickets about slow reports dropped by around 70 percent, and we never had to do the rewrite. I learned that bringing numbers to a disagreement works much better than bringing opinions.",
+    "aCn": "有过的。我的主管想用新框架重写我们的报表模块，因为老代码写得很乱。我理解这种挫败感，但完整重写大概要三个月，而我们那个季度已经有另外三项承诺。我申请先花两天做个技术验证。我测量了真正的痛点在哪里：报表生成大约要八秒，其中绝大部分来自一个 N+1 查询，而不是框架本身。我给他演示了一个原型：修掉那个查询并加上分页后，耗时降到了 400 毫秒以内。他同意推迟重写。我们用一周时间交付了这个修复，关于报表慢的工单下降了约 70%，而且我们再也没必要做那次重写。我学到的是：在分歧中摆数据远比摆观点有效。",
+    "tips": "先量化痛点再谈方案，避免正面否定"
+  },
+  {
+    "id": "bq-conflict-cross-team",
+    "cat": "conflict",
+    "qEn": "Describe a conflict you had with another team and how you resolved it.",
+    "qCn": "讲一次你与其他团队发生冲突及解决的过程。",
+    "aEn": "Sure. Our team owned the checkout service, and the platform team owned the deployment pipeline. They rolled out a new pipeline that broke our canary step, and for about two weeks, every release we did had to be manually rolled back. Both sides were frustrated: we felt blocked, and they felt we were complaining instead of migrating. I scheduled a working session, and instead of starting with the bug, I asked them to walk me through what the new pipeline was trying to achieve. It turned out the canary config format had changed and our YAML was being silently ignored. That was our problem, not theirs. I fixed our config that afternoon, wrote a short migration note for the other four service teams, and offered to review their configs. After that we went from roughly one failed release out of three to zero failed releases over the next two months.",
+    "aCn": "好的。我们团队负责结账服务，平台团队负责部署流水线。他们上线了一套新流水线，把我们的灰度步骤搞坏了，之后大约两周里，我们每次发布都不得不手动回滚。双方都很沮丧：我们觉得被阻塞，他们觉得我们只抱怨不迁移。我组织了一次工作会，并且没有一上来就谈那个 bug，而是请他们给我讲清楚新流水线想达成什么目标。结果发现是灰度配置的格式变了，而我们的 YAML 被静默忽略了。这是我们的问题，不是他们的。我当天下午就修好了配置，为其他四个服务团队写了一份简短的迁移说明，还主动提出帮他们 review 配置。之后我们的发布失败率从大约三次里失败一次，变成接下来两个月零失败。",
+    "tips": "先理解对方目标，再定位责任边界"
+  },
+  {
+    "id": "bq-teamwork-help-struggling",
+    "cat": "teamwork",
+    "qEn": "Tell me about a time you helped a teammate who was struggling.",
+    "qCn": "讲一次你帮助陷入困境的同事的经历。",
+    "aEn": "Yes. A new engineer on our team was assigned a ticket to fix a flaky integration test, and after four days she was still stuck and clearly stressed about it. I had some free time that afternoon, so I sat with her for about an hour. The test was failing roughly one run in five, and we found two causes: it shared a database row with another test, and it depended on the system clock. We fixed the shared state by giving each test its own fixture, and we injected a fake clock. More useful than the fix itself was walking her through how I debug flakiness: run the test in a loop, then bisect the setup. Two weeks later she found and fixed two more flaky tests on her own using the same method, and our CI failure rate went from about 15 percent down to under 2 percent.",
+    "aCn": "有的。我们团队一位新同事接了个修复不稳定集成测试的工单，四天过去她仍然卡住了，而且明显很焦虑。那天下午我有些空闲，就陪她一起看了一个小时左右。这个测试大约五次里失败一次，我们找到了两个原因：它和另一个测试共用了一行数据库数据，而且它依赖系统时钟。我们通过给每个测试独立的数据夹具解决了共享状态问题，并注入了一个假时钟。比修复本身更有价值的是，我带她走了一遍我排查不稳定的方法：先循环跑测试，再二分定位初始化流程。两周后，她用同样的方法独立发现并修复了另外两个不稳定测试，我们 CI 的失败率也从大约 15% 降到了 2% 以下。",
+    "tips": "帮人要说清方法论，不止给答案"
+  },
+  {
+    "id": "bq-teamwork-difficult-person",
+    "cat": "teamwork",
+    "qEn": "Tell me about a time you worked with someone who was difficult to work with.",
+    "qCn": "讲一次你与难相处的人合作的经历。",
+    "aEn": "I worked with a senior engineer who was extremely talented but rejected almost every proposal in review, and the rest of the team had basically stopped bringing ideas to him. I needed his sign-off on a schema change, so instead of sending him a document and waiting, I asked for fifteen minutes and came with two concrete options plus a recommendation. He tore apart option A, then started improving option B on the whiteboard. I realised he did not engage with abstract proposals; he engaged with concrete trade-offs. After that I always brought him a working prototype or a script he could run. Our review cycle on that project went from about a week per decision to roughly a day, and by the end of the quarter he was volunteering to review my designs first.",
+    "aCn": "我曾和一位资深工程师合作，他能力极强，但在评审中几乎否掉所有方案，团队其他人基本已经不再找他讨论想法了。我需要他对一次数据库 schema 变更签字，所以我没有发文档然后干等，而是约了十五分钟，并带着两个具体方案外加一个推荐选项。他把方案 A 批得体无完肤，然后开始在白板上改进方案 B。我意识到他不会对抽象的方案产生兴趣，他只对具体的权衡感兴趣。从那以后，我总是带着一个可运行的原型或一段他能执行的脚本去找他。那个项目的评审周期从每个决策约一周缩短到大约一天，到季度末他已经开始主动抢着第一个 review 我的设计。",
+    "tips": "抱怨改成适配对方的沟通方式"
+  },
+  {
+    "id": "bq-teamwork-cross-functional",
+    "cat": "teamwork",
+    "qEn": "Tell me about a time you worked closely with a non-technical team.",
+    "qCn": "讲一次你与非技术团队紧密合作的经历。",
+    "aEn": "Sure. I was the engineer on a project with our operations team, who handled manual refunds. They were processing around 300 tickets a day by hand, mostly copy-pasting between three internal tools. I spent two days sitting with them and watching the actual workflow instead of reading the spec that had been written for us. Half of what they did was checking whether an order had already been refunded, which we could automate completely. I built a small internal tool that showed the order state on one screen and added a single-click refund action. I shipped it behind a flag, had five operators use it for a week, and iterated on their feedback. After the full rollout, average handling time per ticket dropped from about four minutes to roughly ninety seconds, and the team handled the same volume with two fewer people on the queue.",
+    "aCn": "好的。我曾作为工程师和运营团队合作一个项目，他们负责手工处理退款。他们每天要人工处理约 300 个工单，大部分工作是在三个内部工具之间复制粘贴。我花了两天时间和他们坐在一起观察真实的工作流程，而不是去读那份为我们写好的需求文档。他们有一半的工作是在检查某笔订单是否已经退款，而这完全可以自动化。我做了一个小的内部工具，在一个页面里展示订单状态，并加上一键退款的操作。我用开关发布，先让五名运营同事试用一周，再根据反馈迭代。全面上线后，单个工单的平均处理时长从约四分钟降到约九十秒，团队也用少了两个人的情况下处理了同样的单量。",
+    "tips": "先到现场观察真实流程，别只读文档"
+  },
+  {
+    "id": "bq-teamwork-oncall-handoff",
+    "cat": "teamwork",
+    "qEn": "How do you handle on-call and handing work to teammates in other time zones?",
+    "qCn": "你如何处理值班以及跨时区的工作交接？",
+    "aEn": "On my last team we had engineers in Shanghai and in Berlin, so a lot of issues landed while I was asleep. I rewrote our handoff process. Before, a handoff was a chat message that might say, watch the payment service. I created a short template: what is currently broken, what has already been tried, which dashboards to look at, and the exact runbook link. I also added a rule that any alert firing more than three times a week either gets tuned or gets a runbook. Within about two months, our mean time to acknowledge dropped from roughly 25 minutes to under 8 minutes, and the number of issues needing a second person dropped by around half. The Berlin team told me the template alone saved them the most time, because they no longer had to rebuild context at three in the morning.",
+    "aCn": "我上一家公司团队里同时有上海和柏林的工程师，所以很多问题是在我睡觉时出现的。我重写了我们的交接流程。之前的交接就是一条聊天消息，可能只写着“盯一下支付服务”。我做了一个简短模板：当前什么坏了、已经尝试过什么、该看哪些监控面板，以及确切的 runbook 链接。我还加了一条规则：任何一周触发超过三次的告警，要么被调优，要么必须配一份 runbook。大约两个月内，我们的平均响应时长从约 25 分钟降到 8 分钟以内，需要第二个人介入的问题数量也减少了约一半。柏林的同事告诉我，光是这个模板就帮他们省了最多时间，因为他们再也不用在凌晨三点重新拼凑上下文了。",
+    "tips": "强调模板化和可量化的响应时长"
+  },
+  {
+    "id": "bq-teamwork-knowledge-share",
+    "cat": "teamwork",
+    "qEn": "Tell me about a time you improved how your team shares knowledge.",
+    "qCn": "讲一次你改进团队知识共享方式的经历。",
+    "aEn": "Yes. Our team had a problem where only two people really understood the recommendation service, and whenever one of them was on holiday, everything stalled. I proposed a rotation where each of us spent one sprint as the secondary owner of a service we did not know, and the rule was that you had to fix at least one real ticket in it and update the runbook. I started with the recommendation service myself and wrote about fifteen pages of notes while fixing three bugs. Over two quarters we went from two services with a single owner to seven services with at least two people who could debug them. The measurable part: when the primary owner was out, average resolution time used to be about two days; after the rotation it was around four hours.",
+    "aCn": "有的。我们团队当时有个问题：只有两个人真正懂推荐服务，只要其中一个休假，所有事情都会卡住。我提议做一个轮值机制：每个人花一个 sprint 去当某个自己不熟悉的服务的第二负责人，规则是必须在这个服务里至少修掉一个真实工单，并更新 runbook。我自己先从推荐服务开始，在修三个 bug 的过程中写了大约十五页笔记。在两个季度里，我们从“两个服务只有单一负责人”，变成“七个服务都至少有两人能排查”。可量化的部分是：过去主要负责人不在时平均解决时长约两天，轮值之后大约只要四小时。",
+    "tips": "知识共享要绑定真实工单才有沉淀"
+  },
+  {
+    "id": "bq-failure-unsolved-bug",
+    "cat": "failure",
+    "qEn": "Tell me about a bug you could not solve.",
+    "qCn": "讲一次你没能解决的 bug。",
+    "aEn": "Sure. About two years ago we had a memory leak in a Java service that only showed up in production, roughly once every three days, and only on two of twelve instances. I spent about a week on it, using heap dumps and profilers, and I could not find it. What made it worse was that I kept telling the team I was close. Eventually I escalated and asked a senior architect to pair with me for a day. The root cause was a third-party SDK holding a classloader reference. We had ruled it out early because the version was supposed to be patched, but the patch had not been applied on those two hosts. We fixed it in an hour once we looked together. I took two lessons: escalate after a fixed time budget, not after you feel defeated, and verify assumptions about dependencies instead of trusting release notes.",
+    "aCn": "好的。大约两年前，我们一个 Java 服务出现内存泄漏，只在生产环境出现，大约每三天一次，而且只出现在十二个实例中的两个上。我花了一周时间排查，用了堆转储和各种性能分析工具，还是没找到原因。更糟的是，我一直跟团队说“快找到了”。最后我升级了问题，请一位资深架构师和我结对排查一天。根因是一个第三方 SDK 持有了类加载器引用。我们早期就排除了它，因为按说那个版本已经打过补丁，但那两台机器上补丁其实没有应用。我们一起看了一个小时就修好了。我得到两条教训：升级求助要按固定的时间预算来，而不是等自己崩溃；对于依赖的假设要去验证，而不是相信 release notes。",
+    "tips": "失败题重点在求助时机与复盘机制"
+  },
+  {
+    "id": "bq-failure-caused-incident",
+    "cat": "failure",
+    "qEn": "Tell me about a production incident you caused.",
+    "qCn": "讲一次由你引发的生产事故。",
+    "aEn": "Yes, and it was a painful one. I was adding an index to a large table and assumed the migration would be quick, so I ran it during business hours without a lock timeout. It took a table lock, and for about eleven minutes our order API returned errors for roughly 30 percent of requests. I saw the alert, rolled back the migration immediately, and wrote the incident report myself that same day. The fixes afterwards: every migration in our repo now runs with a lock timeout and goes through a tool that uses online DDL, and we added a pre-production check that runs migrations against production-sized data. In the eighteen months after that we ran more than 200 schema changes with zero lock-related incidents. I also started saying I do not know much faster.",
+    "aCn": "有的，而且代价很惨痛。我当时在给一张大表加索引，想当然地认为迁移会很快，于是没有设置锁超时就在业务时段执行了。它拿走了表锁，在大约十一分钟里，我们的订单接口对约 30% 的请求返回了错误。我看到告警后立刻回滚了迁移，并在当天自己写了事故报告。之后的改进是：仓库里所有迁移都必须带锁超时，并统一走支持 online DDL 的工具；我们还加了一个预发检查，在生产规模的数据副本上先跑一遍迁移。在那之后的十八个月里，我们执行了 200 多次 schema 变更，零锁相关事故。我也开始更快地承认“我不知道”。",
+    "tips": "承认错误 + 系统性防复发，别甩锅"
+  },
+  {
+    "id": "bq-failure-missed-commitment",
+    "cat": "failure",
+    "qEn": "Tell me about a time you missed a commitment.",
+    "qCn": "讲一次你没能兑现承诺的经历。",
+    "aEn": "I did, about a year and a half ago. I committed to delivering a search feature in four weeks. I estimated the indexing part well, but I did not account for the data migration or for reviewing ranking quality with the product team. In week three I could see it was going to slip, and I waited until week four to say so. It finally shipped in week seven. The technical work was fine; the failure was in how I communicated. Since then I do two things: I break any task larger than three days into smaller pieces, and I give my lead a traffic-light status every Friday instead of waiting for the deadline. On the next three projects of similar size, my estimates were off by about 10 percent instead of 75 percent.",
+    "aCn": "有过，大约一年半前。我承诺四周内交付一个搜索功能。索引部分的估算我做得不错，但我没有把数据迁移的工作量算进去，也没有算上和产品团队一起校验排序质量的时间。第三周我就看出来要延期了，但我一直拖到第四周才说。最后这个功能到第七周才上线。技术工作本身没问题，失败在于我的沟通方式。从那以后我做了两件事：任何超过三天的任务都拆成更小的块；每周五主动给主管一个红黄绿状态，而不是等截止日期才暴露。之后三个规模相似的项目里，我的估算偏差从 75% 降到了约 10%。",
+    "tips": "失败原因要指向可改进的机制"
+  },
+  {
+    "id": "bq-failure-wrong-tech-choice",
+    "cat": "failure",
+    "qEn": "Tell me about a technical decision you made that turned out to be wrong.",
+    "qCn": "讲一次你做出的、后来被证明是错误的技术决策。",
+    "aEn": "Yes. I chose to store our event data in a document database because the schema was changing every week, and I thought the flexibility would save us time. Six months later we had about 40 million events, and every analytics query had to load whole documents and filter in application code. Query times went from under a second at the start to more than 30 seconds. I had optimised for the wrong thing: the schema was actually fairly stable after the first month, and all of our access patterns were analytical. I led the migration to a columnar store over about two months, using a dual-write and a backfill. After that, the same queries ran in about 1.2 seconds. The lesson I now apply is to write down the access patterns first and revisit the decision at a fixed date.",
+    "aCn": "有的。我当时选择用文档数据库存储事件数据，因为 schema 每周都在变，我以为这种灵活性会帮我们省时间。六个月后我们有大约 4000 万条事件，而每个分析查询都不得不加载整个文档，再在应用层做过滤。查询耗时从最初的一秒以内，变成超过 30 秒。我优化错了方向：实际上 schema 在第一个月之后就相当稳定了，而我们所有的访问模式都是分析型的。我主导了大约两个月的迁移，切到列式存储，采用双写加回填的方式。迁移之后，同样的查询大约 1.2 秒就能跑完。我现在应用的教训是：先把访问模式写下来，并给这个决策设定一个固定的复盘日期。",
+    "tips": "讲清当初的假设为何失效"
+  },
+  {
+    "id": "bq-leadership-project-e2e",
+    "cat": "leadership",
+    "qEn": "Tell me about a time you led a project end to end.",
+    "qCn": "讲一次你端到端负责一个项目的经历。",
+    "aEn": "Sure. Last year I led the migration of our monolith's user module into a standalone service, with four engineers and a hard deadline of one quarter. I started by writing a one-page plan naming the three riskiest parts: data consistency during dual-write, session handling, and rollback. I assigned each risk to one person and asked for a spike in the first two weeks. We ran weekly checkpoints, and I kept a visible board of what was blocked. In week five the dual-write showed about 0.3 percent mismatch, so we delayed the cutover by one week to fix it rather than pushing through. We cut over with a feature flag, ramping from 1 percent to 100 percent over five days. Latency actually improved: p99 went from 180 milliseconds to about 90, and we finished three days inside the quarter.",
+    "aCn": "好的。去年我主导了把单体里的用户模块拆分成独立服务的迁移，团队四名工程师，硬截止日期是一个季度。我一开始写了一份一页纸的计划，点出三个风险最大的部分：双写期间的数据一致性、会话处理，以及回滚方案。我把每个风险分给一个人负责，并要求在前两周给出验证结果。我们每周做一次检查点，我还维护了一块公开看板展示哪些事项被阻塞。第五周时双写出现了约 0.3% 的不一致，于是我们把切换推迟了一周去修复，而不是硬着头皮推进。我们靠功能开关切换，用五天时间从 1% 灰度到 100%。延迟反而改善了：p99 从 180 毫秒降到约 90 毫秒，我们也在季度截止前三天完成了。",
+    "tips": "突出风险识别与灰度节奏"
+  },
+  {
+    "id": "bq-leadership-no-authority",
+    "cat": "leadership",
+    "qEn": "Tell me about a time you influenced people without formal authority.",
+    "qCn": "讲一次你在没有正式职权的情况下影响他人的经历。",
+    "aEn": "Yes. I noticed our deployment process was slow, about 45 minutes per deploy, and each team had a slightly different script. Nobody owned it, and there was no mandate to fix it. I did not ask for permission to lead it; I just built a working prototype over a weekend using our existing CI and got my own team to use it for two weeks. I measured it: deploys went from 45 minutes to about 7. Then I wrote a short doc with those numbers and the migration steps, and I offered to pair with anyone who wanted to move. Three teams migrated in the first month and all seven within a quarter. I think it worked because I never asked anyone to change until I could show them the result on my own team first.",
+    "aCn": "有的。我发现我们的部署流程很慢，每次大约 45 分钟，而且每个团队的脚本还略有不同。这件事没有归属人，也没有人授权去修。我没有申请“由我来牵头”的许可，而是利用一个周末基于现有 CI 做了一个能跑的原型，并让我们团队先试用两周。我做了测量：部署耗时从 45 分钟降到约 7 分钟。然后我写了一份简短文档，附上这些数据和迁移步骤，并主动提出愿意和任何想迁移的团队结对。第一个月有三个团队迁移，一个季度内七个团队全部迁完。我认为这件事能成，是因为在我自己团队做出结果之前，我从没要求任何人改变。",
+    "tips": "用自家团队的实测数据说服他人"
+  },
+  {
+    "id": "bq-leadership-mentor",
+    "cat": "leadership",
+    "qEn": "Tell me about a time you mentored someone.",
+    "qCn": "讲一次你指导他人的经历。",
+    "aEn": "Yes. I mentored a junior engineer for about six months. When she started, her pull requests typically went through four or five rounds of review and took almost a week to merge. We set up a 30-minute session every week, and the first thing I did was ask her to walk me through her last PR so I could see where the time was going. Most of the churn was in test setup and unclear commit structure. So we worked on two habits: write the test names before the code, and self-review the diff before asking for review. I also reviewed her PRs within an hour so she was never blocked. After about three months her PRs were merging in roughly a day and a half, usually in one or two rounds, and she started reviewing other people's code by month five.",
+    "aCn": "有的。我带过一位初级工程师约六个月。她刚来的时候，PR 通常要经过四五轮评审，几乎要一周才能合并。我们每周安排一次 30 分钟的交流，我做的第一件事是请她带我过一遍她上一个 PR，这样我就能看清时间都花在哪了。大部分的返工来自测试搭建和混乱的提交结构。于是我们重点练两个习惯：先写测试名称再写代码；在请求评审前先自己过一遍 diff。我也保证在一小时内 review 她的 PR，让她不被阻塞。大约三个月后，她的 PR 平均一天半就能合并，通常一两轮就过，到第五个月她已经开始 review 别人的代码了。",
+    "tips": "辅导要落到具体习惯，给出前后数据"
+  },
+  {
+    "id": "bq-leadership-initiative",
+    "cat": "leadership",
+    "qEn": "Tell me about a time you took initiative on something outside your assignment.",
+    "qCn": "讲一次你主动承担职责范围之外工作的经历。",
+    "aEn": "Sure. Nobody asked me to, but I noticed our staging environment was broken about a third of the time, and people had started skipping it and testing directly in production. I looked into it for a week and found three causes: fixtures that were never reset, a shared database that two teams kept mutating, and no alert when the environment was unhealthy. I fixed the fixture reset with a nightly job, split the database per team, and added a simple health check that posted to our team channel every morning. I did this alongside my normal work, about four hours a week. Within six weeks, staging availability went from around 65 percent to over 95 percent, and bugs reaching production dropped by roughly 25 percent that quarter. I also handed ownership of the health check to the team that ran our CI, so it outlived my involvement rather than becoming one more thing only I understood.",
+    "aCn": "好的。没有人要求我这么做，但我发现我们的预发环境大约有三分之一的时间是坏的，大家已经开始跳过它、直接在生产环境上测试了。我花了一周时间排查，找到三个原因：测试数据夹具从来不重置、两个团队共用一个数据库且互相改数据，以及环境不健康时没有任何告警。我用一个每日定时任务修好了夹具重置，把数据库按团队拆分，并加了一个简单的健康检查，每天早上往团队频道推送结果。这些是我在正常工作之外做的，大约每周四小时。六周内，预发环境可用性从约 65% 提升到 95% 以上，那个季度流入生产的 bug 也下降了约 25%。我还把这个健康检查的所有权交给了负责 CI 的团队，这样它不会因为我不再参与就荒废，也不会变成又一件只有我懂的东西。",
+    "tips": "主动题要说明发现问题的来源"
+  },
+  {
+    "id": "bq-impact-biggest",
+    "cat": "impact",
+    "qEn": "What is the biggest technical impact you have had?",
+    "qCn": "你产生过的最大的技术影响力是什么？",
+    "aEn": "I would say it is the query optimisation work on our main order service. When I joined, the order list endpoint took about 2.4 seconds at p95 and was the top source of customer complaints. I profiled it and found two things: an N+1 query that ran roughly 120 queries per request, and a missing composite index on status and created_at. I fixed the N+1 with a single batched join, added the index, and introduced cursor-based pagination because the offset pagination kept getting slower as tables grew. I also added a load test to CI so this could not regress. p95 dropped from 2.4 seconds to about 180 milliseconds, database CPU fell by roughly 40 percent, and support tickets about slow loading dropped by about 80 percent over the next two months.",
+    "aCn": "我认为是我们主订单服务上的查询优化工作。我刚加入时，订单列表接口的 p95 耗时约 2.4 秒，是客户投诉的第一大来源。我做了性能剖析，发现两个问题：一个 N+1 查询，单个请求会执行约 120 条 SQL；以及缺少一个 status 加 created_at 的复合索引。我用一次批量 join 修掉了 N+1，加上了索引，并引入基于游标的分页，因为随着表变大，原来的 offset 分页越来越慢。我还往 CI 里加了一个压测，防止性能回退。p95 从 2.4 秒降到约 180 毫秒，数据库 CPU 下降约 40%，之后两个月关于加载慢的工单减少了约 80%。",
+    "tips": "影响力题必须有基线、动作、倍数改善"
+  },
+  {
+    "id": "bq-impact-cost",
+    "cat": "impact",
+    "qEn": "Tell me about a time you reduced cost or improved efficiency.",
+    "qCn": "讲一次你降低成本或提升效率的经历。",
+    "aEn": "Yes. About a year ago our cloud bill had grown to roughly 90,000 dollars a month, and management asked us to reduce it without cutting features. I spent a week analysing usage and found three clear wins. First, about 30 percent of our compute was in a non-production environment running 24 hours a day, so I added scheduled shutdowns outside working hours. Second, we were storing full-resolution logs for 90 days when nobody had queried anything older than 14 days, so I moved older logs to cold storage. Third, one batch job was running on oversized instances. Altogether the monthly bill dropped to about 58,000 dollars, a reduction of roughly 35 percent, with no measurable change in latency or error rate. I also set up a weekly cost report so it would not creep back up.",
+    "aCn": "有的。大约一年前，我们的云账单涨到了每月约 9 万美元，管理层要求在不削减功能的前提下降本。我花了一周分析使用情况，找到三个明确的优化点。第一，约 30% 的计算资源属于非生产环境，却 7x24 小时运行，于是我加了工作时段之外的定时关机。第二，我们以全量精度存了 90 天日志，但实际上没人查过超过 14 天的数据，于是我把更早的日志转到了冷存储。第三，有个批处理任务跑在规格过大的实例上。合计下来，月账单降到约 5.8 万美元，降幅约 35%，而延迟和错误率没有任何可观测的变化。我还搭了一个每周成本报表，防止它再次悄悄涨回去。",
+    "tips": "降本要强调不影响延迟与稳定性"
+  },
+  {
+    "id": "bq-impact-reliability",
+    "cat": "impact",
+    "qEn": "Tell me about a time you improved the reliability of a system.",
+    "qCn": "讲一次你提升系统可靠性的经历。",
+    "aEn": "Sure. The service I owned had an availability of about 99.5 percent, which sounds fine but meant roughly three and a half hours of downtime a month, and our SLO target was 99.9. I started by categorising the last six months of incidents, and about half came from a single downstream dependency with no timeout and no circuit breaker. I added a 500-millisecond timeout, a circuit breaker, and a cached fallback for the read path. The other big source was bad deploys, so I introduced a canary stage that automatically rolled back if the error rate went above one percent. Over the next quarter our availability went to 99.95 percent, incidents caused by that dependency went from five to zero, and the canary caught two bad releases before they reached all users.",
+    "aCn": "好的。我负责的服务可用性约 99.5%，听起来还行，但这意味着每月大约三个半小时的不可用时间，而我们的 SLO 目标是 99.9。我先把过去六个月的事故做了分类，发现约一半来自同一个下游依赖，它既没有超时也没有熔断。我加了 500 毫秒超时、熔断器，以及读路径的缓存兜底。另一大来源是糟糕的发布，于是我引入了灰度阶段：只要错误率超过 1% 就自动回滚。在接下来一个季度里，我们的可用性提升到 99.95%，由那个依赖引发的事故从五次降到零，灰度也拦下了两个坏版本，避免影响全部用户。",
+    "tips": "用 SLO 与事故分类驱动改进"
+  },
+  {
+    "id": "bq-impact-tooling",
+    "cat": "impact",
+    "qEn": "Tell me about a tool or process you built that helped other engineers.",
+    "qCn": "讲一次你为其他工程师打造工具或流程的经历。",
+    "aEn": "Yes. Setting up a local development environment on our team used to take a new engineer about two days, and it almost always failed somewhere in the middle because of version drift. I built a single script that containerised all the dependencies and seeded a small but realistic dataset, and I documented it in the README. I timed myself: a clean setup went from roughly two days to about 25 minutes. I asked the next three new joiners to use it and file any issue they hit, and I fixed about a dozen of those in the first month. Beyond onboarding, it also stopped the works-on-my-machine class of bugs: we saw about 30 percent fewer environment-related questions in our support channel the following quarter. Two other teams later forked the script for their own services, and it is still the standard onboarding path today.",
+    "aCn": "有的。我们团队搭一个本地开发环境过去要花新同事大约两天，而且几乎总会因为版本漂移在中间某个环节失败。我写了一个脚本，把所有依赖容器化，并预置一份小但贴近真实的数据集，然后把用法写进 README。我给自己计时：一次干净的环境搭建从约两天缩短到约 25 分钟。我请之后入职的三位新同事使用它，并把遇到的任何问题提给我，第一个月里我修了大约十几个问题。除了入职之外，它还终结了“在我机器上是好的”这类 bug：之后一个季度，我们支持频道里与环境相关的问题减少了约 30%。后来另外两个团队把这个脚本 fork 过去用在自己的服务上，直到今天它仍是标准的入职环境搭建方式。",
+    "tips": "工具题要给出使用人数或频次"
+  },
+  {
+    "id": "bq-growth-new-tech",
+    "cat": "growth",
+    "qEn": "Tell me about a time you had to learn a new technology quickly.",
+    "qCn": "讲一次你快速学习一项新技术的经历。",
+    "aEn": "Sure. About eight months ago our team decided to move a service to Go, and I had never written Go professionally. I had about three weeks before I was expected to ship. I did not try to read a book cover to cover. I picked one small, real service to port and learned by doing it: I read the standard library docs for the specific things I needed, and I asked a colleague who was strong in Go to review my first two pull requests line by line. I also spent about an hour a day reading existing code in our company repo. I shipped the ported service in three weeks, and after two months the code felt natural. Two things stuck: learn against a real task, and get your early code reviewed by an expert instead of waiting until you feel ready.",
+    "aCn": "好的。大约八个月前，我们团队决定把一个服务迁到 Go，而我此前从未在正式工作中写过 Go。我大约有三周时间，之后就要交付。我没有试图把一本书从头读到尾，而是挑了一个小的真实服务来移植，边做边学：我只去查标准库里我真正需要的那部分文档，并请一位 Go 很强的同事逐行 review 我的前两个 PR。我还每天花约一小时读公司仓库里的现有代码。三周后我交付了这个移植后的服务，两个月后写起来就已经很自然了。有两点我留了下来：对着真实任务学习；以及在早期就让专家 review 你的代码，而不是等自己觉得准备好了。",
+    "tips": "学习题给出明确时间表与验证方式"
+  },
+  {
+    "id": "bq-growth-feedback",
+    "cat": "growth",
+    "qEn": "Tell me about a time you received difficult feedback.",
+    "qCn": "讲一次你收到尖锐反馈的经历。",
+    "aEn": "Yes. In a performance review my manager told me my design documents were too long and that people were approving them without really reading them, which meant I was getting agreement instead of real review. That stung, because I thought thoroughness was my strength. I asked for one concrete example, and he pointed at a 14-page doc where the actual decision was buried on page nine. So I changed my format: one page with the problem, the options, the trade-offs, and a clear recommendation at the top, with details in an appendix. I also started asking reviewers to comment specifically on the recommendation. Within about two months, substantive comments on my docs roughly tripled, and one doc was actually redesigned based on review feedback, which was the outcome I wanted.",
+    "aCn": "有的。在一次绩效评估中，我的主管告诉我，我的设计文档写得太长，大家其实没有真正读就点了同意，这意味着我得到的是“通过”而不是真正的评审。这话很扎心，因为我一直认为严谨是我的优势。我请他给一个具体例子，他指出了那份 14 页的文档——真正的决策埋在第九页。于是我改了格式：一页纸讲清问题、可选方案、权衡和顶部的明确推荐，细节放附录。我还开始请评审者专门对“推荐项”发表意见。大约两个月内，我文档上收到的实质性评论大约翻了三倍，有一份文档甚至因为评审反馈而被重新设计，这正是我想要的结果。",
+    "tips": "先承认情绪冲击，再讲行为改变"
+  },
+  {
+    "id": "bq-growth-weakness",
+    "cat": "growth",
+    "qEn": "What is your biggest weakness as an engineer?",
+    "qCn": "作为工程师，你最大的短板是什么？",
+    "aEn": "My biggest weakness is that I tend to under-invest in documentation while I am building. I convince myself I will write it at the end, and then the next project starts and it never happens. This bit me last year: I built an internal rate-limiting library, three teams adopted it, and every one of them asked me the same five questions because there was no doc. I have been fixing it concretely. I now write a short README before I write the code, and I treat someone else being able to use this without asking me as part of the definition of done. For that library I eventually wrote the doc, and support questions about it dropped from about ten a month to almost zero. I still have to remind myself, but it is much better than it was.",
+    "aCn": "我最大的短板是：在开发过程中我往往对文档投入不足。我总说服自己最后再写，然后下一个项目开始了，文档就永远没了。去年这件事反噬了我：我写了一个内部的限流库，三个团队用了它，每个团队都来问我同样五个问题，因为没有文档。我在用具体行动修正这一点：现在我会在写代码之前先写一份简短的 README，并把“别人不问我就能用起来”当作完成定义的一部分。那个库我最后还是补了文档，关于它的咨询从每月约十个降到几乎为零。我现在仍然需要提醒自己，但已经比之前好太多了。",
+    "tips": "短板要真实且配可验证的改进动作"
+  },
+  {
+    "id": "bq-growth-keep-learning",
+    "cat": "growth",
+    "qEn": "How do you keep your technical skills up to date?",
+    "qCn": "你如何保持技术能力与时俱进？",
+    "aEn": "I do it in three concrete ways. First, I block about four hours every week on my calendar for reading and I rotate topics: last quarter it was distributed systems papers, this quarter it is database internals. Second, I learn best by building something small, so about twice a year I write a toy implementation of something I use but do not fully understand; last year it was a tiny key-value store with an LSM tree, roughly 800 lines. Third, I review code outside my own area, which is honestly where I learn the most. The measurable part: in the last year I went from being able to debug only the application layer to confidently diagnosing database and network issues, and I cut our average incident diagnosis time from about 40 minutes to around 15.",
+    "aCn": "我用三种具体方式。第一，我每周在日历上固定约四小时用于阅读，并且轮换主题：上个季度是分布式系统论文，这个季度是数据库内核。第二，我通过做小东西学得最好，所以大约一年两次，我会把一个自己天天用但没完全搞懂的东西写个玩具实现；去年写的是一个带 LSM 树的极简键值存储，大约 800 行。第三，我会 review 自己领域之外的代码，说实话这是我学得最多的地方。可量化的部分是：过去一年里，我从只能排查应用层问题，成长为能自信诊断数据库和网络问题，并把我们平均的事故定位时长从约 40 分钟缩短到约 15 分钟。",
+    "tips": "学习习惯要给出频率与产出物"
+  },
+  {
+    "id": "bq-ambiguity-vague-requirements",
+    "cat": "ambiguity",
+    "qEn": "Tell me about a time you had to work with ambiguous requirements.",
+    "qCn": "讲一次你在需求模糊的情况下工作的经历。",
+    "aEn": "Sure. I was asked to make the dashboard faster, with no target and no definition of fast. Rather than start optimising, I spent two days with the product manager turning that into something measurable. We agreed on a target: p95 load time under one second for the 90th percentile customer, who had about ten times more data than the average user. Once we had that, the work became clear. I created a test account with production-scale data, which nobody had done before, and profiled against it. The bottleneck turned out to be serialising far more rows than the UI actually displayed. I added server-side aggregation and pagination. p95 went from about 6 seconds to roughly 800 milliseconds, and I learned to always convert a vague request into a number before writing any code.",
+    "aCn": "好的。我曾被要求“让仪表盘更快”，既没有目标值，也没有定义什么叫快。我没有立刻开始优化，而是花两天时间和产品经理把这个需求变成可衡量的东西。我们商定了目标：p95 加载时间低于一秒，而且针对的是第 90 百分位的大客户——他们的数据量约为平均用户的十倍。有了这个目标后，工作就清晰了。我创建了一个生产规模数据的测试账号，这在之前没人做过，然后基于它做性能剖析。瓶颈原来是序列化了远多于界面实际展示的行数。我加了服务端聚合和分页。p95 从约 6 秒降到约 800 毫秒，我也学到了：在写任何代码之前，一定要先把模糊需求转成一个数字。",
+    "tips": "模糊题的第一步是把需求变成指标"
+  },
+  {
+    "id": "bq-ambiguity-decision-no-data",
+    "cat": "ambiguity",
+    "qEn": "Tell me about a time you had to make a decision without enough information.",
+    "qCn": "讲一次你在信息不足时做决策的经历。",
+    "aEn": "Yes. We had to choose between two message queues for a new pipeline, and we had about two weeks to decide but no time to run a full benchmark on both. Instead of guessing, I defined the three things that actually mattered to us: throughput at about 5,000 messages per second, retention of seven days, and operational familiarity. I ran a narrow benchmark only on those. Both systems met the first two criteria, so I weighted operational familiarity, since three of our engineers had already run one of them in production. I wrote the decision down in a one-page doc with the criteria and the reasoning, and I set a review date six months out. We hit 5,000 messages per second comfortably, and the later review confirmed the choice; the doc made that review far easier.",
+    "aCn": "有的。我们需要为一条新链路在两款消息队列里做选择，只有约两周时间，来不及对两者做完整基准测试。我没有靠猜，而是先定义了三个对我们真正重要的维度：约每秒 5000 条消息的吞吐、七天的数据保留，以及运维熟悉度。然后我只针对这三项做了窄口径的基准测试。两个系统都满足前两项，于是我把权重给了运维熟悉度，因为我们有三名工程师已经在生产环境跑过其中一个。我把这个决策连同评判标准和推理过程写进一页纸的文档，并设定了六个月后的复盘日期。我们轻松达到了每秒 5000 条，后来的复盘也印证了这个选择；而那份文档让复盘变得非常容易。",
+    "tips": "信息不足时先明确评判维度再决策"
+  },
+  {
+    "id": "bq-ambiguity-tradeoff",
+    "cat": "ambiguity",
+    "qEn": "Tell me about a time you had to make a difficult trade-off.",
+    "qCn": "讲一次你不得不做出艰难取舍的经历。",
+    "aEn": "Sure. We were building a feature that needed near-real-time inventory, but the source system only supported batch exports every fifteen minutes, and the team owning it had no capacity to build an API that quarter. The trade-off was between shipping on time with slightly stale data, or waiting a quarter for exact data. I talked to the product team, and we found that for about 90 percent of use cases, browsing and searching, fifteen-minute staleness was invisible. For the checkout path, where it genuinely mattered, I added a synchronous call to the source system. So we shipped on time with freshness exactly where it was needed. The feature launched a quarter earlier, and we had zero incidents related to stale inventory in the following six months. I also wrote the staleness assumption into the API contract, so the next team building on it would not be surprised.",
+    "aCn": "好的。我们当时在开发一个需要近实时库存的功能，但源系统只支持每十五分钟一次的批量导出，而负责它的团队那个季度没有人力去做一个 API。取舍在于：是按时交付但数据略有延迟，还是等一个季度换准确的数据。我和产品团队沟通后发现，对于约 90% 的场景——浏览和搜索——十五分钟的数据延迟是感知不到的。而对于真正需要准确的下单路径，我加了一次对源系统的同步调用。于是我们按时交付了，并把数据新鲜度精确地用在需要的地方。这个功能提前一个季度上线，之后六个月里与库存数据过期相关的事故为零。我还把数据延迟这个假设写进了接口契约里，这样后续基于它开发的团队不会踩坑。",
+    "tips": "取舍要区分场景分别给方案"
+  },
+  {
+    "id": "bq-ambiguity-prioritise",
+    "cat": "ambiguity",
+    "qEn": "Tell me about a time you had to prioritise between competing demands.",
+    "qCn": "讲一次你必须在多个竞争需求间排优先级的经历。",
+    "aEn": "Yes. In one quarter I had three requests at once: a customer-reported performance bug, a compliance requirement with a legal deadline, and a refactor the team wanted. There was only capacity for about two. I wrote each one down with three columns: who is affected, what happens if we do not do it, and the deadline. The compliance item had a hard legal date and a real penalty, so it went first. The performance bug affected about 8 percent of our largest accounts and generated roughly 20 support tickets a week, so it went second. The refactor had no external deadline, and I said that openly to the team rather than pretending it would fit. We finished the first two with two weeks to spare; the error rate on those accounts dropped from about 3 percent to under 0.1 percent, and we scheduled the refactor for the next quarter and actually did it.",
+    "aCn": "有的。有一个季度我同时收到三项需求：一个客户报上来的性能缺陷、一个有法务截止日期的合规要求，以及团队想要的一次重构。而我们的产能只够做其中大约两项。我把每一项都列下来，附上三列信息：影响谁、不做会怎样、截止日期。合规项有硬性法务日期和真实处罚，所以排第一。性能缺陷影响我们最大的约 8% 的客户，每周产生约 20 个工单，所以排第二。重构没有外部截止日期，我向团队明确说明了这一点，而不是假装它能塞进去。我们提前两周完成了前两项，那些客户的错误率从约 3% 降到 0.1% 以下；同时我们把重构排到下一个季度，并且真的做了。",
+    "tips": "优先级要给排序依据而非拍脑袋"
+  }
+]

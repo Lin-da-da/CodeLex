@@ -1,0 +1,122 @@
+[
+  {
+    "slug": "devops-what-containers-solve",
+    "stackSlug": "devops",
+    "title": "Why Containers Changed How We Ship Software",
+    "difficulty": 1,
+    "contentMd": "For most of software history, getting an application to run on another machine was a gamble. It worked on my laptop, but failed in production because the operating system, libraries, or configuration were slightly different. Containers solved this by packaging the application together with everything it needs to run: the code, the runtime, system tools, and settings. The result is a single, portable unit that behaves the same everywhere.\n\nA container is isolated from other containers, yet it shares the host machine's kernel, which makes it far lighter than a full virtual machine. You build an image once, and that image becomes the source of truth. Developers run the exact same image locally, in testing, and in production, which removes the classic it works on my machine problem.\n\nDocker made containers easy to build and share, and Kubernetes later made it possible to run thousands of them across a cluster of machines. Today, containers are the default unit of deployment for cloud-native applications. They make rollouts predictable, scaling automatic, and environments reproducible. Understanding containers is the first step into the whole world of modern DevOps.",
+    "license": "original",
+    "category": "tooling",
+    "contentCn": "在软件发展的大部分历史里，把一个应用搬到另一台机器上运行都是一场赌博。它在我的笔记本上能跑，一到生产环境却因为操作系统、依赖库或配置有细微差异而失败。容器 container 解决了这个问题：它把应用连同运行所需的一切打包在一起——代码、运行时、系统工具以及配置。最终得到的是一个可移植的单元，在任何地方行为都完全一致。\n\n容器 container 之间彼此隔离，但共享宿主机的内核，因此比完整的虚拟机轻量得多。你只需构建一次镜像，这个镜像就成了唯一可信来源。开发者在本地、测试环境和生产环境运行的是完全相同的镜像，这就消除了经典的「在我机器上是好的」（it works on my machine）问题。\n\nDocker 让容器易于构建和分享，Kubernetes 后来让成百上千个容器得以运行在一组机器组成的集群上。如今，容器已是云原生应用默认的部署单元。它们让发布变得可预测、扩缩容变得自动化、环境变得可复现。理解容器，是走进整个现代 DevOps 世界的第一步。",
+    "titleEn": "Why Containers Changed How We Ship Software",
+    "titleCn": "容器 container 如何改变了软件交付方式"
+  },
+  {
+    "slug": "devops-kubernetes-basics",
+    "stackSlug": "devops",
+    "title": "Kubernetes in Plain English",
+    "difficulty": 2,
+    "contentMd": "Kubernetes is a system that runs your containers at scale. Instead of manually starting a container on a server, you tell Kubernetes what you want, and it makes it happen. This idea is called declarative configuration: you describe the desired state, and the system keeps working until reality matches your description.\n\nThe smallest unit Kubernetes schedules is a pod, which usually holds one container. You do not manage pods directly for long-running services; instead you create a deployment that says, for example, I want three copies of this pod. If one pod crashes, Kubernetes notices and starts a replacement. This self-healing behavior is one of the main reasons teams adopt it.\n\nA cluster is a group of machines, called nodes, managed by a control plane. The control plane decides where each pod should run, while the nodes execute the work. To reach your pods from the internet, you expose a service, which gives them a stable address and spreads traffic across healthy instances.\n\nKubernetes also handles scaling, configuration through ConfigMaps, and secrets for sensitive data. At first the vocabulary feels heavy, but every concept maps to a simple job: keep your application running, reachable, and resilient.",
+    "license": "original",
+    "category": "tooling",
+    "contentCn": "Kubernetes 是一个以规模化方式运行容器 container 的系统。你不需要手动在某台服务器上启动容器，而是告诉 Kubernetes 你想要什么，由它来把事情变成现实。这个思路叫做声明式配置（declarative configuration）：你描述期望的状态，系统会持续工作，直到现实与你的描述一致。\n\nKubernetes 调度的最小单元是 pod，它通常包含一个容器。对于长期运行的服务，你不会直接管理 pod，而是创建一个 deployment，比如声明「我想要这个 pod 的三个副本」。如果某个 pod 崩溃，Kubernetes 会发现并启动一个替代品。这种自愈行为正是团队采用它的主要原因之一。\n\n集群（cluster）是由若干台机器组成的，这些机器称为节点（node），由控制平面（control plane）统一管理。控制平面决定每个 pod 该跑在哪里，节点则负责执行具体工作。为了让外部能够访问你的 pod，你需要暴露一个 service，它会为这些 pod 提供一个稳定地址，并把流量分摊到各个健康实例上。\n\nKubernetes 还负责处理扩缩容、通过 ConfigMap 管理配置，以及用 secrets 存放敏感数据。一开始这些术语显得很沉重，但每个概念都对应一件简单的事：让你的应用持续运行、可被访问并且有韧性。",
+    "titleEn": "Kubernetes in Plain English",
+    "titleCn": "用大白话讲清楚 Kubernetes"
+  },
+  {
+    "slug": "devops-cicd-explained",
+    "stackSlug": "devops",
+    "title": "Continuous Integration and Continuous Delivery",
+    "difficulty": 2,
+    "contentMd": "Continuous integration, or CI, means merging code changes often and verifying them automatically. Every time a developer pushes code, a pipeline builds the project and runs the tests. If anything breaks, the team learns within minutes instead of weeks. The goal is to catch problems while they are still small and cheap to fix.\n\nContinuous delivery, or CD, goes one step further. It means your code is always in a state that can be released to production. After the tests pass, the pipeline builds an immutable artifact and may deploy it to a staging environment. A human can then approve the final push to production, or the system can do it automatically.\n\nTogether, CI/CD turns releasing software from a stressful event into a routine. Teams that practice it ship smaller changes, more frequently, and with less risk. When something does go wrong, the change is small and easy to roll back.\n\nGood pipelines are also idempotent: running them again produces the same result. They cache dependencies to run faster, and they fail loudly when a step does not succeed. In short, CI/CD is the engine that connects a developer's keyboard to a running service in production.",
+    "license": "original",
+    "category": "tooling",
+    "contentCn": "持续集成（Continuous Integration，简称 CI）意味着频繁地合并代码改动并自动验证。每次开发者推送代码，流水线都会构建项目并运行测试。如果出了问题，团队几分钟内就能知道，而不是等上几周。目标是在问题还小、修复代价还低的时候就把它们抓住。\n\n持续交付（Continuous Delivery，简称 CD）更进一步。它意味着你的代码始终处于可以发布到生产环境的状态。测试通过后，流水线会构建出一个不可变的制品（artifact），并可能把它部署到预发布环境（staging environment）。随后可以由人工批准最后推送到生产，也可以由系统自动完成。\n\n两者结合，CI/CD 把「发布软件」从一个令人紧张的事件变成了日常操作。实践 CI/CD 的团队发布更小的改动、更高的频率，风险也更低。万一真出了问题，改动很小，回滚也很容易。\n\n好的流水线还具备幂等性（idempotent）：再跑一遍会得到同样的结果。它们会缓存依赖以加快速度，并且在某个步骤失败时大声报错。简而言之，CI/CD 是把开发者的键盘与生产环境中运行的服务连接起来的引擎。",
+    "titleEn": "Continuous Integration and Continuous Delivery",
+    "titleCn": "持续集成与持续交付"
+  },
+  {
+    "slug": "devops-observability-three-pillars",
+    "stackSlug": "devops",
+    "title": "The Three Pillars of Observability",
+    "difficulty": 3,
+    "contentMd": "When a system misbehaves, you cannot fix what you cannot see. Observability is the ability to understand a system's internal state by looking at its outputs. Most teams rely on three pillars: logs, metrics, and traces.\n\nLogs are timestamped records of discrete events, such as an error message or a request received. They are invaluable when you need the exact story of what happened. Metrics are numeric measurements sampled over time, like request rate, error percentage, or memory usage. They answer the question how is the system doing right now. Traces follow a single request as it travels through many services, showing where time is spent.\n\nPrometheus is a popular tool for collecting metrics through a pull model, scraping endpoints that expose numbers. Grafana then visualizes those numbers on dashboards. For traces, OpenTelemetry has become a common standard, producing spans that connect into a full picture of one request.\n\nThese three signals complement each other. Metrics tell you something is wrong, logs tell you what, and traces tell you where. Together they turn guesswork into evidence, which is exactly what you need during an incident.",
+    "license": "original",
+    "category": "tooling",
+    "contentCn": "当系统表现异常时，看不见的东西你无法修复。可观测性（observability）指的是通过观察系统输出来理解其内部状态的能力。大多数团队依赖三大支柱：日志（logs）、指标（metrics）和链路追踪（traces）。\n\n日志是带时间戳的离散事件记录，例如一条错误信息或一次收到的请求。当你需要还原事情发生的确切经过时，日志无可替代。指标是随时间采样的数值测量，比如请求速率、错误百分比或内存占用，它们回答的是「系统现在状况如何」。链路追踪则跟随单个请求穿越多个服务的过程，展示时间都花在了哪里。\n\nPrometheus 是一个流行的指标采集工具，它采用拉取（pull）模型，去抓取那些暴露数值接口的端点。Grafana 随后把这些数值可视化到仪表盘上。在追踪方面，OpenTelemetry 已成为事实上的通用标准，它产生的 span 可以拼接出一幅完整的单请求全景图。\n\n这三类信号彼此互补。指标告诉你「有问题」，日志告诉你「是什么」，链路追踪告诉你「在哪里」。它们合在一起把猜测变成证据，而这正是事故处理时你所需要的东西。",
+    "titleEn": "The Three Pillars of Observability",
+    "titleCn": "可观测性的三大支柱"
+  },
+  {
+    "slug": "devops-prometheus-grafana",
+    "stackSlug": "devops",
+    "title": "Watching Your System with Prometheus and Grafana",
+    "difficulty": 3,
+    "contentMd": "Prometheus is a monitoring system built for reliability. It collects metrics by scraping HTTP endpoints that your services expose, usually at a path called metrics. Each metric has a name and a set of labels, such as the endpoint or the status code, which lets you slice the data in many ways.\n\nThe data is stored as a time series, which means a stream of values over time. You query it with a language called PromQL. For example, you can ask for the rate of requests over the last five minutes, or the 99th percentile of response latency. When a value crosses a threshold, Prometheus sends an alert to Alertmanager, which routes it to the right team channel.\n\nGrafana sits on top of Prometheus and turns those queries into dashboards. Instead of reading raw numbers, an on-call engineer sees a graph of error rate and latency, often with the SLO drawn as a line. When the error budget is burning too fast, the dashboard makes it obvious.\n\nThis combination is powerful because it is open source, widely supported, and designed for dynamic environments like Kubernetes, where pods appear and disappear constantly. You do not list servers by hand; you discover them automatically and monitor what is actually running.",
+    "license": "original",
+    "category": "practice",
+    "contentCn": "Prometheus 是一个为可靠性而生的监控系统。它通过抓取服务暴露的 HTTP 端点来采集指标，这些端点通常位于一个叫 /metrics 的路径上。每个指标都有一个名称和一组标签（label），比如端点名或状态码，这让你可以从很多维度对数据做切分。\n\n数据以时间序列（time series）的形式存储，也就是随时间流动的一串数值。你用一门叫 PromQL 的语言来查询它。例如，你可以查询过去五分钟内的请求速率，或者响应延迟的 99 分位数。当某个数值越过阈值时，Prometheus 会把告警发给 Alertmanager，由它转发到对应团队的频道。\n\nGrafana 位于 Prometheus 之上，把这些查询变成仪表盘。值班工程师不必再盯着原始数字，而是看到一张错误率与延迟的曲线图，通常还会把 SLO 画成一条参考线。当错误预算消耗得太快时，仪表盘会让问题一目了然。\n\n这套组合之所以强大，是因为它开源、生态支持广泛，并且是专为 Kubernetes 这类动态环境设计的——在这里 pod 不断出现又消失。你不需要手工列出服务器；系统会自动发现它们，并监控真正在运行的东西。",
+    "titleEn": "Watching Your System with Prometheus and Grafana",
+    "titleCn": "用 Prometheus 和 Grafana 盯住你的系统"
+  },
+  {
+    "slug": "devops-infrastructure-as-code",
+    "stackSlug": "devops",
+    "title": "Infrastructure as Code: Treat Servers Like Code",
+    "difficulty": 3,
+    "contentMd": "In the early days of cloud, engineers clicked through web consoles to create servers, databases, and networks. The result was slow, error-prone, and impossible to reproduce. Infrastructure as code, or IaC, changes this by describing your entire environment in text files that can be stored in version control.\n\nWith a tool like Terraform, you declare the resources you want, then run a plan to preview the changes and an apply to make them real. The system figures out what already exists and what needs to be created, updated, or destroyed. Because the configuration lives in Git, every change is a reviewable pull request, and you can roll back by reverting a commit.\n\nIaC also supports the idea of immutable infrastructure. Rather than logging into a server and patching it by hand, you build a fresh image and replace the old machine entirely. This prevents configuration drift, where two servers slowly become different and cause mysterious bugs.\n\nThe benefit is consistency. Development, staging, and production can be built from the same modules with different variables. New team members can spin up the whole stack in minutes. Infrastructure becomes something you can test, audit, and automate like any other part of your codebase.",
+    "license": "original",
+    "category": "tooling",
+    "contentCn": "在云时代的早期，工程师只能在网页控制台里一路点选来创建服务器、数据库和网络。结果是缓慢、易出错，而且根本无法复现。基础设施即代码（Infrastructure as Code，简称 IaC）改变了这一切：它用可以纳入版本控制的文本文件来描述你的整个环境。\n\n借助 Terraform 之类的工具，你先声明想要哪些资源，然后运行 plan 预览变更，再运行 apply 让它们真正生效。系统会自行判断哪些已经存在、哪些需要创建、更新或销毁。由于配置保存在 Git 中，每一次变更都是一个可评审的 pull request，回滚只需 revert 一个 commit。\n\nIaC 还支持「不可变基础设施」的理念。你不必登录服务器手工打补丁，而是构建一个全新镜像，把旧机器整个替换掉。这能防止配置漂移（configuration drift）——也就是两台服务器慢慢变得不一样，最终引发莫名其妙的故障。\n\n它带来的好处是一致性。开发、预发布和生产环境可以用同一批模块、配合不同的变量构建出来。新加入的团队成员几分钟内就能拉起整套环境。基础设施变成了和代码库其他部分一样可以测试、审计和自动化的东西。",
+    "titleEn": "Infrastructure as Code: Treat Servers Like Code",
+    "titleCn": "基础设施即代码：像管理代码一样管理服务器"
+  },
+  {
+    "slug": "devops-sre-slo-error-budget",
+    "stackSlug": "devops",
+    "title": "SRE, SLOs, and the Error Budget",
+    "difficulty": 3,
+    "contentMd": "Site Reliability Engineering, or SRE, is an approach that applies software engineering to operations. Instead of promising a system will never fail, it accepts that failure is normal and focuses on how much is acceptable. The key tool is the SLO, a service level objective such as 99.9 percent of requests succeed within 300 milliseconds.\n\nTo measure an SLO you need an SLI, a service level indicator, which is the actual signal you observe, like the success rate. The gap between perfect and the target is the error budget. For a 99.9 percent target, you are allowed to fail about 0.1 percent of the time. This budget is not a penalty; it is a freedom.\n\nIf you are spending the error budget slowly, you can take risks like launching new features. If you burn through it quickly because of an incident, the team freezes risky changes and focuses on stability. This creates a healthy balance between speed and reliability.\n\nThe formal promise to a customer is the SLA, often stricter and tied to penalties. Good SRE teams write a postmortem after every serious incident, without blame, and turn the lessons into concrete improvements. Reliability becomes a measurable, shared responsibility.",
+    "license": "original",
+    "category": "practice",
+    "contentCn": "站点可靠性工程（Site Reliability Engineering，简称 SRE）是一套把软件工程方法应用到运维的思路。它不去承诺系统永不出故障，而是接受故障是常态，转而关注「多少故障是可以接受的」。核心工具是 SLO（服务等级目标），比如「99.9 percent 的请求要在 300 毫秒内成功」。\n\n要衡量一个 SLO，你需要一个 SLI（服务等级指标），也就是你实际观测到的信号，比如成功率。完美表现与目标之间的差距就是错误预算（error budget）。对于 99.9 percent 的目标，意味着你大约有 0.1 percent 的失败额度。这份预算不是惩罚，而是一种自由。\n\n如果你消耗错误预算的速度很慢，就可以承担一些风险，比如上线新功能。如果因为一次事故而迅速烧完了预算，团队就会冻结有风险的改动，把重心放在稳定性上。这在速度与可靠性之间形成了健康的平衡。\n\n对客户正式作出的承诺是 SLA，它通常更严格，并且与违约处罚挂钩。优秀的 SRE 团队会在每次严重事故后写一份不带指责的复盘（postmortem），并把教训落实为具体改进。可靠性由此变成一件可度量、人人共担的事情。",
+    "titleEn": "SRE, SLOs, and the Error Budget",
+    "titleCn": "SRE、SLO 与错误预算"
+  },
+  {
+    "slug": "devops-safe-deployments",
+    "stackSlug": "devops",
+    "title": "Releasing Without Fear: Safe Deployment Strategies",
+    "difficulty": 3,
+    "contentMd": "Deploying a new version used to mean downtime and nervous engineers. Modern teams use strategies that let them release continuously while keeping users happy. One common approach is the rolling update, where old pods are replaced a few at a time so some are always serving traffic.\n\nA canary release takes this further. You send a small slice of users, perhaps five percent, to the new version first. If error rates stay normal, you slowly increase the traffic. If something breaks, only a tiny group is affected, and you roll back instantly. Blue-green deployment keeps two identical environments, one live and one idle. You deploy to the idle one, test it, then flip the router so all traffic moves at once, giving you near zero-downtime and a fast escape hatch.\n\nUnderneath these strategies are simple safeguards. A readiness probe ensures a pod only receives traffic once it is ready. A liveness probe restarts a stuck process. Graceful shutdown lets in-flight requests finish before the container stops.\n\nCombined with good observability, these techniques turn releases from dangerous events into boring, frequent, and safe moments that users never notice.",
+    "license": "original",
+    "category": "tooling",
+    "contentCn": "过去发布一个新版本意味着停机和紧张的工程师。如今的团队采用各种策略，在保持用户满意的同时持续发布。一种常见做法是滚动更新（rolling update）：每次只替换少量旧 pod，保证总有一些 pod 在承接流量。\n\n金丝雀发布（canary release）更进一步。你先让一小部分用户（比如 5 percent）进入新版本。如果错误率保持正常，就逐步扩大流量。一旦出问题，受影响的只是极小一部分用户，你可以瞬间回滚。蓝绿部署（blue-green deployment）则保留两套完全相同的环境，一套在跑、一套闲置。你先部署到闲置的那套并做验证，然后切换路由让全部流量一次性切过去，既能实现近乎零停机，又留有快速撤离的退路。\n\n这些策略之下是一些简单的保护措施。readiness probe 确保 pod 只有在真正就绪后才接收流量；liveness probe 会把卡死的进程重启；优雅停机（graceful shutdown）让正在处理的请求在容器停止前完成。\n\n再加上良好的可观测性，这些技术就把发布从「危险事件」变成了「无聊、频繁且安全」的时刻——用户从来不会察觉。",
+    "titleEn": "Releasing Without Fear: Safe Deployment Strategies",
+    "titleCn": "无畏发布：安全的部署策略"
+  },
+  {
+    "slug": "devops-resilience-patterns",
+    "stackSlug": "devops",
+    "title": "Building Resilience into Distributed Systems",
+    "difficulty": 4,
+    "contentMd": "In a distributed system, parts fail all the time, and your design must assume this. Resilience is the ability to keep serving users even when some components are broken. Several patterns help achieve it.\n\nA circuit breaker watches calls to a dependency. If the failure rate climbs too high, it opens the circuit and stops sending requests for a while, giving the struggling service time to recover. Without it, one slow database can drag down the entire site through a retry storm.\n\nSpeaking of retries, doing them blindly is dangerous. A backoff strategy increases the wait between attempts, often exponentially, so a flooded service is not hammered further. Pair this with a rate limit that caps how many requests a client may send, protecting shared resources.\n\nDecoupling services with a message queue lets work wait during a slowdown instead of failing. And chaos engineering takes resilience seriously by deliberately injecting faults, such as killing random pods, to prove the system survives.\n\nNone of these patterns make failure impossible. They make failure small, contained, and recoverable. A resilient system does not need heroes at 3 a.m.; it simply absorbs the shock and continues, which is the real goal of good operations.",
+    "license": "original",
+    "category": "architecture",
+    "contentCn": "在分布式系统中，部件随时都在故障，你的设计必须预设这一点。韧性（resilience）指的是即使部分组件已经损坏，仍能继续为用户提供服务的能力。有几种模式可以帮助实现它。\n\n熔断器（circuit breaker）负责监控对某个依赖的调用。如果失败率升得太高，它就会「断开」电路，暂停一段时间不再发请求，给正在挣扎的服务喘息恢复的机会。没有它，一个变慢的数据库就可能通过重试风暴拖垮整个站点。\n\n说到重试，盲目重试是危险的。退避策略（backoff）会拉长每次尝试之间的等待时间，通常按指数增长，这样被洪水般请求冲击的服务就不会继续被锤。把它与限流（rate limit）搭配起来——后者为单个客户端的请求数设定上限，保护共享资源。\n\n用消息队列把服务解耦，可以让工作在下行期排队等待，而不是直接失败。混沌工程（chaos engineering）则更认真地对待韧性：它会主动注入故障，比如随机杀掉 pod，以此证明系统能够存活下来。\n\n这些模式没有一个能让故障消失。它们让故障变得微小、可控、可恢复。一个有韧性的系统不需要凌晨三点出现的英雄；它只是吸收住冲击然后继续运行，而这正是良好运维的真正目标。",
+    "titleEn": "Building Resilience into Distributed Systems",
+    "titleCn": "把韧性建进分布式系统"
+  },
+  {
+    "slug": "devops-gitops-future",
+    "stackSlug": "devops",
+    "title": "GitOps: Git as the Control Center",
+    "difficulty": 4,
+    "contentMd": "GitOps is a way of running Kubernetes where the Git repository is the single source of truth for what should run in the cluster. You do not kubectl apply from your laptop. Instead, you change a file in Git, open a pull request, and once it is merged, a controller inside the cluster notices the difference and reconciles reality to match the new desired state.\n\nThis has several nice effects. Every change is visible in Git history, so auditing who changed what and when is trivial. Rollbacks are just a git revert. If someone manually edits the cluster and causes drift, the controller detects it and restores the correct state automatically.\n\nTools like Argo CD make this practical. They continuously compare the live cluster against the Git repo and report any divergence on a dashboard. If the cluster turns red, you know it no longer matches the source of truth.\n\nGitOps fits naturally with CI/CD. The pipeline builds and tests, while GitOps handles the final step of syncing state to production. It reduces the number of people who need direct cluster access, which improves security through least privilege. As cloud-native systems grow more complex, treating the cluster like a codebase you can review and roll back is becoming the standard way to operate safely at scale.",
+    "license": "original",
+    "category": "tooling",
+    "contentCn": "GitOps 是一种运行 Kubernetes 的方式，其中 Git 仓库是「集群里应该跑什么」的唯一可信来源。你不再从自己的笔记本上执行 kubectl apply，而是修改 Git 中的一个文件、提交 pull request，一旦合并，集群内的控制器就会发现差异，并把现实状态调谐到新的期望状态。\n\n这会带来几个很让人愉快的效果。每一次变更都体现在 Git 历史中，因此审计「谁在什么时候改了什么」变得轻而易举。回滚只需要一次 git revert。如果有人手动改了集群造成漂移，控制器会自动检测并恢复到正确状态。\n\nArgo CD 之类的工具让这套做法变得可落地。它们持续把运行中的集群与 Git 仓库做对比，并在仪表盘上报出任何分歧。如果集群变成红色，你就知道它已经不再与可信来源一致了。\n\nGitOps 与 CI/CD 天然契合：流水线负责构建和测试，GitOps 负责把状态同步到生产的最后一步。它减少了需要直接访问集群的人员数量，通过最小权限原则提升了安全性。随着云原生系统日益复杂，把集群当作一份可以评审、可以回滚的代码来对待，正在成为大规模安全运维的标准做法。",
+    "titleEn": "GitOps: Git as the Control Center",
+    "titleCn": "GitOps：让 Git 成为控制中枢"
+  }
+]

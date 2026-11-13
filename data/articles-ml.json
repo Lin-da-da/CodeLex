@@ -1,0 +1,122 @@
+[
+  {
+    "slug": "ml-supervised-learning",
+    "stackSlug": "ml",
+    "title": "Supervised Learning in Plain English",
+    "difficulty": 1,
+    "contentMd": "Machine learning lets programs improve at a task by studying data instead of following fixed rules. In supervised learning, every training example comes with a label that tells the model the correct answer. The model's job is to discover a mapping from inputs to those labels, so that later it can predict labels for data it has never seen.\n\nA classic example is email spam detection. You collect thousands of past messages, each already marked as spam or not spam. The model reads features such as the sender, certain keywords, and the time of day, then learns which combinations tend to indicate spam. After training, it can flag new messages on its own.\n\nSupervised learning splits into two common types. When the label is a category, such as dog or cat, we call it classification. When the label is a number, such as a house price, we call it regression. Both share the same idea: minimize the gap between the model's predictions and the true labels.\n\nThe quality of the labels matters as much as the algorithm. Noisy or biased labels teach the model the wrong lesson, and no amount of compute can fully fix that. Good supervised models start with clean, representative training data.",
+    "license": "original",
+    "category": "basics",
+    "contentCn": "机器学习 machine learning 让程序通过研究数据而不是遵循固定规则来在某项任务上变得更好。在监督学习 supervised learning 中，每个训练样本都带有一个标签，告诉模型正确答案是什么。模型的任务是发现从输入到这些标签的映射，从而日后能对从未见过的数据预测标签。\n\n一个经典例子是垃圾邮件检测。你收集数千条过往邮件，每条都已标记为垃圾或非垃圾。模型读取发件人、某些关键词、发送时间等特征，然后学习哪些组合往往意味着垃圾邮件。训练完成后，它就能自行标记新的邮件。\n\n监督学习通常分成两类。当标签是类别，比如狗或猫，我们称之为分类 classification。当标签是数字，比如房屋售价，我们称之为回归 regression。两者共享同一个思想：让模型的预测与真实标签之间的差距尽可能小。\n\n标签的质量与算法本身同等重要。带噪声或有偏的标签会给模型上错课，再多的算力也无法彻底弥补。好的监督模型总是从干净、有代表性的训练数据开始。",
+    "titleEn": "Supervised Learning in Plain English",
+    "titleCn": "用大白话讲清楚监督学习"
+  },
+  {
+    "slug": "ml-gradient-descent",
+    "stackSlug": "ml",
+    "title": "How Gradient Descent Finds the Answer",
+    "difficulty": 2,
+    "contentMd": "Training a model means finding parameters that make its predictions accurate. Gradient descent is the workhorse method for this search. It treats the loss function as a landscape of hills and valleys, where the height at any point is how wrong the model currently is.\n\nThe algorithm starts at a random position and looks around to find the direction of steepest increase, which is the gradient. It then takes a small step downhill, opposite to the gradient, because going down reduces the error. By repeating this, the model gradually settles into a low region where predictions are close to the truth.\n\nThe size of each step is controlled by the learning rate. If the rate is too large, the model may overshoot the minimum and bounce around without converging. If it is too small, training becomes painfully slow and can get stuck in a poor solution. Choosing a good learning rate is one of the most practical skills in deep learning.\n\nIn practice we rarely compute the gradient over the entire dataset at once. Instead, stochastic gradient descent uses small random batches, which is faster and adds helpful noise that can help escape bad local minima.",
+    "license": "original",
+    "category": "practice",
+    "contentCn": "训练一个模型，意味着找到让它的预测足够准确的参数。梯度下降 gradient descent 是完成这项搜索的主力方法。它把损失函数看作一片由山丘与山谷构成的地貌，任何一点的高度就代表模型当前错得有多离谱。\n\n算法从一个随机位置出发，向四周探查以找到上升最陡的方向，也就是梯度 gradient。然后它朝相反方向，也就是下坡方向，迈出一小步，因为往下走能减小误差。不断重复，模型就会逐渐稳定到一个低谷区域，在那里预测值接近真实值。\n\n每一步的大小由学习率 learning rate 控制。如果学习率太大，模型可能冲过最小值，在附近来回弹跳而无法收敛。如果太小，训练会慢得令人难受，还可能卡在一个糟糕的解里。选好学习率是深度学习中最实用的技能之一。\n\n在实践中，我们很少对整个数据集一次性计算梯度。相反，随机梯度下降 stochastic gradient descent 使用随机的迷你批次，速度更快，而且引入的有益噪声还能帮助逃离糟糕的局部极小值。",
+    "titleEn": "How Gradient Descent Finds the Answer",
+    "titleCn": "梯度下降是如何找到答案的"
+  },
+  {
+    "slug": "ml-neural-networks",
+    "stackSlug": "ml",
+    "title": "What a Neural Network Really Is",
+    "difficulty": 2,
+    "contentMd": "A neural network is a stack of simple units called neurons, wired together in layers. Each neuron takes several numbers as input, multiplies them by learned weights, adds a bias term, and passes the result through a nonlinear activation function. A single neuron is weak, but many of them together can represent remarkably complex patterns.\n\nThe first layer receives the raw features, the last layer produces the prediction, and the layers in between are called hidden layers. When a network has many hidden layers, we call it deep learning. Depth lets the model build up understanding in stages, from edges in an image to shapes, and finally to whole objects.\n\nWhat makes neural networks powerful is the activation function. Without it, stacking linear operations would collapse into one linear step, no matter how many layers we add. Functions like ReLU introduce the nonlinearity that lets the network bend and curve its decisions around real data.\n\nTraining happens through forward passes and backpropagation. A forward pass computes a prediction, the loss measures the error, and backpropagation sends the gradient back through every weight so the optimizer can improve them. After enough iterations, the network learns to map inputs to outputs with surprising accuracy.",
+    "license": "original",
+    "category": "basics",
+    "contentCn": "神经网络 neural network 是一叠称为神经元 neuron 的简单单元，按层连接起来。每个神经元接收若干数字作为输入，把它们乘以学到的权重，再加上一个偏置项，然后把结果送过一个非线性激活函数。单神经元很弱，但大量神经元组合起来就能表示极其复杂的模式。\n\n第一层接收原始特征，最后一层产出预测，中间的层称为隐藏层 hidden layer。当一个网络有很多隐藏层时，我们称之为深度学习 deep learning。深度让模型能够分阶段地层层建立理解，从图像中的边缘到形状，最后到完整的物体。\n\n让神经网络强大的正是激活函数 activation function。没有它，无论叠加多少层线性运算，最终都会塌缩成同一个线性步骤。像 ReLU 这样的函数引入了非线性，让网络能够绕着真实数据把决策面弯曲、扭转。\n\n训练通过前向传播和反向传播完成。前向传播计算出一个预测，损失函数衡量误差，反向传播把梯度送回每一个权重，好让优化器去改进它们。经过足够多的迭代，网络就能以惊人的精度学会把输入映射到输出。",
+    "titleEn": "What a Neural Network Really Is",
+    "titleCn": "神经网络究竟是什么"
+  },
+  {
+    "slug": "ml-overfitting-regularization",
+    "stackSlug": "ml",
+    "title": "Overfitting and How to Fight It",
+    "difficulty": 3,
+    "contentMd": "A model that memorizes its training set is not useful. Overfitting happens when a model learns the noise and quirks of the training data so well that it fails on new examples. You can spot it by a small training error paired with a large validation error.\n\nUnderfitting is the opposite problem. The model is too simple to capture the underlying pattern, so it performs poorly everywhere. The goal of training is to land between these two, with a model that generalizes.\n\nRegularization is the set of tools we use to fight overfitting. Dropout randomly disables neurons during training, forcing the network to rely on many different paths instead of a few fragile ones. L2 regularization penalizes large weights, keeping the model smooth and conservative. Early stopping halts training once the validation error stops improving, before the model starts to memorize.\n\nMore data is often the best regularizer of all. With enough diverse examples, the model has less room to exploit lucky coincidences. Data augmentation helps too, by creating variations of existing samples so the model learns the essence rather than the specifics.\n\nThe key habit is to evaluate on a validation set you never train on, so the reported performance reflects the real world.",
+    "license": "original",
+    "category": "practice",
+    "contentCn": "一个把训练集背下来的模型毫无用处。当模型把训练数据的噪声和怪癖学得太好，以至于在新样本上失败时，就发生了过拟合 overfitting。你可以通过「训练误差很小但验证误差很大」这一组合识别出它。\n\n欠拟合 underfitting 是相反的问题。模型过于简单，无法捕捉底层模式，于是在哪儿表现都不好。训练的目标是落在两者之间，得到一个能够泛化的模型。\n\n正则化 regularization 是我们对抗过拟合所用的一整套工具。Dropout 在训练时随机禁用一些神经元，迫使网络依赖许多不同的路径而不是少数脆弱的路径。L2 正则化惩罚过大的权重，让模型保持平滑与保守。早停 early stopping 则在验证误差停止改善之后、模型开始死记硬背之前终止训练。\n\n更多的数据往往是最好的正则化手段。有了足够多样的样本，模型就更难去利用那些碰巧的巧合。数据增强 data augmentation 也有帮助，它通过创造现有样本的变体，让模型学到本质而不是细节。\n\n关键习惯是：始终在一个你从未训练过的验证集上评估，这样报告出来的性能才反映真实世界。",
+    "titleEn": "Overfitting and How to Fight It",
+    "titleCn": "过拟合，以及如何与它对抗"
+  },
+  {
+    "slug": "ml-cnns-vision",
+    "stackSlug": "ml",
+    "title": "Convolutional Networks for Vision",
+    "difficulty": 3,
+    "contentMd": "Images are grids of pixels, and ordinary neural networks struggle with them because every pixel would need its own weight. Convolutional neural networks solve this with a clever trick: they share weights across space using small filters that slide over the image.\n\nA convolution applies the same small kernel at every position, producing a feature map that highlights local patterns such as edges or corners. Stacking many convolutions lets the network detect increasingly abstract features, from simple textures in early layers to eyes and wheels in deeper ones.\n\nPooling layers downsample these maps by keeping only the strongest response in each region. This makes the representation smaller and more robust to small shifts, so a cat detected slightly to the left is still recognized. After several conv and pool blocks, the feature map is flattened and passed to dense layers that output the final class.\n\nConvolutional networks powered the revolution in computer vision, from photo tagging to medical scanning. Their strength is translation invariance: the same filter works wherever a feature appears. This sharing of weights also makes them far more efficient than fully connected models on visual data.\n\nModern vision systems often pre-train a convolutional backbone on a huge dataset, then reuse it for new tasks with only a small labeled set.",
+    "license": "original",
+    "category": "practice",
+    "contentCn": "图像是像素组成的网格，而普通神经网络很难处理它们，因为每个像素都需要自己的一组权重。卷积神经网络 convolutional neural network 用一个巧妙的办法解决了这个问题：它们用滑动在图像上的小滤波器，在空间维度上共享权重。\n\n卷积在每个位置应用同一个小型卷积核 kernel，产生一张特征图 feature map，把边缘或角点这类局部模式凸显出来。叠加许多层卷积，网络就能探测越来越抽象的特征，从浅层的简单纹理，到深层的眼睛和轮子。\n\n池化层 pooling layer 通过只保留每个区域中最强的响应来对这些图降采样。这让表示更小、对小幅位移也更鲁棒，因此一只稍微偏左的猫仍然能被识别出来。经过若干个卷积与池化模块之后，特征图被展平，送入全连接层输出最终的类别。\n\n卷积网络推动了计算机视觉的变革，从照片打标签到医学扫描。它的力量来自平移不变性：同一个滤波器无论特征出现在哪里都能工作。这种权重共享也让它们在视觉数据上远比全连接模型高效。\n\n现代视觉系统常常先在海量数据集上预训练一个卷积主干，再用少量标注数据复用它来应对新任务。",
+    "titleEn": "Convolutional Networks for Vision",
+    "titleCn": "用于视觉的卷积网络"
+  },
+  {
+    "slug": "ml-transformers-attention",
+    "stackSlug": "ml",
+    "title": "Transformers and the Attention Idea",
+    "difficulty": 4,
+    "contentMd": "For years, sequences like text were handled by recurrent networks that processed words one at a time. The Transformer changed everything by replacing recurrence with attention, allowing the model to look at the whole sentence at once.\n\nSelf-attention works by comparing each word, the query, against every other word, the keys, to decide how much attention to pay. The result is a weighted mix of values that captures context. A word like bank can thus gather meaning from river or money appearing elsewhere in the sentence.\n\nThe original architecture uses stacks of encoders and decoders, each built from multi-head attention and feedforward blocks. Multiple attention heads let the model track several relationships in parallel, such as grammar and topic. Positional encoding is added so the model knows the order of words, since attention itself ignores sequence order.\n\nTransformers scale beautifully with data and hardware. Large language models are essentially Transformers trained on massive text corpora, and they can write, translate, and reason surprisingly well. Their main cost is the attention computation, which grows with the square of the sequence length.\n\nBecause attention connects every token to every other token, Transformers are the default choice for modern natural language processing.",
+    "license": "original",
+    "category": "practice",
+    "contentCn": "多年来，文本这类序列一直由循环网络处理，它们一次处理一个词。Transformer 用注意力 attention 取代了循环，彻底改变了这一切，让模型能够一次性看到整个句子。\n\n自注意力 self-attention 的工作方式是：把每个词（查询 query）与其他所有词（键 key）作比较，来决定应该分配多少注意力。结果是一个带权的 values 混合体，用以捕捉上下文。这样，像 bank 这样的词就能从句子别处出现的 river 或 money 那里汲取含义。\n\n最初的架构使用编码器和解码器的堆叠，每一部分都由多头注意力和前馈块构成。多个注意力头让模型能并行追踪若干种关系，比如语法关系和主题关系。还会加入位置编码 positional encoding，让模型知道词的顺序，因为注意力本身忽略序列顺序。\n\nTransformer 随数据和硬件一起优雅地扩展。大语言模型本质上就是在海量文本语料上训练的 Transformer，它们能写作、翻译，推理能力也出人意料地好。它们的主要代价是注意力计算，其开销随序列长度的平方增长。\n\n由于注意力把每个 token 与其他所有 token 相连，Transformer 已成为现代自然语言处理的首选。",
+    "titleEn": "Transformers and the Attention Idea",
+    "titleCn": "Transformer 与注意力思想"
+  },
+  {
+    "slug": "ml-data-splits",
+    "stackSlug": "ml",
+    "title": "Training, Validation, and Test Sets",
+    "difficulty": 2,
+    "contentMd": "Before training, we split the dataset into parts so we can trust the results. The training set is what the model learns from, the validation set guides decisions during development, and the test set gives a final, honest score.\n\nMixing these roles is a common mistake. If you tune the model while watching the test set, you have quietly trained on it, and the reported number will be optimistic. The test set should stay sealed until the very end, used only once to estimate real performance.\n\nThe validation set serves the middle step. You watch its error to pick the best epoch, choose the learning rate, and decide when to stop. Because the model never updates using validation labels, that score stays a fair guide for tuning.\n\nA typical split might be eighty percent for training, ten for validation, and ten for testing, though small datasets often need cross-validation instead. Cross-validation rotates the folds so every example gets a turn in the validation set, giving a more stable estimate.\n\nGood splits respect the data's natural grouping. If one patient contributes many scans, keep all of their scans in a single split, or the model may cheat by memorizing the patient across train and test.",
+    "license": "original",
+    "category": "practice",
+    "contentCn": "在训练之前，我们把数据集切成几部分，这样结果才值得信赖。训练集 training set 是模型学习的地方，验证集 validation set 在开发过程中指引决策，测试集 test set 则给出一个最终而诚实的分数。\n\n混用这些角色是常见错误。如果你在盯着测试集的同时调模型，你其实已经悄悄在上面训练过了，报告出来的数字会偏乐观。测试集应当一直封存到最后，只用一次来估计真实性能。\n\n验证集承担的是中间那一步。你观察它的误差来挑选最佳 epoch、选择学习率，并决定何时停止。因为模型从不利用验证标签更新，所以那个分数始终是调参的公平指引。\n\n一个典型的划分可能是百分之八十用于训练、百分之十用于验证、百分之十用于测试，不过小数据集往往需要改用交叉验证 cross-validation。交叉验证轮换各个折，让每个样本都有机会进入验证集，从而给出更稳定的估计。\n\n好的划分要尊重数据的天然分组。如果一位患者贡献了很多扫描，那就把他所有的扫描放在同一个划分里，否则模型可能通过记住这位患者而在训练集和测试集之间作弊。",
+    "titleEn": "Training, Validation, and Test Sets",
+    "titleCn": "训练集、验证集与测试集"
+  },
+  {
+    "slug": "ml-embeddings-nlp",
+    "stackSlug": "ml",
+    "title": "Embeddings: Turning Words into Numbers",
+    "difficulty": 3,
+    "contentMd": "Computers need numbers, but language is made of words. Embeddings bridge this gap by mapping each word to a dense vector in a continuous space, where similar meanings sit close together.\n\nAn embedding layer learns these vectors during training. Early methods like word2vec trained on co-occurrence, so the vector for king minus man plus woman lands near queen. Modern models build context-aware embeddings, where the same word gets different vectors depending on the sentence around it.\n\nThe power of embeddings is that arithmetic and distance in vector space mirror meaning. We can cluster words, find synonyms, or feed the vectors into downstream models for classification and search. They also shrink the input: a vocabulary of fifty thousand words becomes a compact matrix instead of a huge one-hot vector.\n\nIn practice, tokenization decides how text is split before embedding. Subword tokenizers break rare words into familiar pieces, which helps the model handle new terms and different languages. Each token then looks up its vector, and the sequence of vectors flows into the neural network.\n\nGood embeddings are the foundation of most natural language processing today, from translation to question answering, because they turn text into a form a model can actually learn from.",
+    "license": "original",
+    "category": "practice",
+    "contentCn": "计算机需要数字，而语言由词语构成。Embedding 词向量架起了这座桥：它把每个词映射为连续空间中的一个稠密向量，含义相近的词彼此靠得很近。\n\nembedding 层在训练过程中学习这些向量。早期方法如 word2vec 建立在共现统计之上，所以 king 的向量减去 man 加上 woman 会落在 queen 附近。现代模型构建的是上下文感知的 embedding，同一个词会根据周围的句子得到不同的向量。\n\nembedding 的力量在于，向量空间中的算术和距离能映射到语义上。我们可以对词做聚类、找出近义词，或者把这些向量喂给下游模型去做分类和检索。它们还压缩了输入：五万词的词表变成了一个紧凑的矩阵，而不是巨大的 one-hot 向量。\n\n在实践中，分词 tokenization 决定了文本在做 embedding 之前如何被切分。子词分词器 subword tokenizer 把罕见词拆成熟悉的片段，这有助于模型处理新术语和不同语言。每个 token 随后查表得到自己的向量，向量序列再流入神经网络。\n\n好的 embedding 是当今大多数自然语言处理的基础，从翻译到问答皆是如此，因为它们把文本变成了模型真正能够学习的形态。",
+    "titleEn": "Embeddings: Turning Words into Numbers",
+    "titleCn": "Embedding：把词变成数字"
+  },
+  {
+    "slug": "ml-evaluation-metrics",
+    "stackSlug": "ml",
+    "title": "Reading the Right Evaluation Metric",
+    "difficulty": 3,
+    "contentMd": "Accuracy is the first metric people reach for, but it can mislead. If only one percent of emails are spam, a model that labels everything as not spam is ninety-nine percent accurate while catching nothing. We need metrics that look deeper.\n\nFor classification, the confusion matrix records true positives, false positives, true negatives, and false negatives. From it we derive precision and recall. Precision asks how many predicted positives were correct, which matters when false alarms are costly. Recall asks how many real positives we found, which matters when missing a case is dangerous, such as in disease screening.\n\nThe F1 score is the harmonic mean of precision and recall, rewarding models that do well on both. It is especially useful on imbalanced data where accuracy hides failure.\n\nFor ranking problems, the ROC curve plots true positive rate against false positive rate as the decision threshold moves. The area under this curve, called AUC, tells us how well the model separates the classes regardless of the threshold.\n\nNo single number tells the whole story. Choose the metric that matches the cost of being wrong, and always inspect the confusion matrix before trusting a model in production.",
+    "license": "original",
+    "category": "pitfalls",
+    "contentCn": "准确率 accuracy 是人们第一个想用的指标，但它可能误导人。如果只有百分之一的邮件是垃圾邮件，那么把所有邮件都标为非垃圾的模型准确率高达百分之九十九，却什么都没抓到。我们需要看得更深的指标。\n\n对于分类任务，混淆矩阵 confusion matrix 记录真正例、假正例、真负例和假负例。由它可以推导出精确率 precision 和召回率 recall。精确率问的是预测为正例的那些里有多少是对的，当误报代价高昂时它很重要。召回率问的是我们找出了多少真实正例，当漏掉一个案子很危险时它很重要，比如疾病筛查。\n\nF1 分数是精确率与召回率的调和平均，它奖励两方面都表现出色的模型。在准确率会掩盖失败的不平衡数据上，它尤其有用。\n\n对于排序类问题，ROC 曲线会随着决策阈值移动，绘制真正例率与假正例率的关系。这条曲线下的面积，称为 AUC，告诉我们无论阈值取在哪里，模型区分两个类的能力有多好。\n\n没有任何单一数字能讲完整个故事。选择与「犯错代价」相匹配的指标，并且在生产环境信任一个模型之前，永远先看一眼混淆矩阵。",
+    "titleEn": "Reading the Right Evaluation Metric",
+    "titleCn": "读懂正确的评估指标"
+  },
+  {
+    "slug": "ml-transfer-learning",
+    "stackSlug": "ml",
+    "title": "Transfer Learning Saves Labels",
+    "difficulty": 3,
+    "contentMd": "Collecting and labeling a large dataset from scratch is expensive. Transfer learning offers a shortcut: take a model already trained on a big, general task and adapt it to your smaller, specific one.\n\nThe idea rests on the observation that early layers of a network learn generic features. In vision, the first convolutions detect edges and blobs that are useful for almost any image task. Only the later layers specialize. So we can freeze the early layers and retrain just the top, saving both data and compute.\n\nFine-tuning goes a step further. After swapping the final layer for your own, you train the whole network with a small learning rate. The pre-trained weights give a strong starting point, and a gentle update bends them toward your domain without destroying what they already know.\n\nThis pattern is everywhere in modern machine learning. Large language models are pre-trained on broad text, then fine-tuned on instruction data to follow user prompts. Vision models pre-trained on massive image sets become the backbone for medical or satellite tasks with only a few hundred labeled examples.\n\nTransfer learning turns scarce labels into acceptable results and makes deep learning practical for teams without giant budgets.",
+    "license": "original",
+    "category": "practice",
+    "contentCn": "从零开始收集并标注一个大型数据集代价高昂。迁移学习 transfer learning 提供了一条捷径：拿一个已经在大规模通用任务上训练好的模型，再把它适配到你自己更小、更具体的任务上。\n\n这个想法基于一个观察：网络的浅层会学到通用特征。在视觉领域，最前面的几层卷积检测的是边缘和色块，对几乎任何图像任务都有用。只有后面的层才变得专门化。所以我们可以冻结浅层，只重新训练上层，同时省下数据和算力。\n\n微调 fine-tuning 更进一步。在把最后一层换成你自己的之后，你用一个很小的学习率训练整个网络。预训练权重提供了一个强有力的起点，而温和的更新会把它们朝你的领域弯曲，同时不破坏它们已经掌握的东西。\n\n这个模式在现代机器学习中无处不在。大语言模型先在广泛文本上预训练，再在指令数据上微调，从而能遵循用户提示。视觉模型在海量图像上预训练之后，仅凭几百个标注样本就能成为医学或卫星任务的骨干网络。\n\n迁移学习把稀缺的标注变成了可接受的结果，也让深度学习对那些没有巨额预算的团队变得可行。",
+    "titleEn": "Transfer Learning Saves Labels",
+    "titleCn": "迁移学习省下了标注成本"
+  }
+]

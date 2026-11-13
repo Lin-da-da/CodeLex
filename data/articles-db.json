@@ -1,0 +1,122 @@
+[
+  {
+    "slug": "db-why-indexes-matter",
+    "stackSlug": "db",
+    "title": "Why Database Indexes Matter",
+    "difficulty": 2,
+    "contentMd": "When a table grows to millions of rows, a simple lookup can suddenly feel slow. Without help, the engine must walk every row to find the ones you asked for, a process called a full table scan. An index changes this by keeping a small, sorted structure that points to the real data, much like the index at the back of a book.\n\nMost relational databases build indexes as B-trees, which let the engine jump to the right place in logarithmic time instead of scanning everything. If you often filter by a column, adding an index on that column usually turns a multi-second query into a millisecond one.\n\nIndexes are not free, however. Every insert, update, or delete must also update the relevant indexes, so too many of them can slow down writes. A good rule is to index the columns you actually query and to prefer a composite index when you filter by several columns together. A covering index, which already contains every column the query needs, can remove the trip back to the table entirely. Learn to read the query plan, and the right index will reveal itself quickly.",
+    "license": "original",
+    "category": "practice",
+    "contentCn": "当一张表膨胀到数百万行时，一个简单的查询也可能突然变慢。没有人帮忙的话，引擎必须逐行走遍每一行才能找到你要的数据，这个过程称为全表扫描 full table scan。索引 index 改变了这一点：它维护一个小的、有序的结构指向真实数据，就像书末的索引一样。\n\n大多数关系型数据库使用 B 树 B-tree 来构建索引，让引擎以对数时间跳到正确的位置，而不是扫描全部数据。如果你经常按某一列过滤，在该列上建索引通常能把一条耗时数秒的查询变成毫秒级。\n\n不过索引并不是免费的。每一次插入、更新或删除也都必须更新相关索引，所以索引过多会拖慢写入。一条不错的经验法则是：为真正会查询的列建索引，并且当你要同时按多个列过滤时，优先使用复合索引 composite index。覆盖索引 covering index 已经包含了查询所需的全部列，可以彻底省掉回表的那一趟。学会读执行计划，正确的索引很快就会自己浮现出来。",
+    "titleEn": "Why Database Indexes Matter",
+    "titleCn": "数据库索引为什么重要"
+  },
+  {
+    "slug": "db-acid-explained",
+    "stackSlug": "db",
+    "title": "Understanding ACID Transactions",
+    "difficulty": 2,
+    "contentMd": "A transaction groups several operations so that they either all succeed or all fail together. The guarantee behind this is known as ACID, a set of four properties that keep your data trustworthy even when things go wrong.\n\nAtomicity means the transaction is indivisible: if one step fails, the whole unit is rolled back as if nothing happened. Consistency ensures the database moves from one valid state to another, honoring every constraint you defined. Isolation controls how much concurrent transactions can see of each other's unfinished work. Durability promises that once you commit, the change survives a crash, usually thanks to a write-ahead log.\n\nTogether these properties let programmers reason about money transfers, orders, and inventory without manually tracking every failure. You begin a transaction, perform your updates, and then commit. If an exception occurs, you rollback instead. Understanding ACID is the first step toward writing code that stays correct under load and failure.",
+    "license": "original",
+    "category": "concurrency",
+    "contentCn": "事务 transaction 把若干操作组织在一起，让它们要么全部成功，要么一起失败。支撑这一保证的特性被称为 ACID，它是一组让数据即使在出错时依然可信的四大属性。\n\n原子性 Atomicity 意味着事务不可分割：如果某一步失败，整个单元都会回滚，仿佛什么都没发生。一致性 Consistency 确保数据库从一个有效状态迁移到另一个有效状态，并遵守你定义的每一条约束。隔离性 Isolation 决定并发事务彼此能看到对方多少未完成的工作。持久性 Durability 保证一旦提交，改动就能挺过崩溃，这通常要靠预写日志 write-ahead log。\n\n这些特性合在一起，让程序员无需手工追踪每一种失败，就能推理资金转账、订单和库存这类问题。你开启一个事务，执行更新，然后提交。如果发生异常，就改为回滚。理解 ACID 是写出在高并发与故障下依然正确的代码的第一步。",
+    "titleEn": "Understanding ACID Transactions",
+    "titleCn": "读懂 ACID 事务"
+  },
+  {
+    "slug": "db-isolation-levels",
+    "stackSlug": "db",
+    "title": "A Practical Look at Isolation Levels",
+    "difficulty": 3,
+    "contentMd": "Isolation levels decide how much one transaction can observe of another that is still in progress. Picking the right level is a balance between correctness and speed, because stricter levels lock or track more data.\n\nThe weakest level, read uncommitted, lets a transaction see dirty reads, changes that might later be rolled back. Read committed hides those but can still show different results if you re-read the same row. Repeatable read keeps a consistent snapshot so a row you read once stays the same within your transaction. Serializable is the strongest, effectively running transactions as if one at a time.\n\nEach step up avoids more anomalies such as non-repeatable reads and phantom reads, but usually costs more in throughput. Modern engines often use multi-version concurrency control to deliver high isolation without blocking readers. When you see strange intermittent bugs in concurrent code, check the isolation level before assuming the database is broken.",
+    "license": "original",
+    "category": "practice",
+    "contentCn": "隔离级别 isolation level 决定一个事务能观察到另一个仍在进行中的事务的多少内容。选对级别是在正确性与速度之间取平衡，因为更严格的级别会锁住或跟踪更多数据。\n\n最弱的级别是读未提交 read uncommitted，它允许事务看到脏读 dirty read，也就是那些之后可能被回滚的改动。读已提交 read committed 挡住了这些脏读，但如果重读同一行，仍可能看到不同结果。可重复读 repeatable read 保持一个一致的快照，使你读过的行在事务内保持不变。可串行化 serializable 是最强的，实际上让事务像是一个接一个执行。\n\n每往上一级都会规避掉更多异常，比如不可重复读 non-repeatable read 和幻读 phantom read，但通常要以吞吐量下降为代价。现代引擎常常使用多版本并发控制 MVCC，在不阻塞读取者的前提下提供高隔离级别。当你在并发代码里遇到奇怪的、时隐时现的 bug 时，先检查隔离级别，再去怀疑数据库坏了。",
+    "titleEn": "A Practical Look at Isolation Levels",
+    "titleCn": "从实践角度看隔离级别"
+  },
+  {
+    "slug": "db-transaction-pitfalls",
+    "stackSlug": "db",
+    "title": "Common Transaction Pitfalls",
+    "difficulty": 3,
+    "contentMd": "Transactions are easy to start and surprisingly easy to misuse. One frequent mistake is holding a transaction open while doing slow work like a network call or a heavy computation. The longer the transaction lives, the longer it locks rows and the more likely it is to collide with others.\n\nAnother trap is the deadlock, where two transactions each wait for a lock the other holds. Databases detect this and kill one of them, so your code must be ready to retry. A simple way to avoid deadlocks is to access tables and rows in a consistent order across your services.\n\nDevelopers also forget that an auto-commit setting may wrap every statement in its own transaction, defeating the all-or-nothing guarantee they wanted. Use explicit begin and commit, keep the critical section small, and prefer an upsert over a check-then-insert pattern that races under concurrency. Finally, remember that a savepoint lets you undo only part of a transaction when a single step is allowed to fail.",
+    "license": "original",
+    "category": "internals",
+    "contentCn": "事务开启起来很容易，用错起来却出奇地容易。一个常见错误是在事务仍然打开时去做慢活，比如网络调用或繁重计算。事务存活得越久，锁住行的时间就越长，与他人冲突的可能性也越高。\n\n另一个陷阱是死锁 deadlock：两个事务各自等待对方持有的锁。数据库会检测到这种情况并杀掉其中一个，所以你的代码必须准备好重试。避免死锁的一个简单办法，是在所有服务中保持一致的表访问顺序和行访问顺序。\n\n开发者还常常忘了自动提交设置可能会把每条语句都包进各自的事务，从而让它们想要的要么全成要么全败的保证落空。请显式使用 begin 和 commit，把临界区压到最小，并且优先用 upsert 取代在并发下会竞争的那种先查后插模式。最后别忘了，保存点 savepoint 允许你只撤销事务的一部分，用于某个步骤允许失败的场景。",
+    "titleEn": "Common Transaction Pitfalls",
+    "titleCn": "常见的事务陷阱"
+  },
+  {
+    "slug": "db-normalization-basics",
+    "stackSlug": "db",
+    "title": "The Basics of Database Normalization",
+    "difficulty": 2,
+    "contentMd": "Normalization is the practice of organizing a schema so that each fact is stored in exactly one place. The goal is to reduce redundancy and the update anomalies that come with it. If the same address lives in ten rows and the customer moves, you must change all ten or your data becomes inconsistent.\n\nThe first normal form asks for atomic values and no repeating groups. The second removes partial dependencies, and the third eliminates columns that depend on something other than the primary key. In practice, reaching the third normal form solves most problems for typical applications.\n\nYet normalization is not an absolute rule. Highly normalized schemas can require many joins, which may hurt read performance. That is why teams sometimes choose denormalization, deliberately copying a value to avoid an expensive join on a hot read path. The key is to normalize by default and denormalize only where measurement shows a real bottleneck, documenting the trade-off as you go.",
+    "license": "original",
+    "category": "performance",
+    "contentCn": "范式化 normalization 的做法是组织 schema，让每个事实只存放在一个地方。目标是减少冗余以及随之而来的更新异常。如果同一个地址存在十行里，而客户搬家了，你就必须改十处，否则数据就不一致了。\n\n第一范式要求属性值原子化并且没有重复组。第二范式去除部分依赖，第三范式消除那些依赖于主键以外东西的列。在实践中，对典型应用来说做到第三范式就能解决大部分问题。\n\n然而范式化并不是一条绝对规则。高范式化的 schema 可能需要大量连接 join，而这会损害读取性能。这就是为什么团队有时会选择反范式化 denormalization，故意复制某个值，以避免在热读路径上做昂贵的连接。关键在于：默认先范式化，只在测量结果显示存在真实瓶颈时才反范式化，并且沿途把这个取舍记录下来。",
+    "titleEn": "The Basics of Database Normalization",
+    "titleCn": "数据库范式化基础"
+  },
+  {
+    "slug": "db-sharding-intro",
+    "stackSlug": "db",
+    "title": "An Introduction to Database Sharding",
+    "difficulty": 3,
+    "contentMd": "When a single database node can no longer handle your write volume, sharding becomes attractive. Sharding means splitting your data horizontally across several machines, so each one holds only a slice of the total rows.\n\nThe crucial decision is the shard key, the column used to route a row to a node. A good key spreads load evenly; a bad one sends most traffic to one overloaded machine, a problem called a hot shard. Many systems shard by a hashed user identifier so that activity is distributed at random.\n\nSharding brings real complexity. Cross-shard queries and global transactions become expensive, and rebalancing data when you add nodes is never trivial. Consistent hashing helps minimize the rows that must move during expansion. Before committing to sharding, exhaust simpler options such as read replicas, caching, and better indexing, because a sharded system is noticeably harder to operate and reason about.",
+    "license": "original",
+    "category": "practice",
+    "contentCn": "当单个数据库节点再也扛不住你的写入量时，分片 sharding 就变得有吸引力了。分片意味着把数据横向切分到多台机器上，让每台只持有全部行中的一小片。\n\n关键决策是分片键 shard key，也就是用来把某一行路由到某个节点的列。好的键能让负载均匀分布；坏的键会把大部分流量都送到一台过载的机器上，这个问题称为热点分片 hot shard。许多系统按经过哈希的用户标识来分片，让活跃度随机分散开来。\n\n分片会带来实实在在的复杂度。跨分片查询和全局事务都会变得昂贵，而在新增节点时重新平衡数据也从来不是易事。一致性哈希 consistent hashing 有助于把扩容期间必须搬动的行数降到最低。在决定分片之前，请先用尽更简单的方案，比如只读副本、缓存和更好的索引，因为一个分片系统在运维和推理上都要明显更难。",
+    "titleEn": "An Introduction to Database Sharding",
+    "titleCn": "数据库分片入门"
+  },
+  {
+    "slug": "db-replication-guide",
+    "stackSlug": "db",
+    "title": "How Database Replication Works",
+    "difficulty": 3,
+    "contentMd": "Replication copies data from a primary node to one or more replicas, and it serves two big purposes: scaling reads and surviving failures. Because replicas are read-only, you can send heavy reporting traffic to them while writes still go to the primary.\n\nThe simplest form is statement-based, where the primary ships each SQL command. A more robust approach is row-based, shipping the actual changed rows, which avoids non-deterministic functions causing drift. Many systems rely on a write-ahead log or binary log as the source of truth for what changed.\n\nThe main cost is replica lag: a replica may briefly show older data than the primary. Applications that need the very latest value should read from the primary, while feeds and dashboards can tolerate a few seconds of staleness thanks to eventual consistency. When the primary fails, a controlled failover promotes a replica, keeping the service alive with minimal interruption.",
+    "license": "original",
+    "category": "practice",
+    "contentCn": "复制 replication 把数据从主节点复制到一个或多个副本，它有两个重要用途：扩展读取能力，以及在故障时存活。由于副本是只读的，你可以把繁重的报表流量发给它们，而写入仍然走主节点。\n\n最简单的形式是基于语句的，主节点把每条 SQL 命令发过去。更稳健的方式是基于行的，只发送真正发生变化的行，从而避免非确定性函数导致的数据漂移。许多系统依靠预写日志或二进制日志 binlog 作为「到底什么变了」的事实来源。\n\n主要代价是副本延迟：副本短时间内可能显示比主节点更旧的数据。需要最新值的应用应当读主节点，而信息流和仪表盘借助最终一致性可以容忍几秒钟的陈旧。当主节点故障时，受控故障转移会提升一个副本当主节点，让服务以极小的中断继续存活。",
+    "titleEn": "How Database Replication Works",
+    "titleCn": "数据库复制是如何工作的"
+  },
+  {
+    "slug": "db-nosql-when",
+    "stackSlug": "db",
+    "title": "When to Reach for a NoSQL Database",
+    "difficulty": 3,
+    "contentMd": "Relational databases are the safe default, but some workloads fit a NoSQL store better. NoSQL is an umbrella term covering document stores, key-value systems, wide-column databases, and graph databases, each optimized for a particular access pattern.\n\nA document store such as a JSON collection shines when your data is hierarchical and your schema changes often, because you avoid painful migrations. A key-value store offers extremely low latency for simple lookups, ideal for caching and session data. Graph databases make relationship-heavy queries, like friend-of-a-friend, natural and fast.\n\nNoSQL systems often favor availability and partition tolerance over strict consistency, summarized by the BASE model and eventual consistency. That trade-off is perfect for a social feed but dangerous for a bank ledger. Choose NoSQL when scale and flexibility matter more than rigid correctness, and keep relational systems where transactions and joins are essential.",
+    "license": "original",
+    "category": "internals",
+    "contentCn": "关系型数据库是稳妥的默认选项，但某些工作负载更适合 NoSQL 存储。NoSQL 是一个统称，涵盖文档存储、键值系统、宽列数据库和图数据库，每一种都为特定的访问模式做过优化。\n\n像 JSON 集合这样的文档存储，在你的数据是层级结构且 schema 经常变化时格外好用，因为它免去了痛苦的迁移。键值存储 key-value store 为简单查找提供极低延迟，非常适合缓存和会话数据。图数据库 graph database 则让关系密集的查询（比如「朋友的朋友」）变得自然又快速。\n\nNoSQL 系统往往更偏重可用性和分区容忍，而不是严格一致性，这一点常被概括为 BASE 模型和最终一致性。这种取舍对社交信息流是完美的，对银行账本却是危险的。当规模和灵活性比严格正确性更重要时选择 NoSQL；而在事务和连接不可或缺的地方，继续使用关系型系统。",
+    "titleEn": "When to Reach for a NoSQL Database",
+    "titleCn": "什么时候该选 NoSQL 数据库"
+  },
+  {
+    "slug": "db-query-optimization",
+    "stackSlug": "db",
+    "title": "Habits for Faster SQL Queries",
+    "difficulty": 3,
+    "contentMd": "Slow queries rarely have a single cause, but a handful of habits will fix most of them. Start by asking the engine how it plans to run your statement with an explain command, because the plan reveals whether it scans a whole table or uses an index.\n\nWrite queries that touch only the columns you need instead of selecting everything, since a covering index can then satisfy the request without visiting the table. Filter early with a selective where clause so the engine discards rows before expensive joins. Watch out for functions wrapped around indexed columns, which often disable the index entirely.\n\nThe cost-based optimizer relies on table statistics to estimate row counts, so keep those statistics fresh with periodic analyze or vacuum commands. Finally, pagination with a large offset gets slower the deeper you go; keyset pagination using the last seen id is far more stable. Measure before and after each change, because intuition about performance is frequently wrong.",
+    "license": "original",
+    "category": "practice",
+    "contentCn": "慢查询很少有单一成因，但少数几个习惯就能解决大部分问题。先用 explain 命令问问引擎打算如何执行你的语句，因为执行计划会揭示它是扫全表还是用了索引。\n\n写查询时只触碰你真正需要的列，而不是把所有列都 select 出来，这样一旦有覆盖索引，就能不访问表直接满足请求。用选择性强的 where 子句尽早过滤，让引擎在执行昂贵的连接之前就丢弃行。要当心套在索引列外面的函数，它们常常会让索引完全失效。\n\n基于成本的优化器依靠表统计信息来估算行数，所以要通过定期的 analyze 或 vacuum 命令让这些统计保持新鲜。最后，用大 offset 做分页时，越翻越慢；而使用最后见到的 id 的 keyset 分页要稳定得多。每次改动前后都要测量，因为关于性能的直觉经常是错的。",
+    "titleEn": "Habits for Faster SQL Queries",
+    "titleCn": "让 SQL 查询更快的习惯"
+  },
+  {
+    "slug": "db-distributed-tradeoffs",
+    "stackSlug": "db",
+    "title": "Trade-offs in Distributed Databases",
+    "difficulty": 4,
+    "contentMd": "Running a database across several machines forces you to confront the CAP theorem, which states that during a network partition you must choose between consistency and availability. A system that stays available may return slightly stale data, while a strongly consistent system may refuse requests until the partition heals.\n\nBuilding agreement among nodes requires a consensus protocol such as Raft, where a majority elects a leader and replicates decisions. Quorum settings let you tune how many nodes must acknowledge a write or read, trading latency for safety. Change data capture can stream every committed change to other systems without coupling them tightly.\n\nDistributed transactions are the hardest part. The two-phase commit protocol coordinates participants but can block if a node fails, so many teams prefer a saga, a sequence of local transactions each with a compensating step. None of these patterns is free; the art is choosing the weakest guarantee your feature can tolerate and designing the code to handle the cases it intentionally gives up.",
+    "license": "original",
+    "category": "practice",
+    "contentCn": "把数据库跑在多台机器上，会迫使你直面 CAP 定理：它指出在网络分区期间，你必须在一致性与可用性之间做出选择。保持可用的系统可能返回略微陈旧的数据，而强一致的系统可能会在分区恢复之前一直拒绝请求。\n\n在节点之间建立共识需要像 Raft 这样的共识协议，其中多数派选出一个 leader 并复制各项决定。仲裁设置 quorum settings 让你可以调节一次写入或读取需要多少节点确认，用延迟换取安全性。变更数据捕获 change data capture 可以把每一项已提交的变更流式送到其他系统，而不必把它们紧密耦合在一起。\n\n分布式事务是最难的部分。两阶段提交协议 2PC 能够协调各参与方，但一旦某个节点故障就可能阻塞，因此许多团队更偏好 saga——一串本地事务，每一笔都带一个补偿步骤。这些模式没有一种是免费的；真正的艺术在于，选择你的特性所能容忍的最弱保证，并设计代码去处理那些你有意放弃的情况。",
+    "titleEn": "Trade-offs in Distributed Databases",
+    "titleCn": "分布式数据库中的取舍"
+  }
+]

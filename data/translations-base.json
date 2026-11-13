@@ -1,0 +1,27 @@
+[
+  {
+    "slug": "java-gc",
+    "titleCn": "Java 垃圾回收与内存模型速读",
+    "contentCn": "In the JVM, object instances are allocated on the heap, while local variables and method calls live on the stack. Once an object on the heap is no longer referenced, the garbage collector reclaims the memory it occupies at an appropriate point in time.\n\nIn a multi-threaded environment, multiple threads may operate on the same shared objects at once. Using synchronized guarantees that only one thread enters a critical section at any given moment, which avoids the data inconsistencies that concurrent modification can cause.\n\nThe Java Collections framework provides containers such as List, Set, and Map. HashMap, implemented as a hash table, is one of the most widely used key-value containers, and thanks to generics a collection can constrain its element type at compile time."
+  },
+  {
+    "slug": "python-decorator",
+    "titleCn": "Python 装饰器与迭代协议",
+    "contentCn": "In Python, a decorator is a higher-order function that takes a function and returns a new one; it is commonly used to attach behaviors such as logging, authentication, or caching to a function.\n\nA generator yields values one at a time, which dramatically reduces memory usage when iterating over large datasets, while an iterator is an object that can be visited one element at a time through next.\n\nBecause of the Global Interpreter Lock (GIL), Python threads cannot truly run in parallel on CPU-bound tasks. Built-in containers such as list, dict, and tuple, combined with comprehensions, let you write concise and efficient data-processing code, while async and await make asynchronous IO feel much closer to a synchronous style."
+  },
+  {
+    "slug": "frontend-render",
+    "titleCn": "前端渲染与 JavaScript 核心",
+    "contentCn": "The browser parses HTML into a manipulable tree of nodes through the DOM (Document Object Model). When a user interaction fires an event, the corresponding listener is invoked, which in turn updates the page state.\n\nIn React, a component is the basic unit of the UI. State is managed through hooks such as useState, and whenever that state changes the framework re-renders the virtual DOM and efficiently updates the real DOM.\n\nUnderstanding closures and prototypes is what lets you master JavaScript's scoping and inheritance mechanisms, while promises give you a way to handle the eventual outcome of an asynchronous operation."
+  },
+  {
+    "slug": "go-concurrency",
+    "titleCn": "Go 并发模型速览",
+    "contentCn": "Go's concurrency model is built on goroutines: the go keyword starts a lightweight thread, and the runtime multiplexes many of them across a small number of OS threads.\n\nChannels pass data between goroutines while also providing synchronization, and paired with select they let you wait on several channel operations at once. Interfaces define behavioral contracts, whereas structs aggregate fields and methods.\n\ndefer lets you schedule cleanup logic to run later. When a program hits an unrecoverable error, panic interrupts the flow, and recover can catch it. The idiomatic way to handle errors is to check the returned error value, using a sync.Mutex to protect shared state where necessary."
+  },
+  {
+    "slug": "cpp-memory",
+    "titleCn": "C++ 内存与资源管理",
+    "contentCn": "In C++, a pointer stores an object's address, while a reference is an alias for an object that already exists. Dynamic memory is managed with new and delete, and misusing them leads to memory leaks.\n\nRAII is the central idea behind resource management in C++: an object acquires a resource in its constructor and releases it in its destructor. Smart pointers such as unique_ptr manage the lifetime automatically.\n\nTemplates support generic programming, and vector is a dynamically sized array with contiguous storage. With move semantics, a temporary object can be transferred efficiently instead of being deep-copied, and classes that contain virtual functions support polymorphism."
+  }
+]

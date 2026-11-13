@@ -1,0 +1,122 @@
+[
+  {
+    "slug": "go-why-goroutines",
+    "stackSlug": "go",
+    "title": "Why Goroutines Make Concurrency Approachable",
+    "difficulty": 1,
+    "contentMd": "Go was designed from the start with concurrency in mind. The core idea is the goroutine, a lightweight thread of execution managed by the Go runtime rather than the operating system. When you write the keyword go in front of a function call, you start a new goroutine that runs independently. Because a goroutine starts with only a tiny stack and grows as needed, you can launch thousands or even millions of them without exhausting memory.\n\nThis model is very different from traditional threads. A thread usually costs a few megabytes of stack space, while a goroutine begins at roughly two kilobytes. The scheduler multiplexes these goroutines onto a small pool of operating system threads, so your program stays efficient even under heavy load. You rarely need to think about thread pools yourself.\n\nCommunication between goroutines happens through channels, which are typed conduits for sending and receiving values. The slogan often quoted in the Go community is that you should share memory by communicating, not communicate by sharing memory. A channel gives you a safe place to pass data without explicit locks in many common cases.\n\nOf course, concurrency still requires care. A goroutine that blocks forever waiting on a channel that no one closes creates a goroutine leak. Tools like the race detector help you find data races during testing. Once you understand these basics, goroutines become a natural way to structure servers, workers, and pipelines.",
+    "license": "original",
+    "category": "concurrency",
+    "contentCn": "Go 从诞生之初就把并发写进了设计理念。它的核心概念是 goroutine —— 由 Go 运行时（而不是操作系统）管理的一种轻量级执行线程。当你在函数调用前面加上关键字 go，就启动了一个独立运行的 goroutine。由于 goroutine 起始时只占用极小的栈空间，并且会按需增长，你可以启动成千上万甚至上百万个 goroutine 而不会耗尽内存。\n\n这个模型与传统线程有天壤之别。一个线程通常要消耗几 MB 的栈空间，而一个 goroutine 起始只有大约 2 KB。调度器会把这些 goroutine 复用到一小撮操作系统线程上，因此即使在高压负载下你的程序依然高效。你几乎不需要自己去考虑线程池。\n\ngoroutine 之间的通信通过通道（channel）完成，通道是用于收发值的类型化管道。Go 社区常被引用的一句话是：不要通过共享内存来通信，而要通过通信来共享内存。在许多常见场景下，通道为你提供了一个安全的场所来传递数据，无需显式加锁。\n\n当然，并发仍然需要小心。一个永远阻塞在无人关闭的通道上的 goroutine 会造成 goroutine 泄漏。诸如竞态检测器（race detector）之类的工具可以帮助你在测试期间发现数据竞争。一旦理解了这些基本概念，goroutine 就会成为组织服务器、worker 和 pipeline 的自然方式。",
+    "titleEn": "Why Goroutines Make Concurrency Approachable",
+    "titleCn": "为什么goroutine 让并发变得容易上手"
+  },
+  {
+    "slug": "go-channels-basics",
+    "stackSlug": "go",
+    "title": "Channels: The Pipes of Go Programs",
+    "difficulty": 1,
+    "contentMd": "A channel is a typed conduit you use to send and receive values between goroutines. You create one with the built-in make function, passing the element type as an argument. By default a channel is unbuffered, which means every send blocks until another goroutine is ready to receive. This synchronization property is what makes channels useful for coordination, not just for moving data.\n\nWhen you need to decouple the sender from the receiver, you can create a buffered channel by passing a capacity to make. A send to a buffered channel only blocks once the buffer is full, and a receive only blocks once it is empty. Buffered channels are handy for worker pools where you want to limit in-flight work without forcing strict handshakes.\n\nThe select statement lets a goroutine wait on multiple channel operations at once. Each case describes a send or receive, and select chooses whichever is ready first. You can add a default case to make the whole thing non-blocking, which is a common pattern for polling or checking readiness.\n\nA subtle point is the nil channel. A nil channel never becomes ready, so a send or receive on it blocks forever. Programmers exploit this inside select to disable a branch dynamically by setting the channel variable to nil. As with maps, always initialize a channel with make before using it, because sending on a nil channel panics.",
+    "license": "original",
+    "category": "practice",
+    "contentCn": "通道是一个类型化的管道，你用它在不同goroutine 之间收发值。你可以用内置的 make 函数创建通道，并把元素类型作为参数传入。默认情况下通道是无缓冲的，这意味着每次发送都会阻塞，直到另一个 goroutine 准备好接收为止。正是这种同步特性让通道不仅能用来搬运数据，还非常适合用来做协作协调。\n\n当你想让发送方和接收方解耦时，可以给 make 传入一个容量值来创建带缓冲的通道。向带缓冲通道发送时，只有缓冲区满了才会阻塞；接收时，只有缓冲区空了才会阻塞。带缓冲通道在 worker 池场景中非常实用：你可以在不强制严格握手的情况下限制在途任务的数量。\n\nselect 语句让一个 goroutine 可以同时等待多个通道操作。每个 case 描述一次发送或接收，select 会选择最先就绪的那个。你可以加一个 default 分支让整个语句变成非阻塞的，这是轮询或检查就绪状态的常见写法。\n\n有一个微妙之处是 nil 通道。nil 通道永远不会就绪，因此在它上面发送或接收会永久阻塞。程序员会利用这一点：在 select 内部把通道变量设为 nil，从而动态禁用某个分支。和 map 一样，使用通道前一定要先用 make 初始化，因为向 nil 通道发送会触发 panic。",
+    "titleEn": "Channels: The Pipes of Go Programs",
+    "titleCn": "通道：Go 程序的管道"
+  },
+  {
+    "slug": "go-error-handling",
+    "stackSlug": "go",
+    "title": "Error Handling Without Exceptions",
+    "difficulty": 1,
+    "contentMd": "Go does not have exceptions. Instead, functions that can fail return a value of the built-in error interface as their last result. The caller is expected to check that value before continuing. This explicit style makes control flow easy to follow, because every possible failure is visible at the call site.\n\nThe standard library provides a few helpers for building errors. You call errors.New to create a simple error with a message, and fmt.Errorf when you want to format a string. Since Go 1.13, error wrapping has become idiomatic: fmt.Errorf with the percent-w verb attaches context while preserving the original cause. Later you can use errors.Is to compare against a sentinel error and errors.As to unpack a specific custom error type from the chain.\n\nA sentinel error is a package-level variable that callers compare against, such as sql.ErrNoRows. A custom error type, on the other hand, is a struct that implements the Error method and carries extra fields. Both approaches let the caller decide how to react without relying on string matching.\n\nPanic and recover exist but are reserved for truly unexpected states, such as a programmer mistake or an unrecoverable invariant. A web server should not panic on a bad request; it should return an error and a proper status code. Treat panic as a signal that something is broken, not as ordinary flow control.",
+    "license": "original",
+    "category": "practice",
+    "contentCn": "Go 没有异常。相反，可能失败的函数会把内置 error 接口类型的值作为最后一个返回值返回。调用方应该在继续执行之前检查这个值。这种显式的风格让控制流易于追踪，因为每一种可能的失败都摆在调用点上。\n\n标准库提供了几个用于构造错误的辅助函数。你可以用 errors.New 创建一个带消息的简单错误，需要格式化字符串时则用 fmt.Errorf。自 Go 1.13 起，错误包装（error wrapping）已经成为惯用做法：带 percent-w 动词的 fmt.Errorf 可以在保留原始原因的同时附加上下文。之后你可以用 errors.Is 与哨兵错误（sentinel error）比较，用 errors.As 从错误链中解包出特定的自定义错误类型。\n\n哨兵错误是一个包级变量，供调用方比较，例如 sql.ErrNoRows。自定义错误类型则是一个实现了 Error 方法并携带额外字段的 struct。两种做法都让调用方可以自行决定如何响应，而不必依赖字符串匹配。\n\npanic 和 recover 是存在的，但它们被保留给真正意料之外的状态，例如程序员失误或无法恢复的不变量条件。Web 服务器不应该因为一个非法请求就 panic；它应该返回一个 error 和恰当的状态码。请把 panic 当作「某处出了问题」的信号，而不是普通的流程控制手段。",
+    "titleEn": "Error Handling Without Exceptions",
+    "titleCn": "不用异常的错误处理"
+  },
+  {
+    "slug": "go-interfaces-explained",
+    "stackSlug": "go",
+    "title": "Interfaces and Structural Typing",
+    "difficulty": 2,
+    "contentMd": "An interface in Go is a set of method signatures. A concrete type satisfies that interface simply by implementing those methods; there is no explicit declaration such as implements. This is called structural typing, and it lets you define small, focused interfaces close to where they are consumed rather than at the type definition.\n\nThe empty interface, written interface{}, accepts any value because every type implements zero methods. Since Go 1.18 the predeclared alias any means exactly the same thing and reads more cleanly. You use any when you genuinely do not know the type, such as in a generic container, but you should narrow it as soon as possible with a type assertion or a type switch.\n\nA type assertion extracts a concrete value from an interface. The comma-ok idiom returns a second boolean that tells you whether the assertion succeeded, so you can handle the mismatch gracefully. A type switch goes further and runs different branches depending on the dynamic type, which is convenient when decoding JSON or handling multiple event kinds.\n\nOne classic surprise is the nil interface. An interface is only nil when both its type and value are nil. A typed nil pointer stored in an interface is not equal to a plain nil interface, which can confuse nil checks in error handling. Keep this distinction in mind when you write functions that return an error interface.",
+    "license": "original",
+    "category": "practice",
+    "contentCn": "Go 中的接口就是一组方法签名。具体类型只要实现了这些方法就自动满足该接口，没有 implements 这样的显式声明。这被称为结构化类型（structural typing），它让你可以在靠近使用处的地方定义小而聚焦的接口，而不必把接口放到类型定义旁边。\n\n空接口写作 interface{}，它接受任何值，因为每个类型都实现了零个方法。自 Go 1.18 起，预声明的别名 any 含义完全相同，但读起来更清晰。当你确实不知道类型时——比如在泛型容器里——才使用 any，而且应该尽快用类型断言或类型 switch 把它收窄。\n\n类型断言用于从接口中取出具体值。逗号-ok惯用法会返回第二个布尔值，告诉你断言是否成功，从而让你可以优雅地处理类型不匹配的情况。类型 switch 更进一步，它根据动态类型走不同的分支，在解码 JSON 或处理多种事件类型时非常方便。\n\n有一个经典的「意外」是 nil 接口。只有当接口的类型和值都为 nil 时，这个接口才等于 nil。把一个带类型的 nil 指针存进接口，它并不等于普通的 nil 接口，这会让错误处理中的 nil 检查产生困惑。当你编写返回 error 接口的函数时，务必牢记这一区别。",
+    "titleEn": "Interfaces and Structural Typing",
+    "titleCn": "接口与结构化类型"
+  },
+  {
+    "slug": "go-modules-intro",
+    "stackSlug": "go",
+    "title": "Modules: Managing Dependencies in Go",
+    "difficulty": 1,
+    "contentMd": "A module is the unit of dependency management in modern Go. It is a collection of packages versioned together, described by a go.mod file at its root. That file records the module path, the Go version, and the list of required dependencies with their versions. A companion go.sum file stores checksums so that builds are reproducible and tamper resistant.\n\nWhen you start a new project you run go mod init with a module path, often a repository URL. As you import external packages and build, the tooling updates go.mod automatically. Running go mod tidy removes unused requirements and adds any that your code references but the file lacks. The go mod download command fetches the named modules into the local cache.\n\nGo resolves modules through a module proxy by default, configured with the GOPROXY environment variable. This proxy improves both speed and availability, and it protects you when an upstream repository disappears. Teams behind a firewall sometimes set a private proxy, and go env lets you inspect or change these settings.\n\nVersion selection follows semantic import versioning. A module at major version two or higher must include the major version in its module path, which keeps APIs stable within a major line. With modules, your builds no longer depend on a global GOPATH layout, which makes projects portable and easy to share.",
+    "license": "original",
+    "category": "tooling",
+    "contentCn": "模块是现代 Go 中依赖管理的单位。它是一组一起做版本控制的包，由根目录下的 go.mod 文件描述。该文件记录模块路径、Go 版本，以及依赖列表及其版本。配套的 go.sum 文件保存校验和，使构建可复现并且能防篡改。\n\n开始一个新项目时，你会带上模块路径（通常是一个仓库 URL）运行 go mod init。当你导入外部包并构建时，工具链会自动更新 go.mod。运行 go mod tidy 会移除不再使用的依赖，并补上代码中引用但文件里缺失的依赖。go mod download 命令则把指定的模块拉取到本地缓存。\n\nGo 默认通过模块代理（module proxy）解析模块，代理由GOPROXY 环境变量配置。这个代理同时提升了速度和可用性，还能在上游仓库消失时保护你。处于防火墙之后的团队有时会设置私有代理，而 go env 可以让你查看或修改这些设置。\n\n版本选择遵循语义化导入版本（semantic import versioning）规则。主版本号为二或更高的模块，必须在模块路径中包含主版本号，这保证了同一条主线内的 API 稳定性。有了模块，构建不再依赖全局 GOPATH 目录布局，项目因此更可移植、也更便于分享。",
+    "titleEn": "Modules: Managing Dependencies in Go",
+    "titleCn": "模块：管理 Go 的依赖"
+  },
+  {
+    "slug": "go-context-package",
+    "stackSlug": "go",
+    "title": "Controlling Cancellation with context",
+    "difficulty": 2,
+    "contentMd": "The context package helps you carry deadlines, cancellation signals, and request-scoped values across API boundaries. A server typically creates a root context with context.Background and derives a child with a timeout before calling a downstream service. When the timeout fires or the parent is canceled, every goroutine watching that context is notified at once.\n\nYou obtain a cancel function from context.WithCancel, context.WithTimeout, or context.WithDeadline. Calling cancel is itself a deferred call in most code, so resources are released even on the early return paths. A blocked goroutine should select on ctx.Done in addition to its real work; when the channel closes, it should stop and return. The ctx.Err method tells you whether the context was canceled or hit its deadline.\n\nContext propagation is the practice of threading the same context through every layer of a request. A database query, an HTTP call, and a background job should all respect the incoming context so that a slow client cannot tie up the whole system. Functions that ignore their context risk hanging forever.\n\nBe careful with context.WithValue, which stores keyed data rather than control signals. Use it only for request-scoped metadata like a trace identifier, never for optional parameters. Define a private type for the context value key to avoid collisions, because the value travels through code you do not control.",
+    "license": "original",
+    "category": "concurrency",
+    "contentCn": "context 包帮助你跨API 边界传递截止时间、取消信号以及请求作用域内的数据。服务器通常用 context.Background 创建一个根 context，在调用下游服务之前派生出带超时的子 context。当超时触发或父 context 被取消时，所有监听该 context 的 goroutine 会同时收到通知。\n\n你可以通过 context.WithCancel、context.WithTimeout 或 context.WithDeadline 拿到一个 cancel 函数。在多数代码里调用 cancel 本身就是一次 defer 调用，因此即使提前返回，资源也会被释放。一个阻塞中的 goroutine 除了等待自己的实际工作之外，还应该在 ctx.Done 上做 select；当该通道关闭时，它应当停止并返回。ctx.Err 方法告诉你这个 context 是被取消了还是触发了截止时间。\n\nContext 传播指的是把同一个 context 一层层穿过请求的每一层。一次数据库查询、一次 HTTP 调用和一个后台任务都应当尊重传入的 context，这样一个缓慢的客户端才不会拖住整个系统。忽略 context 的函数有永久挂起的风险。\n\n要小心 context.WithValue，它存储的是带键的数据，而不是控制信号。只应把它用于请求作用域的元数据（比如 trace 标识），绝不要用它传可选参数。为 context 的值定义一个私有的键类型以避免冲突，因为这个值会流经你无法控制的代码。",
+    "titleEn": "Controlling Cancellation with context",
+    "titleCn": "用 context 控制取消"
+  },
+  {
+    "slug": "go-generics-overview",
+    "stackSlug": "go",
+    "title": "Generics Arrived in Go 1.18",
+    "difficulty": 3,
+    "contentMd": "Go gained generics in version 1.18, letting you write functions and types that work over a family of types. A generic function declares type parameters in square brackets before its normal parameters. The compiler instantiates the function for each concrete type you call it with, so you keep type safety without duplicating code or falling back to the empty interface.\n\nA type parameter is constrained by an interface that describes what the type must support. The predeclared constraint comparable matches every type that supports the equality operators, which is exactly what you need for a generic map key or a set. The constraints package once held extras such as constraints.Ordered, though many of those helpers now live in the standard library.\n\nA constraint is really a type set: the union of types or interfaces that satisfy it. This idea powers both built-in operators and custom bounds. Type inference often lets you omit the explicit type arguments, because the compiler deduces them from the ordinary arguments you pass.\n\nGenerics are powerful, but the Go team advises restraint. Reach for them when you would otherwise copy the same logic across several types, such as a generic Min over ordered values or a thread-safe container. Do not wrap every concrete type in a type parameter just because you can; clear, specific code usually beats clever abstraction. Used sparingly, generics remove a whole class of repetitive boilerplate.",
+    "license": "original",
+    "category": "tooling",
+    "contentCn": "Go 在 1.18 版本获得了泛型，让你能够编写适用于一族类型的函数和类型。泛型函数在普通参数之前用方括号声明类型参数。编译器会针对你实际调用的每种具体类型实例化该函数，因此你既保住了类型安全，又不必复制代码或退回到空接口。\n\n类型参数受一个接口约束，该接口描述这个类型必须支持什么。预声明的约束 comparable 匹配所有支持相等运算符的类型，这正是泛型 map 的键或集合所需要的。constraints 包曾经提供 constraints.Ordered 之类的额外约束，不过如今其中很多辅助设施已经进入标准库。\n\n约束本质上是一个类型集合：满足它的类型或接口的并集。这个概念同时支撑了内置运算符和自定义边界。类型推断通常让你可以省略显式的类型参数，因为编译器能从你传入的普通参数中推导出来。\n\n泛型很强大，但 Go 团队建议克制使用。当你的逻辑原本需要在多个类型之间复制时再考虑它，比如对有序值求最小值的泛型 Min，或一个线程安全的容器。不要仅仅因为可以就把每个具体类型都包进类型参数；清晰、具体的代码通常胜过聪明的抽象。用得克制，泛型能消除一整类重复的样板代码。",
+    "titleEn": "Generics Arrived in Go 1.18",
+    "titleCn": "泛型：Go 1.18 正式登场"
+  },
+  {
+    "slug": "go-testing-basics",
+    "stackSlug": "go",
+    "title": "Writing Tests the Go Way",
+    "difficulty": 2,
+    "contentMd": "Go treats testing as a first-class activity. A test file lives next to the code it checks and ends with the _test suffix. Inside, you write functions named TestXxx that take a pointer of type testing.T. Running go test in the package compiles and executes them, reporting failures through methods like t.Errorf and t.Fatal.\n\nThe community favors table-driven tests, where you declare a slice of cases and loop over them. Each case holds inputs and the expected output, so adding a new scenario is just another row. When a case needs its own setup and teardown, you call t.Run with a name to create a subtest, and you can run a single one with the -run flag. Marking a subtest with t.Parallel lets independent cases execute concurrently.\n\nThe testing package also supports benchmarks. A function named BenchmarkXxx receives testing.B and runs its loop b.N times, with the framework choosing a large enough N. Calling b.ReportAllocs shows how many allocations happened, and b.ResetTimer excludes slow setup from the measurement. Since Go 1.18 you can write fuzz tests that explore inputs automatically to find crashes.\n\nFor coverage, go test -cover prints the percentage of statements exercised. External tools like testify add assertions that make expectations readable, but the standard library alone is enough for most projects. Good tests document behavior as much as they catch regressions.",
+    "license": "original",
+    "category": "tooling",
+    "contentCn": "Go 把测试视为一等公民。测试文件与被测代码放在一起，并以 _test 后缀结尾。在文件内部，你编写名为 TestXxx 的函数，它们接收一个 testing.T 类型的指针。在该包里运行 go test 会编译并执行这些函数，通过 t.Errorf 和 t.Fatal 之类的方法报告失败。\n\n社区偏爱表驱动测试：声明一个用例切片，然后循环遍历。每个用例包含输入和期望输出，因此新增一个场景只是再加一行。当某个用例需要独立的准备和清理时，你可以带名字调用 t.Run 来创建子测试，并用 -run 标记单独运行某一个。用 t.Parallel 标记子测试，可以让彼此独立的用例并发执行。\n\ntesting 包还支持基准测试。名为 BenchmarkXxx 的函数接收 testing.B，并把循环执行 b.N 次，框架会选择足够大的 N。调用 b.ReportAllocs 可以显示发生了多少次内存分配，b.ResetTimer 则把耗时的准备工作排除在测量之外。自 Go 1.18 起，你还可以写模糊测试（fuzz test），让它自动探索输入以发现崩溃。\n\n关于覆盖率，go test -cover 会打印被执行到的语句百分比。testify 之类的第三方工具提供了让断言更易读的辅助，但多数项目只靠标准库就够了。好的测试既记录行为，也捕获回归。",
+    "titleEn": "Writing Tests the Go Way",
+    "titleCn": "用 Go 的方式写测试"
+  },
+  {
+    "slug": "go-http-server",
+    "stackSlug": "go",
+    "title": "Building an HTTP Server in Go",
+    "difficulty": 2,
+    "contentMd": "The net/http package gives you everything needed to serve web traffic without third-party frameworks. You register a handler function that implements http.Handler, or you use http.HandleFunc to wrap an ordinary function. The default router, http.ServeMux, matches the request path to a pattern and dispatches the call.\n\nA middleware is just a function that wraps a handler, adding logging, authentication, or recovery before delegating to the next one. Because handlers have a uniform signature, you compose them like layers of an onion. The http.Request carries the method, headers, and body, while http.ResponseWriter is where you write the status code and bytes back to the client.\n\nMost services also need a graceful shutdown. Instead of killing the process abruptly, you call Shutdown on the http.Server, which stops accepting new connections and waits for in-flight requests to finish. Pair this with a context that a signal handler cancels when the operator presses Ctrl-C.\n\nCross-origin concerns appear once a browser talks to your API, so you may set CORS headers in middleware. For dynamic backends, a reverse proxy forwards selected paths to another service. Keep handlers small and test them with the httptest package, which spins up a local server or records the response. Clear handlers plus a cool context make a server that is both fast and easy to reason about.",
+    "license": "original",
+    "category": "practice",
+    "contentCn": "net/http 包提供了服务 Web 流量所需的一切，无需第三方框架。你可以注册一个实现了 http.Handler 的处理函数，或者用 http.HandleFunc 包装一个普通函数。默认路由器 http.ServeMux 会把请求路径匹配到某个模式并分发调用。\n\n中间件本质上就是一个包装处理器的函数，在委托给下一个处理器之前加上日志、认证或恢复逻辑。由于处理器的签名统一，你可以像洋葱的层一样把它们组合起来。http.Request 携带方法、请求头和请求体，而 http.ResponseWriter 则是你写回状态码和字节数据给客户端的地方。\n\n大多数服务还需要优雅关闭。与其粗暴地终止进程，不如调用 http.Server 的 Shutdown，它会停止接受新连接，并等待在途请求完成。把它与一个由信号处理器在运维人员按下 Ctrl-C 时取消的 context 搭配使用。\n\n一旦浏览器开始访问你的 API，跨域问题就会出现，因此你可能需要在中间件里设置 CORS 响应头。对于动态后端，反向代理会把选定路径转发到另一个服务。保持处理器小巧，并用 httptest 包测试它们——它可以启动一个本地服务器或记录响应。清晰的处理器加上得心应手的 context，才能造就一个既快又易于推理的服务器。",
+    "titleEn": "Building an HTTP Server in Go",
+    "titleCn": "用 Go 搭建 HTTP 服务器"
+  },
+  {
+    "slug": "go-memory-performance",
+    "stackSlug": "go",
+    "title": "Memory and Performance Notes",
+    "difficulty": 3,
+    "contentMd": "Go balances productivity with predictable performance, but a few internals matter once your service scales. Every value has a zero value, so an uninitialized variable is never undefined; a nil slice, for example, is safe to append to, while a nil map panics on write. Knowing these defaults prevents whole categories of bugs.\n\nThe garbage collector reclaims unreachable memory automatically, which spares you from manual frees. Still, allocations cost time and pressure the collector. Escape analysis decides whether a value lives on the stack or escapes to the heap; a value whose address leaves the function usually escapes. You can reduce pressure by reusing buffers through sync.Pool or by building strings with strings.Builder instead of repeated concatenation.\n\nThe memory model defines a happens-before relation that tells you when writes by one goroutine are visible to another. Without synchronization such as a mutex or a channel, concurrent access to the same variable is a data race, and the race detector catches it under go test -race. At the hardware level, false sharing happens when unrelated variables sit on the same cache line and bounce between CPUs, which a careful struct layout can avoid.\n\nWhen you need profiles, the pprof tool reveals CPU and memory hotspots as flamegraphs. Measure first, then optimize the few functions that actually dominate latency. Premature cleverness rarely beats clear code plus a profile.",
+    "license": "original",
+    "category": "performance",
+    "contentCn": "Go 在开发效率与可预测的性能之间取得平衡，但当服务规模上去之后，有几个内部机制就变得重要了。每个值都有一个零值，因此未初始化的变量永远不会是「未定义」；例如 nil 切片可以安全地 append，而 nil map 在写入时会 panic。了解这些默认行为能避免一整类 bug。\n\n垃圾收集器会自动回收不可达内存，让你不必手动释放。不过内存分配仍然消耗时间并给收集器带来压力。逃逸分析决定一个值是留在栈上还是逃逸到堆上；一个地址离开了函数的值通常会发生逃逸。你可以用 sync.Pool 复用缓冲区，或者用 strings.Builder 构造字符串而不是反复拼接，从而降低内存压力。\n\n内存模型定义了一个「先行发生」（happens-before）关系，用来告诉你一个 goroutine 的写入何时对另一个 goroutine可见。如果没有互斥锁或通道这类同步手段，并发访问同一个变量就是数据竞争，而竞态检测器能在 go test -race 下把它抓出来。在硬件层面，当互不相关的变量落在同一条缓存行上、在多个 CPU 之间来回失效时，就发生了伪共享，而精心安排结构体布局可以避免它。\n\n当你需要性能剖析时，pprof 工具会以火焰图的形式揭示 CPU 和内存热点。先测量，再优化那几个真正主导延迟的函数。先测量，再优化那几个真正主导延迟的函数。一上来就耍小聪明，几乎总是比不上清晰的代码加一份剖析报告。",
+    "titleEn": "Memory and Performance Notes",
+    "titleCn": "内存与性能要点"
+  }
+]

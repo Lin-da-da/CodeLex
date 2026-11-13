@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="format-detection" content="telephone=no" />
+  <title>CodeLex 程序员英语</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      background: #020617;
+      color: #e2e8f0;
+      -webkit-font-smoothing: antialiased;
+      -webkit-tap-highlight-color: transparent;
+    }
+    #root { min-height: 100%; }
+    .boot { padding: 40px 24px; text-align: center; color: #64748b; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <div id="root"><div class="boot">正在装载词库…</div></div>
+
+  <!-- ============================================================
+       数据脚本：全部为「静态引入」的经典外置脚本（async，不阻塞首屏）。
+       容器禁止运行时动态注入 <script>（CSP / 沙箱会拦截），
+       因此词库、文章、题库一律在 index.html 中静态声明。
+       关键修复：标记为 async —— 浏览器并行下载、不阻塞 HTML 解析，
+       首屏立刻渲染出「可交互外壳」（tabBar / 顶部导航立即可点），
+       数据脚本到位后各自把 window.__CLX_* 挂上，再由应用层轮询等待、填充内容。
+       这彻底消除了「5.26MiB 同步脚本阻塞 → 审核早期截图只看到加载中 →
+       被判按钮无法点击」的盲区。app.js 仍由 postbuild 追加在最后。
+       ============================================================ -->
+
+  <!-- L0：索引层（词条骨架 + 栈 + 偏移） -->
+  <script src="./data/manifest.js" async></script>
+  <script src="./data/stacks.js" async></script>
+  <script src="./data/offsets.js" async></script>
+  <script src="./data/index.js" async></script>
+
+  <!-- L1：词条详情（按技术栈拆分） -->
+  <script src="./data/dict-java.js" async></script>
+  <script src="./data/dict-python.js" async></script>
+  <script src="./data/dict-frontend.js" async></script>
+  <script src="./data/dict-go.js" async></script>
+  <script src="./data/dict-cpp.js" async></script>
+  <script src="./data/dict-agent.js" async></script>
+  <script src="./data/dict-devops.js" async></script>
+  <script src="./data/dict-algo.js" async></script>
+  <script src="./data/dict-db.js" async></script>
+  <script src="./data/dict-ml.js" async></script>
+  <script src="./data/dict-security.js" async></script>
+  <script src="./data/dict-system-design.js" async></script>
+  <script src="./data/dict-rust.js" async></script>
+  <script src="./data/dict-backend.js" async></script>
+  <script src="./data/dict-spring.js" async></script>
+  <script src="./data/dict-interview.js" async></script>
+
+  <!-- L1：文章与专项题库 -->
+  <script src="./data/articles.js" async></script>
+  <script src="./data/kit.js" async></script>
+
+  <!-- 应用本体：由 postbuild 追加在最后（数据之后），此处仅占位供开发期 dev server 使用 -->
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+</html>

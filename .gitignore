@@ -1,0 +1,22 @@
+node_modules
+.next
+out
+dist
+.env
+.env.local
+prisma/dev.db
+prisma/dev.db-journal
+*.log
+.DS_Store
+tsconfig.tsbuildinfo
+next-env.d.ts
+
+# WorkBuddy 本地产物
+.smoke/
+.workbuddy/
+.wbapp_*.genie
+
+# 小红书小工具（CodeLex）：工程产物与下载的技能包
+xhs-minitool/public/data/
+xhs-minitool/release/
+.skill/

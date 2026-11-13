@@ -1,0 +1,122 @@
+[
+  {
+    "slug": "algo-why-big-o-matters",
+    "stackSlug": "algo",
+    "title": "Why Big-O Notation Matters for Programmers",
+    "difficulty": 2,
+    "contentMd": "When we build software, the most important question is not whether a program works, but whether it keeps working as the data grows. A script that feels instant on a hundred records may crawl on a million. This is where Big-O notation earns its place in every developer's toolkit.\n\nBig-O describes how the runtime or memory grows with the input size, ignoring small constants that do not change the big picture. An algorithm in O(n log n) will eventually beat one in O(n squared), no matter how clever the slower code looks. Learning to read these bounds lets you predict pain before it reaches production.\n\nBeginners often optimize the wrong line. They shave a constant factor while a quadratic loop quietly dominates. By estimating complexity first, you spend your effort where it actually moves the needle. A single nested loop over a large array is usually the first thing to question.\n\nIn day-to-day work you rarely prove bounds on paper. You learn a handful of shapes: constant, logarithmic, linear, linearithmic, quadratic, and exponential. With those, you can glance at a function and guess its fate. That intuition is the real gift of studying complexity.",
+    "license": "original",
+    "category": "performance",
+    "contentCn": "当我们构建软件时，最关键的问题不是程序能不能跑，而是数据增长之后它还能不能继续跑。一个在几百条记录上快如闪电的脚本，到一百万条记录时可能爬得极慢。这正是大 O 记号 big-O notation 在每个开发者工具箱中占据一席之地的原因。\n\n大 O 描述的是运行时间或内存占用如何随输入规模增长，忽略那些不影响大局的小常数。无论较慢的代码看起来多么巧妙，一个 O(n log n) 的算法终将胜过一个 O(n 平方) 的算法。学会读懂这些复杂度边界，你就能在痛苦降临生产环境之前预见到它。\n\n初学者常常优化错行代码。他们费尽心思去削减常数因子，而一个二次循环却在暗中主宰了整体性能。先估算复杂度，你才能把精力花在真正能撬动结果的地方。对大数组做单层嵌套循环，通常是最值得第一个质疑的对象。\n\n在日常工作中，你很少需要在纸面上证明复杂度边界。你只需掌握少数几种形态：常数级、对数级、线性级、线性对数级、平方级和指数级。掌握它们之后，你扫一眼函数就能猜出它的命运。这种直觉才是研究复杂度真正的馈赠。",
+    "titleEn": "Why Big-O Notation Matters for Programmers",
+    "titleCn": "为什么程序员必须懂大 O 复杂度"
+  },
+  {
+    "slug": "algo-arrays-vs-linked-lists",
+    "stackSlug": "algo",
+    "title": "Arrays vs Linked Lists: Choosing the Right Sequence",
+    "difficulty": 2,
+    "contentMd": "Two structures sit at the root of almost every program: the array and the linked list. Both store a sequence of values, yet they behave very differently when the data changes shape.\n\nAn array keeps elements in contiguous memory, so reading by index is instant. The cost appears when you insert in the middle: every later element must shift. A linked list turns that around. Each node holds a value and a pointer to the next, so insertion is just rewiring two pointers. The trade-off is that you can no longer jump to position i; you must walk from the head.\n\nModern languages blur the line. A dynamic array such as a vector grows by doubling, giving amortized constant-time appends while keeping random access. A linked list shines when you do many inserts and deletes at known positions, such as in a music playlist or a task queue.\n\nThe lesson is simple. If you read far more than you mutate, prefer an array. If you constantly reshape the middle of a sequence, a linked list may serve you better. Matching the structure to the access pattern is the first step toward efficient code.",
+    "license": "original",
+    "category": "performance",
+    "contentCn": "几乎每个程序的根基上都站着两种结构：数组 array 和链表 linked list。两者都存储一个值序列，然而当数据形态发生变化时，它们的表现截然不同。\n\n数组把元素放在连续的内存中，因此按下标读取是瞬时的。代价出现在中间插入的时候：后面的每个元素都必须挪动位置。链表恰好把这个关系颠倒过来。每个节点持有一个值和一个指向下一个节点的指针，插入只需重新接上两个指针。代价是，你再也无法直接跳到第 i 个位置，必须从头开始遍历。\n\n现代语言把这条界线模糊了。像 vector 这样的动态数组通过成倍扩容来增长，既保留了随机访问，又提供了均摊常数时间的追加操作。当你需要在已知位置频繁插入和删除时，链表才真正发光，比如音乐播放列表或任务队列。\n\n结论很简单。如果读取远多于修改，就优先选择数组。如果你不断在序列中段反复重塑形状，链表可能更合适。让结构去匹配访问模式，这是迈向高效代码的第一步。",
+    "titleEn": "Arrays vs Linked Lists: Choosing the Right Sequence",
+    "titleCn": "数组与链表：如何选对序列结构"
+  },
+  {
+    "slug": "algo-binary-search-intuition",
+    "stackSlug": "algo",
+    "title": "The Intuition Behind Binary Search",
+    "difficulty": 2,
+    "contentMd": "Binary search is the first algorithm that teaches a powerful idea: throw away half the problem at every step. Given a sorted array and a target, you compare the middle element. If it equals the target, you are done. If the target is smaller, the entire right half cannot contain it, so you discard it and repeat on the left.\n\nEach comparison halves the search space, which is why the cost is logarithmic. Searching a billion items needs about thirty comparisons, a number small enough to feel like magic. The catch is that the data must already be sorted; otherwise the halving logic has no meaning.\n\nMany bugs come from the loop boundaries. Off-by-one errors creep in when you pick the midpoint or update the low and high pointers. A clean habit is to decide whether the range is inclusive or exclusive and stick to it throughout the function.\n\nOnce the pattern clicks, you will spot it beyond arrays. It appears in finding a root of a function, in capacity planning, and in any situation where a yes-or-no answer flips at a single threshold. Binary search is less a recipe than a way of thinking.",
+    "license": "original",
+    "category": "basics",
+    "contentCn": "二分查找 binary search 是第一个教会我们强大思想的算法：每一步都扔掉一半的问题。给定一个有序数组和一个目标值，你比较中间元素。如果它等于目标，查找结束。如果目标更小，那么整个右半区都不可能包含它，于是你丢弃右半区，转而在左侧继续。\n\n每次比较都让搜索空间减半，这就是它的代价为对数级的原因。在十亿个元素中查找大约需要三十次比较，这个数字小到让人感觉像魔法。前提条件是数据必须已经排好序，否则减半的逻辑就毫无意义。\n\n许多 bug 都出在循环边界上。挑选中点或者更新 low 与 high 指针时，差一错误 off-by-one error 就会悄悄潜入。一个干净的编码习惯是先决定区间是闭区间还是开区间，然后在整个函数里始终保持一致。\n\n一旦这个模式在脑中成形，你会在数组之外认出它。它出现在求函数的根、容量规划中，以及任何答案是或否、并在某个单一阈值处翻转的场景里。二分查找与其说是一份菜谱，不如说是一种思维方式。",
+    "titleEn": "The Intuition Behind Binary Search",
+    "titleCn": "二分查找背后的直觉"
+  },
+  {
+    "slug": "algo-hash-tables-everywhere",
+    "stackSlug": "algo",
+    "title": "Why Hash Tables Are Everywhere",
+    "difficulty": 2,
+    "contentMd": "Open almost any program and you will find a hash table quietly doing the heavy lifting. Dictionaries, caches, indexes, and sets are often just hash tables wearing a friendly name. Their appeal is simple: average constant-time lookup, insertion, and deletion.\n\nThe trick is a hash function that maps each key to a bucket index. A good function spreads keys evenly so that few collisions occur. When two keys land in the same bucket, the table must resolve the clash, often by chaining the entries in a small list or by probing the next free slot.\n\nPerformance depends on the load factor, the ratio of entries to buckets. As it climbs, collisions multiply and the table slows. Most implementations watch this ratio and rebuild with more buckets, a process called rehashing, to keep operations fast.\n\nUnderstanding hash tables changes how you design. Need to deduplicate a stream, count frequencies, or memoize results? A hash table is usually the first tool to reach for. Knowing its average speed and its worst-case weakness makes you a sharper engineer.",
+    "license": "original",
+    "category": "performance",
+    "contentCn": "随便打开任何一个程序，你都会发现某个哈希表 hash table 正在默默干重活。字典、缓存、索引和集合，很多时候不过是换了个friendly 名字的哈希表。它的吸引力很简单：平均常数时间的查找、插入和删除。\n\n关键在于一个把每个键映射到桶下标的哈希函数。好的函数会均匀地分散键，使得碰撞很少发生。当两个键落进同一个桶，表必须解决这个冲突，常见做法是把条目串成一个小链表，或者去探测下一个空槽位。\n\n性能取决于装载因子 load factor，也就是条目数与桶数的比值。随着它攀升，碰撞成倍增长，表就会变慢。大多数实现都会监控这个比值，并通过用更多桶重建（这个过程称为 rehash 重建哈希）来保持操作迅捷。\n\n理解哈希表会改变你的设计方式。需要对数据流去重、统计频次，或者对结果做记忆化 memoize 吗？哈希表通常是第一个该考虑的工具。知道它的平均速度，也知道它的最坏情况弱点，会让你成为更犀利的工程师。",
+    "titleEn": "Why Hash Tables Are Everywhere",
+    "titleCn": "哈希表为何无处不在"
+  },
+  {
+    "slug": "algo-recursion-and-stack",
+    "stackSlug": "algo",
+    "title": "Recursion and the Call Stack",
+    "difficulty": 2,
+    "contentMd": "Recursion happens when a function calls itself to solve a smaller piece of the same problem. It feels almost like cheating: describe the answer in terms of a simpler version, and trust the language to handle the rest. Factorials, tree walks, and divide-and-conquer sorts all lean on this idea.\n\nBehind the scenes, each call is pushed onto a call stack. The machine remembers where to return after the inner call finishes. This is why deeply nested recursion can overflow: too many frames pile up before any of them resolve. Tail recursion and iteration are common ways to avoid that trap.\n\nA clean recursive design needs a base case, the smallest input that can be answered directly. Without it, the function calls itself forever. With it, the problem shrinks at each step until it hits the floor.\n\nRecursion is not always the fastest path, but it is often the clearest. When a problem is naturally hierarchical, a recursive solution reads like the definition itself. Learning to move between recursive and iterative forms gives you flexibility and deepens your sense of how computation actually unfolds.",
+    "license": "original",
+    "category": "basics",
+    "contentCn": "当一个函数为了解决同类问题中更小的一部分而调用自己时，递归就发生了。它感觉几乎像在作弊：用更简单版本的答案来描述问题，然后相信语言会处理好剩下的部分。阶乘、树的遍历以及分治排序，全都倚赖这个思想。\n\n在幕后，每次调用都会被压入调用栈 call stack。机器记下内层调用结束后该返回到哪里。这就是深度嵌套的递归会栈溢出的原因：在任何一个栈帧返回之前，就堆积了太多栈帧。尾递归和迭代是避开这个陷阱的常用手段。\n\n一个干净的递归设计需要一个基准情形 base case，也就是那个可以直接给出答案的最小输入。没有它，函数会永远调用自己。有了它，问题在每一步都缩小，直到触到地板。\n\n递归不总是最快的路径，但往往是最清晰的。当问题天然具有层级结构时，递归解法读起来就像定义本身。学会在递归形态与迭代形态之间切换，会给你灵活性，也会加深你对计算究竟如何展开的感受。",
+    "titleEn": "Recursion and the Call Stack",
+    "titleCn": "递归与调用栈"
+  },
+  {
+    "slug": "algo-graphs-model-world",
+    "stackSlug": "algo",
+    "title": "Graphs: Modeling the Real World",
+    "difficulty": 3,
+    "contentMd": "A graph is just vertices joined by edges, yet with that simple idea we can model roads, friendships, dependencies, and the web itself. The art is choosing how to represent it. An adjacency list stores each vertex's neighbors and is lean for sparse graphs. An adjacency matrix uses a grid and answers edge queries in constant time at the cost of memory.\n\nOnce a graph is in hand, classic questions follow. Are two nodes reachable? What is the shortest path between them? Which edges form a tree that connects everyone at the lowest cost? Breadth-first search explores neighbor by neighbor and finds the shortest route on unweighted graphs. Depth-first search dives deep and is handy for cycles and components.\n\nWeighted and directed graphs add realism. Traffic has one-way streets and tolls, so algorithms like Dijkstra balance distance against cost. The same machinery powers GPS, network routing, and recommendation systems.\n\nGraphs reward a visual mind. Sketch the vertices, draw the edges, and the algorithm often becomes obvious. Few structures connect theory to everyday software as directly as the humble graph.",
+    "license": "original",
+    "category": "basics",
+    "contentCn": "图 graph 不过是由边连接起来的顶点，但正是这个简单的概念，让我们能够为道路、友谊、依赖关系乃至整个互联网建模。艺术之处在于如何表示它。邻接表 adjacency list 存储每个顶点的邻居，对稀疏图非常轻量。邻接矩阵 adjacency matrix 使用网格，能以常数时间回答边查询，代价是内存。\n\n一旦图在手，经典问题就会接踵而至。两个节点是否可达？它们之间的最短路径是什么？哪些边能组成一棵以最低成本连接所有人的树？广度优先搜索 breadth-first search 逐层探索邻居，在无权重图上能找到最短路线。深度优先搜索 depth-first search 一路深入，适合处理环和连通分量。\n\n带权图和有向图带来了现实感。交通有单行道和过路费，于是像 Dijkstra 这样的算法要在距离与成本之间权衡。同一套机制也支撑着 GPS、网络路由和推荐系统。\n\n图会奖赏拥有视觉思维的人。把顶点画出来，把边连上，算法往往就变得一目了然。很少有哪种结构能像朴素的图那样，把理论与日常软件如此直接地连在一起。",
+    "titleEn": "Graphs: Modeling the Real World",
+    "titleCn": "图：把真实世界建模出来"
+  },
+  {
+    "slug": "algo-dp-break-it-down",
+    "stackSlug": "algo",
+    "title": "Dynamic Programming: Break It Down",
+    "difficulty": 3,
+    "contentMd": "Dynamic programming sounds intimidating, but the core idea is gentle. Hard problems often repeat the same smaller subproblems. If you solve each one once and remember the answer, you turn exponential waste into polynomial speed.\n\nTwo properties signal that dynamic programming fits. The problem has optimal substructure, meaning a best solution is built from best sub-solutions. It also has overlapping subproblems, the same small cases computed again and again. Computing a Fibonacci number the naive way is the classic warning sign: it recalculates the same values exponentially many times.\n\nThere are two styles. Top-down starts from the goal and caches results as recursion unwinds, a technique called memoization. Bottom-up builds a table from the smallest cases upward, filling each cell from those already known. Either way, you trade a little memory for a massive time saving.\n\nPractice on familiar puzzles: the knapsack, the longest common subsequence, edit distance between words. With each, the moment you see the repeated subproblem, the table writes itself. Dynamic programming is less a trick than a discipline of not repeating work.",
+    "license": "original",
+    "category": "performance",
+    "contentCn": "动态规划 dynamic programming 听起来吓人，但它的核心思想很温和。困难的问题常常重复出现相同的更小子问题。如果你只求解每个子问题一次并记住答案，就能把指数级的浪费变成多项式级的速度。\n\n有两个性质预示动态派发适用。问题具有最优子结构 optimal substructure，意味着最优解可以由最优子解构建而成。它还具有重叠子问题 overlapping subproblems，即相同的小案例被一遍又一遍地重复计算。用朴素方式计算斐波那契数就是经典的警示信号：它会以指数倍的次数重复计算相同的值。\n\n有两种风格。自顶向下 top-down 从目标出发，在递归回溯时缓存结果，这种技术称为记忆化 memoization。自底向上 bottom-up 从最小的案例开始构建表格，用已知的结果填充每个单元格。两种方式都是用一点内存换取巨大的时间节省。\n\n拿熟悉的谜题练手：背包问题、最长公共子序列、单词之间的编辑距离。每一次，只要你看见重复的子问题，那张表格就会自己浮现。动态规划与其说是一种技巧，不如说是一种不重复劳动的纪律。",
+    "titleEn": "Dynamic Programming: Break It Down",
+    "titleCn": "动态规划：把它拆开看"
+  },
+  {
+    "slug": "algo-sorting-tradeoffs",
+    "stackSlug": "algo",
+    "title": "Sorting and Its Trade-offs",
+    "difficulty": 2,
+    "contentMd": "Sorting is the quiet backbone of computing. Searching, merging, deduplicating, and ranking all run faster on ordered data. Picking the right sort is a study in trade-offs rather than a single best answer.\n\nComparison sorts cannot beat O(n log n) in the worst case, a fact proven by counting the decisions a sort can make. Merge sort hits that bound and stays stable, while quicksort usually wins in practice yet can degrade on bad pivots. Heap sort is in-place and predictable but less cache friendly.\n\nWhen keys are small integers, non-comparison sorts leap ahead. Counting sort tallies frequencies, radix sort peels digits from least to most significant, and bucket sort scatters items before finishing locally. Their speed comes from assumptions about the data, assumptions comparison sorts cannot use.\n\nStability matters more than people expect. If you sort by one field then another, a stable sort preserves the first order and yields correct multi-key results. Knowing which algorithm keeps that promise saves subtle bugs. Sorting teaches that efficiency is always relative to what you know about your input.",
+    "license": "original",
+    "category": "performance",
+    "contentCn": "排序是计算领域安静的骨干。搜索、合并、去重和排序排名，在有序数据上都会跑得更快。选择合适的排序算法是一道取舍题，而不是一道只有一个标准答案的题。\n\n比较排序在最坏情况下无法突破 O(n log n)，这个事实通过统计排序可能做出的决策次数得到了证明。归并排序 merge sort 正好达到这个下界并且保持稳定，而快速排序 quicksort 通常在实际场景中更胜一筹，却可能在糟糕的枢轴上退化。堆排序 heap sort 是原地排序，性能可预测，但对缓存不够友好。\n\n当键是小整数时，非比较排序就会大幅领先。计数排序 counting sort 统计频次，基数排序 radix sort 从低位到高位逐位剥离数字，桶排序 bucket sort 先把元素散开再各自局部完成。它们的加速来自对数据的假设，而这些假设比较排序无法利用。\n\n稳定性比人们预期的更重要。如果你先按一个字段排序再按另一个字段排序，稳定排序会保留前一次的顺序，从而给出正确的多键结果。知道哪种算法能兑现这个承诺，能省下细微的 bug。排序教会我们：效率永远相对于你对输入了解多少而言。",
+    "titleEn": "Sorting and Its Trade-offs",
+    "titleCn": "排序及其取舍"
+  },
+  {
+    "slug": "algo-trees-hierarchy",
+    "stackSlug": "algo",
+    "title": "Trees: Order in a Hierarchy",
+    "difficulty": 2,
+    "contentMd": "A tree is a graph with no cycles, and that single rule unlocks a world of structure. File systems, organization charts, and parse trees are all trees. The root sits at the top, children hang below, and any two nodes share exactly one path.\n\nThe binary search tree adds order: every left descendant is smaller, every right descendant larger. This gives logarithmic lookup, insertion, and deletion, as long as the tree stays balanced. Left alone, a bad insertion order can stretch it into a linked list and ruin the speed.\n\nBalanced variants fix that. An AVL tree rotates after each change to keep height tight; a red-black tree uses color marks and fewer rotations for similar guarantees. Databases and language libraries lean on these so lookups stay honest under any workload.\n\nTraversal order is its own small language. Visit the node before children and you get preorder; between them, inorder, which prints a binary search tree in sorted sequence; after them, postorder, useful for freeing memory. Trees reward you for thinking top-down, one branch at a time.",
+    "license": "original",
+    "category": "performance",
+    "contentCn": "树 tree 是一种没有环的图，而仅仅这一条规则就解锁了一整片结构化的天地。文件系统、组织架构图和语法树全都是树。根位于顶端，子节点悬挂在下方，任意两个节点之间恰好共享一条路径。\n\n二叉搜索树 binary search tree 加入了顺序：左侧每个后代都更小，右侧每个后代都更大。只要树保持平衡，这就带来了对数级的查找、插入和删除。如果放任不管，一个糟糕的插入顺序可以把它拉伸成链表，彻底毁掉速度。\n\n平衡变体修复了这个问题。AVL 树在每次变更后通过旋转把高度压紧；红黑树 red-black tree 使用颜色标记，用更少的旋转换取相近的保证。数据库和语言库都依赖这些结构，好让查找在任何负载下都保持诚实。\n\n遍历顺序本身就是一门小语言。先访问节点再访问子节点，得到的是前序 preorder；在子节点之间访问，得到中序 inorder，它能把二叉搜索树按有序序列打印出来；在子节点之后访问，得到后序 postorder，适合释放内存。树会奖赏你自顶向下、一次专注一个分支的思考方式。",
+    "titleEn": "Trees: Order in a Hierarchy",
+    "titleCn": "树：在层级中建立秩序"
+  },
+  {
+    "slug": "algo-greedy-vs-dp",
+    "stackSlug": "algo",
+    "title": "Greedy or Dynamic? Picking a Strategy",
+    "difficulty": 3,
+    "contentMd": "When a problem asks for the best choice, two strategies compete for your attention. Greedy takes the locally best option at each step and hopes it leads to the global best. Dynamic programming considers every path and keeps the proven optimum. Knowing which to trust is a real skill.\n\nGreedy is fast and elegant, but it only works when a greedy choice property holds: a locally optimal move is always safe to commit. Interval scheduling is a clean win. Pick the meeting that ends earliest, drop the overlaps, and repeat. No second-guessing is needed.\n\nMany problems betray that hope. The knapsack tempts you to grab the best value-per-weight item first, yet a cheaper combination may fit better. Here dynamic programming wins because today's choice shapes tomorrow's options and you must compare them all.\n\nA practical rule: try greedy first, then prove it. If you can exhibit an exchange argument showing any optimal solution can be shifted toward your greedy picks, you are safe. If you cannot, reach for dynamic programming. The contrast teaches you to read a problem's shape before writing a single line.",
+    "license": "original",
+    "category": "practice",
+    "contentCn": "当问题要求最优选择时，两种策略会争夺你的注意力。贪心 greedy 每一步都拿当前局部最优选项，并指望它通向全局最优。动态编程则考虑每一条路径，保存已被证明的最优解。知道该信任哪一个，是一项真功夫。\n\n贪心快速而优雅，但只有在具备贪心选择性质时才管用：局部最优的一步总是可以安全地执行下去。区间调度 interval scheduling 就是干净利落的胜利。挑结束时间最早的会议，丢掉冲突的，然后重复。不需要任何反复犹豫。\n\n许多问题会辜负这份期待。背包问题会诱使你先拿性价比最高的物品，然而一个更便宜的组合可能装得更合适。这里动态编程胜出，因为今天的选择塑造了明天的选项，而你必须把它们全部比较一遍。\n\n一条实用规则：先试贪心，然后去证明它。如果你能给出交换论证 exchange argument，说明任何最优解都可以向你的贪心选择靠拢，你就安全了。如果做不到，就转向动态编程。这种对比教会你在写第一行代码之前先读懂问题的形状。",
+    "titleEn": "Greedy or Dynamic? Picking a Strategy",
+    "titleCn": "贪心还是动态：如何选择策略"
+  }
+]

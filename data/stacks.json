@@ -1,0 +1,114 @@
+[
+  {
+    "slug": "java",
+    "name": "Java 语言与生态",
+    "description": "JVM、集合、并发、泛型、IO/NIO、Stream 与 Lambda",
+    "icon": "☕",
+    "order": 1
+  },
+  {
+    "slug": "python",
+    "name": "Python",
+    "description": "数据结构、装饰器、异步与生态库",
+    "icon": "🐍",
+    "order": 2
+  },
+  {
+    "slug": "frontend",
+    "name": "前端",
+    "description": "DOM、React、HTTP 与构建工具",
+    "icon": "🎨",
+    "order": 3
+  },
+  {
+    "slug": "go",
+    "name": "Go",
+    "description": "goroutine、channel、接口与并发",
+    "icon": "🐹",
+    "order": 4
+  },
+  {
+    "slug": "cpp",
+    "name": "C++",
+    "description": "指针、模板、内存与 STL",
+    "icon": "⚙️",
+    "order": 5
+  },
+  {
+    "slug": "agent",
+    "name": "AI 智能体",
+    "description": "Prompt、RAG、Agent、工具调用与多模态",
+    "icon": "🤖",
+    "order": 6
+  },
+  {
+    "slug": "devops",
+    "name": "DevOps / 云原生",
+    "description": "容器、K8s、CI/CD 与可观测性",
+    "icon": "☸️",
+    "order": 7
+  },
+  {
+    "slug": "algo",
+    "name": "算法与数据结构",
+    "description": "复杂度、排序、图论与动态规划",
+    "icon": "🧮",
+    "order": 8
+  },
+  {
+    "slug": "db",
+    "name": "数据库",
+    "description": "索引、事务、分片与一致性",
+    "icon": "🗄️",
+    "order": 9
+  },
+  {
+    "slug": "ml",
+    "name": "机器学习 / 深度学习",
+    "description": "模型、训练、梯度、神经网络与 NLP/CV",
+    "icon": "🧠",
+    "order": 10
+  },
+  {
+    "slug": "security",
+    "name": "网络安全",
+    "description": "加密、认证、Web 安全与渗透测试",
+    "icon": "🛡️",
+    "order": 11
+  },
+  {
+    "slug": "system-design",
+    "name": "系统设计",
+    "description": "扩展性、缓存、消息队列与高可用架构",
+    "icon": "🏗️",
+    "order": 12
+  },
+  {
+    "slug": "rust",
+    "name": "Rust",
+    "description": "所有权、生命周期、async 与系统编程",
+    "icon": "🦀",
+    "order": 13
+  },
+  {
+    "slug": "backend",
+    "name": "后端通用",
+    "description": "HTTP/REST、缓存、鉴权与 API 设计",
+    "icon": "🔌",
+    "order": 14
+  },
+  {
+    "slug": "spring",
+    "name": "Spring 框架",
+    "description": "IoC/DI、Boot、MVC、事务、AOP 与 Spring Data",
+    "icon": "🍃",
+    "order": 15
+  },
+  {
+    "slug": "interview",
+    "name": "面试高频词",
+    "description": "程序员面试高频技术词汇与热门技术栈术语",
+    "icon": "🎯",
+    "order": 16
+  }
+]

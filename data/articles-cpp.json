@@ -1,0 +1,122 @@
+[
+  {
+    "slug": "cpp-optional-and-variant",
+    "stackSlug": "cpp",
+    "title": "Optional and Variant: Expressing Absence and Choice in Types",
+    "difficulty": 3,
+    "contentMd": "Working with values that might be missing is a daily task in C++. Before C++17, programmers often returned a pointer, a special sentinel such as negative one, or a separate boolean flag to signal failure. Each of these approaches is error prone because the caller can forget to check the sentinel. The standard library now offers std::optional, a small wrapper that either holds a value of type T or holds nothing. When a function can legitimately fail to produce a result, returning std::optional makes that possibility part of the type. The caller must check whether the value is present before using it, and the compiler cannot easily ignore the check.\n\nRelated to optional is std::variant, a type-safe union. A variant holds exactly one value chosen from a fixed list of alternative types. This is far safer than the old C-style union, which gave no help in remembering which member was active. You usually read a variant with std::visit, passing a callable that handles every alternative. Together, optional and variant let you express \"maybe a value\" and \"one of several types\" directly in the type system. That clarity reduces bugs and makes the code easier to read for everyone on the team.",
+    "license": "original",
+    "category": "practice",
+    "contentCn": "在 C++ 中，处理「可能没有值」的数据是日常任务。在 C++17 之前，程序员常常返回指针、诸如 -1 这样的特殊哨兵值，或者一个单独的布尔标志来表示失败。这些做法都容易出错，因为调用方可能忘记检查哨兵值。标准库现在提供了 std::optional——一个小包装类型，它要么持有一个 T 类型的值，要么什么都不持有。当函数确实可能无法产出结果时，返回 std::optional 就把这种可能性编码进了类型里。调用方必须先检查值是否存在才能使用它，而编译器也很难忽略这个检查。\n\n与 optional 相关的是 std::variant，一个类型安全的联合体。一个 variant 恰好持有从固定候选类型列表中选出的一个值。这比老式的 C 风格 union 安全得多，后者对「当前是哪个成员有效」毫无帮助。你通常用 std::visit 读取 variant，传入一个能处理所有候选类型的可调用对象。optional 和 variant 一起，让你能直接在类型系统中表达「也许有一个值」和「若干类型之一」。这种清晰度能减少 bug，也让团队里的每个人都更容易读懂代码。",
+    "titleEn": "Optional and Variant: Expressing Absence and Choice in Types",
+    "titleCn": "optional 与 variant：在类型中表达「缺失」与「选择」"
+  },
+  {
+    "slug": "cpp-smart-pointers-recap",
+    "stackSlug": "cpp",
+    "title": "Why Modern C++ Reaches for Smart Pointers",
+    "difficulty": 3,
+    "contentMd": "Managing memory by hand with new and delete has always been a major source of bugs in C++. A forgotten delete creates a memory leak, while a double delete or a use after free causes undefined behavior. Modern C++ strongly encourages RAII, the idea that a resource is tied to the lifetime of an object. When the object goes out of scope, its destructor releases the resource automatically. Smart pointers are the standard implementation of this idea for heap memory.\n\nstd::unique_ptr expresses sole ownership: only one pointer owns the object, and it is destroyed when that pointer is gone. You normally create one with std::make_unique, which is both safer and sometimes faster than calling new directly. When several parts of the program need to share an object, std::shared_ptr tracks ownership through a reference count, and the last owner frees the memory. A std::weak_ptr can observe a shared object without keeping it alive, which helps to break reference cycles. By preferring these smart pointers over raw new, you make ownership explicit and leaks far less likely.",
+    "license": "original",
+    "category": "practice",
+    "contentCn": "用 new 和 delete 手工管理内存，一直是 C++ 中 bug 的主要来源之一。漏掉一个 delete 会造成内存泄漏，而重复 delete 或释放后使用则会导致未定义行为。现代 C++ 强烈倡导 RAII，即把资源绑定到对象的生命周期上。当对象离开作用域时，它的析构函数会自动释放资源。智能指针就是这一思想在堆内存上的标准实现。\n\nstd::unique_ptr 表达独占所有权：只有一个指针拥有该对象，并且它会在那个指针消亡时被销毁。你通常用 std::make_unique 创建它，这比直接调用 new 更安全，有时还更快。当程序的多个部分需要共享同一个对象时，std::shared_ptr 通过引用计数跟踪所有权，最后一个所有者负责释放内存。std::weak_ptr 则可以在不延长对象生命的前提下观察共享对象，有助于打破引用循环。优先使用这些智能指针而不是裸 new，可以让所有权变得明确，泄漏的可能性也大大降低。",
+    "titleEn": "Why Modern C++ Reaches for Smart Pointers",
+    "titleCn": "现代 C++ 为什么依赖智能指针"
+  },
+  {
+    "slug": "cpp-move-semantics-basics",
+    "stackSlug": "cpp",
+    "title": "Move Semantics: Cheap Ownership Transfer",
+    "difficulty": 4,
+    "contentMd": "Copying large objects can be expensive. Imagine a function that returns a std::vector with a million elements: under the old rules, the value might be copied from the function back to the caller, doubling the memory used for a moment. Move semantics, introduced in C++11, solves this by transferring ownership of resources instead of duplicating them. After a move, the source object is left in a valid but unspecified state, and the destination now owns the data cheaply.\n\nThe mechanism rests on value categories and rvalue references. A function that takes an rvalue reference, written as T&&, can steal the contents of a temporary. The library function std::move is not a move by itself; it simply casts an lvalue to an rvalue reference so that a move can happen. For your own classes, you write a move constructor and a move assignment operator, and together with the copy operations they form the rule of five. Mark these special functions noexcept when you can, because standard containers rely on that guarantee when resizing. Move semantics make returning and storing big objects efficient and natural.",
+    "license": "original",
+    "category": "internals",
+    "contentCn": "复制大对象可能代价高昂。想象一个返回含有一百万元素的 std::vector 的函数：在旧规则下，这个值可能会从函数内部复制回调用方，短时间内让内存占用翻倍。C++11 引入的移动语义解决了这个问题——它转移资源的所有权，而不是复制资源。移动之后，源对象会处于一个有效但未指定的状态，而目标对象则廉价地接管了数据。\n\n这套机制建立在值类别（value category）和右值引用之上。一个接受右值引用（写作 T&&）的函数，可以「偷走」临时对象的内容。库函数 std::move 本身并不是一次移动；它只是把左值转换成右值引用，让移动得以发生。对于你自己的类，你需要编写移动构造函数和移动赋值运算符，它们与拷贝操作一起构成了「五法则」。能标为 noexcept 的时候就把这些特殊函数标上，因为标准容器在扩容时依赖这一保证。移动语义让返回和保存大对象变得高效而自然。",
+    "titleEn": "Move Semantics: Cheap Ownership Transfer",
+    "titleCn": "移动语义：低开销的所有权转移"
+  },
+  {
+    "slug": "cpp-concurrency-primer",
+    "stackSlug": "cpp",
+    "title": "A First Look at Concurrency in C++",
+    "difficulty": 4,
+    "contentMd": "Modern programs often need to do several things at once, whether to keep a user interface responsive or to use multiple CPU cores. In C++ this usually starts with std::thread, which represents an independent path of execution. You give a thread a callable, and it runs concurrently with the rest of your code. When you are done, you must either join it, which waits for it to finish, or detach it, which lets it run on its own. Forgetting to do either causes the program to terminate.\n\nSharing data between threads is where real difficulty begins. If two threads write to the same variable without coordination, you have a data race, and the result is undefined behavior. The simplest fix is a mutex, a lock that only one thread may hold at a time. The RAII wrapper std::lock_guard takes the lock on construction and releases it automatically when the scope ends, which prevents the classic mistake of forgetting to unlock. For waiting and notification, std::condition_variable lets one thread sleep until another signals that work is ready. Build concurrency on these primitives carefully, because bugs such as deadlock are hard to reproduce.",
+    "license": "original",
+    "category": "concurrency",
+    "contentCn": "现代程序常常需要同时做几件事——无论是保持用户界面响应，还是利用多个 CPU 核心。在 C++ 中，这通常从 std::thread 开始，它代表一条独立的执行路径。你给线程一个可调用对象，它就会与代码的其余部分并发运行。结束时，你必须选择 join（等待它完成）或 detach（让它自行运行）。两者都忘记做会导致程序终止。\n\n线程之间共享数据才是真正困难开始的地方。如果两个线程在没有协调的情况下写入同一个变量，就产生了数据竞争，结果是未定义行为。最简单的修法是互斥锁（mutex）——一种同一时刻只能被一个线程持有的锁。RAII 包装器 std::lock_guard 在构造时加锁，并在作用域结束时自动解锁，从而避免了忘记解锁这个经典错误。对于等待和通知，std::condition_variable 让一个线程可以睡眠，直到另一个线程发出「工作已就绪」的信号。在这些原语之上构建并发时要格外小心，因为死锁这类 bug 很难复现。",
+    "titleEn": "A First Look at Concurrency in C++",
+    "titleCn": "C++ 并发初探"
+  },
+  {
+    "slug": "cpp-templates-intro",
+    "stackSlug": "cpp",
+    "title": "Templates and Generic Programming",
+    "difficulty": 3,
+    "contentMd": "Templates are what make C++ a powerful language for generic programming. A template is a pattern for code that the compiler fills in with concrete types or values when you use it. The classic example is a function that returns the larger of two arguments; written as a template, the same source works for int, double, or your own types. This avoids copying nearly identical functions by hand and keeps a single point of truth.\n\nA template parameter can be a type, written with typename or class, or a value such as an integer. When the compiler encounters a use, it instantiates a fresh copy of the function or class for those arguments. More advanced features include variadic templates, which accept any number of parameters, and partial specialization, which provides a custom implementation for a subset of arguments. In C++20, concepts and the requires clause let you constrain what types are acceptable, turning confusing error messages into clear failures. Used well, templates give you reusable, type-safe building blocks without the cost of runtime polymorphism.",
+    "license": "original",
+    "category": "practice",
+    "contentCn": "模板让 C++ 成为一门强大的泛型编程语言。模板是一份代码的蓝图，当你使用它时，编译器会用具体的类型或值把它填充完整。经典例子是一个返回两个参数中较大者的函数；写成模板后，同一份源码可以用于 int、double 或你自己的类型。这免去了手工抄写近乎相同的函数，也保留了唯一的事实来源。\n\n模板参数可以是类型（用 typename 或 class 书写），也可以是值，比如一个整数。当编译器遇到一次使用时，它会为这些参数实例化出一份全新的函数或类副本。更高级的特性包括可变参数模板（可接受任意数量的参数）和部分特化（为参数的一个子集提供自定义实现）。在 C++20 中，concepts 和 requires 子句让你能够约束哪些类型是可接受的，把令人困惑的编译错误变成清晰的失败信息。用好模板，你就能获得可复用、类型安全的构建模块，而不必付出运行时多态的开销。",
+    "titleEn": "Templates and Generic Programming",
+    "titleCn": "模板与泛型编程"
+  },
+  {
+    "slug": "cpp-raii-explained",
+    "stackSlug": "cpp",
+    "title": "RAII: Tying Resources to Object Lifetime",
+    "difficulty": 3,
+    "contentMd": "RAII stands for Resource Acquisition Is Initialization, and it is one of the most important idioms in C++. The core idea is simple: tie a resource to the lifetime of an object. When you acquire the resource, you do it inside a constructor; when the object is destroyed, its destructor releases the resource. Because C++ always calls destructors when an object leaves its scope, the cleanup happens no matter how the scope is exited, including when an exception is thrown.\n\nThis idiom explains why so many standard types are safe by default. std::unique_ptr frees its memory, std::lock_guard unlocks its mutex, and std::ofstream closes its file, all in their destructors. The historical alternative was to call free, unlock, or close manually at every exit point, which is tedious and fragile. RAII also underlies the rule of three and rule of five: if your class owns a resource, you must control how it is copied or moved. Once you think in terms of ownership and lifetime, many C++ bugs simply disappear, and exception safety becomes much easier to achieve.",
+    "license": "original",
+    "category": "internals",
+    "contentCn": "RAII 是 Resource Acquisition Is Initialization（资源获取即初始化）的缩写，它是 C++ 中最重要的惯用法之一。核心思想很简单：把资源绑定到对象的生命周期上。获取资源时在构造函数里完成；对象销毁时，其析构函数释放资源。由于 C++ 总会在对象离开作用域时调用析构函数，无论作用域是如何退出的——包括抛出异常的情况——清理动作都会发生。\n\n这个惯用法解释了为什么标准库中许多类型天生安全。std::unique_ptr 释放它的内存，std::lock_guard 解开它的互斥锁，std::ofstream 关闭它的文件，全都在各自的析构函数里完成。历史上的替代做法是在每一个出口处手动调用 free、unlock 或 close，既繁琐又脆弱。RAII 也是「三法则」和「五法则」的基础：如果你的类拥有一个资源，你就必须控制它如何被拷贝或移动。一旦你开始用所有权和生命周期的方式思考，许多 C++ 的 bug 就自然消失了，异常安全也更容易做到。",
+    "titleEn": "RAII: Tying Resources to Object Lifetime",
+    "titleCn": "RAII：把资源绑定到对象生命周期"
+  },
+  {
+    "slug": "cpp-stl-algorithms",
+    "stackSlug": "cpp",
+    "title": "Getting More from STL Algorithms",
+    "difficulty": 2,
+    "contentMd": "The Standard Template Library gives you containers such as std::vector and std::map, but the real productivity win comes from the algorithms in the <algorithm> header. Instead of writing a hand-made loop to find, sort, or transform elements, you call a named algorithm and pass it a range. For example, std::sort arranges a vector in ascending order, and std::find searches for a value within a range.\n\nMost algorithms are expressed in terms of iterators, which are generalizations of pointers. This separation means the same algorithm works on a vector, a list, or a raw array, as long as you give it begin and end. Because these routines are written and reviewed by experts, they tend to be correct and often faster than ad hoc loops. Modern C++ adds execution policies, so you can ask std::sort to run in parallel with a single extra argument. A good habit is to scan the algorithm list before writing a loop: chances are the operation you need already exists, and using it makes your intent obvious to readers.",
+    "license": "original",
+    "category": "practice",
+    "contentCn": "标准模板库提供了 std::vector、std::map 这样的容器，但真正带来生产力提升的是 <algorithm> 头文件里的算法。你不必手写循环去查找、排序或转换元素，而是调用一个具名算法并把区间传进去。比如 std::sort 会把 vector 按升序排列，std::find 会在区间内查找某个值。\n\n大多数算法都是用迭代器（iterator）来表达的，而迭代器是指针的泛化。这种分离意味着同一个算法可以作用于 vector、list 或裸数组，只要你给它 begin 和 end。由于这些例程由专家编写和审阅，它们往往正确，而且常常比临时手写的循环更快。现代 C++ 还加入了执行策略，你只需多传一个参数就能让 std::sort 并行运行。一个好习惯是：写循环之前先扫一眼算法列表——你需要的操作很可能已经存在了，而用它能让意图对读者一目了然。",
+    "titleEn": "Getting More from STL Algorithms",
+    "titleCn": "更充分地利用 STL 算法"
+  },
+  {
+    "slug": "cpp-const-and-constexpr",
+    "stackSlug": "cpp",
+    "title": "Const and Constexpr: Immutability by Default",
+    "difficulty": 2,
+    "contentMd": "Two small keywords, const and constexpr, carry a lot of meaning in C++ and help you write safer, faster code. A variable declared const cannot be changed after initialization, and a member function marked const promises not to modify the object's observable state. Using const lets the compiler catch accidental writes and communicates intent clearly to anyone reading the code.\n\nconstexpr goes further: it asks the compiler to evaluate the value at compile time. A constexpr variable is a true compile-time constant, and a constexpr function can be used in constant expressions when its arguments allow it. This shifts work from runtime to build time and enables features such as array sizes known at compile time and template arguments that must be constants. In modern code you usually prefer constexpr over the older #define macros because it respects scopes and types. Together, const and constexpr form a habit of making immutability explicit, which reduces surprise and often opens the door to better optimization by the compiler.",
+    "license": "original",
+    "category": "practice",
+    "contentCn": "两个小关键字 const 和 constexpr 在 C++ 中承载了大量含义，能帮助你写出更安全、更快的代码。用 const 声明的变量在初始化之后不能被修改，标记为 const 的成员函数则承诺不会改变对象的可观察状态。使用 const 能让编译器捕获意外的写入，也向任何读代码的人清晰传达意图。\n\nconstexpr 更进一步：它要求编译器在编译期就完成求值。constexpr 变量是真正的编译期常量，而 constexpr 函数在实参允许的情况下可以用于常量表达式。这把工作从运行期搬到了构建期，并解锁了「数组大小在编译期已知」「模板实参必须是常量」这类特性。在现代代码中，你通常更偏好 constexpr 而不是更老的 #define 宏，因为它尊重作用域和类型。const 与 constexpr 合在一起，养成了「把不可变性显式化」的习惯，这能减少意外，也常常为编译器的进一步优化打开大门。",
+    "titleEn": "Const and Constexpr: Immutability by Default",
+    "titleCn": "const 与 constexpr：默认不可变"
+  },
+  {
+    "slug": "cpp-undefined-behavior",
+    "stackSlug": "cpp",
+    "title": "Understanding Undefined Behavior in C++",
+    "difficulty": 3,
+    "contentMd": "Undefined behavior, often shortened to UB, is one of the most misunderstood parts of C++. It occurs when your program performs an operation that the language standard does not define, such as reading past the end of an array, dereferencing a null pointer, or causing signed integer overflow. The standard places no requirement on what happens next, so the program might crash, produce a wrong answer, or appear to work until a different compiler version changes the outcome.\n\nThe danger is that UB is not a runtime error with a clear message. An optimizer may assume UB never happens and remove checks accordingly, which can make a bug invisible in testing and fatal in production. Common sources include out-of-bounds access, using an object after it has been freed, and data races between threads. The best defense is prevention: use std::vector with bounds checking during development, prefer smart pointers, enable compiler warnings, and run sanitizers. Treating undefined behavior as a serious defect, rather than a curiosity, is essential for writing reliable C++.",
+    "license": "original",
+    "category": "pitfalls",
+    "contentCn": "未定义行为（常缩写为 UB）是 C++ 中最容易被误解的部分之一。当你的程序执行了语言标准没有定义的操作时，就会出现未定义行为，比如越界读取数组、解引用空指针，或者造成有符号整数溢出。标准对接下来会发生什么没有任何要求，于是程序可能崩溃、给出错误答案，或者看似正常地运行，直到换一个编译器版本结果就变了。\n\n危险之处在于，UB 不是那种带明确报错的运行时错误。优化器可能假设 UB 永远不会发生，并据此删除相应的检查，这会让 bug 在测试中隐身、在生产环境中致命。常见来源包括越界访问、对象释放后继续使用，以及线程之间的数据竞争。最好的防御是预防：开发阶段使用带边界检查的 std::vector、优先使用智能指针、打开编译器警告，并运行 sanitizers。把未定义行为当作严重缺陷而不是猎奇现象，对写出可靠的 C++ 至关重要。",
+    "titleEn": "Understanding Undefined Behavior in C++",
+    "titleCn": "理解 C++ 中的未定义行为"
+  },
+  {
+    "slug": "cpp-modern-cpp-features",
+    "stackSlug": "cpp",
+    "title": "A Tour of Modern C++ Features",
+    "difficulty": 3,
+    "contentMd": "C++ has changed a great deal since the old days, and a programmer who learns the modern language gains a lot of convenience. C++11 introduced auto for type deduction, range-based for loops, lambdas, and smart pointers, which together removed much of the boilerplate. Later standards kept building on that base. C++17 added std::optional, std::variant, and std::string_view, so common patterns no longer need custom classes. C++20 brought concepts, which make template errors readable, and coroutines, which simplify asynchronous code.\n\nAdopting these features is not only about writing less code. Structured bindings let you unpack a tuple or a map entry into named variables, making intent clearer. constexpr and const make immutability explicit and move work to compile time. The standard library keeps growing with tools such as std::span for non-owning views and std::jthread for safer threads. Learning modern C++ means learning a safer, more expressive language than many programmers expect, and the effort pays back in fewer bugs and more readable code.",
+    "license": "original",
+    "category": "internals",
+    "contentCn": "C++ 与过去相比变化巨大，而学会现代写法的程序员能获得大量便利。C++11 引入了用于类型推导的 auto、范围 for 循环、lambda 表达式和智能指针，它们共同消除了大量样板代码。后续标准不断在这个基础上继续构建：C++17 加入了 std::optional、std::variant 和 std::string_view，常见模式不再需要自定义类；C++20 带来了让模板错误变得可读的 concepts，以及简化异步代码的协程。\n\n采用这些特性不只是为了少写几行代码。结构化绑定可以把 tuple 或 map 的条目解包成具名变量，让意图更清晰。constexpr 和 const 让不可变性显式化，并把工作挪到编译期。标准库也在持续成长，提供了 std::span 这类非拥有型视图和 std::jthread 这样更安全的线程工具。学习现代 C++ 意味着学一门比许多人想象的更安全、更富表达力的语言，而这份投入会以更少的 bug 和更易读的代码回报你。",
+    "titleEn": "A Tour of Modern C++ Features",
+    "titleCn": "现代 C++ 特性巡礼"
+  }
+]

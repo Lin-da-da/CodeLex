@@ -1,0 +1,122 @@
+[
+  {
+    "slug": "security-encryption-basics",
+    "stackSlug": "security",
+    "title": "Encryption Basics Every Developer Should Know",
+    "difficulty": 1,
+    "contentMd": "Encryption is the foundation of modern data protection. At its core, encryption transforms readable data, called plaintext, into an unreadable form called ciphertext. Only someone who holds the correct key can turn the ciphertext back into plaintext through decryption. Without encryption, any data that travels over a network or rests on a disk can be read by anyone who gains access.\n\nThere are two broad families of encryption. Symmetric encryption uses a single shared secret key for both encryption and decryption, which makes it fast and ideal for bulk data. Asymmetric encryption uses a key pair: a public key that can be shared openly, and a private key that must stay secret. The public key encrypts, while the private key decrypts.\n\nIn practice, systems combine both. A TLS connection uses asymmetric encryption during the handshake to safely exchange a temporary symmetric key, then switches to symmetric encryption for the actual data. This hybrid approach gives you both strong key exchange and high performance. As a developer, you rarely implement these algorithms yourself; you call a vetted library and focus on protecting the keys.",
+    "license": "original",
+    "category": "performance",
+    "contentCn": "加密是现代数据保护的基础。就其本质而言，加密把可读的数据（称为明文 plaintext）转换成不可读的形式（称为密文 ciphertext）。只有持有正确密钥的人，才能通过解密把密文还原成明文。如果没有加密，任何在网络上传输或存放在磁盘上的数据，都可能被任何拿到访问权的人读取。\n\n加密大致分为两大类。对称加密（symmetric encryption）在加密和解密时使用同一个共享密钥，因此速度很快，非常适合批量数据。非对称加密（asymmetric encryption）使用密钥对：一个可以公开分发的公钥，以及一个必须保密的私钥。公钥负责加密，私钥负责解密。\n\n在实际系统中，两者通常结合使用。一个 TLS 连接在握手阶段使用非对称加密来安全地交换一个临时的对称密钥，随后切换到对称加密处理真正的数据。这种混合方式同时给了你安全的密钥交换和很高的性能。作为开发者，你很少需要自己实现这些算法；你调用经过验证的库，把精力放在保护密钥上。",
+    "titleEn": "Encryption Basics Every Developer Should Know",
+    "titleCn": "每位开发者都应掌握的加密基础"
+  },
+  {
+    "slug": "security-hashing-passwords",
+    "stackSlug": "security",
+    "title": "Why We Hash Passwords Instead of Encrypting Them",
+    "difficulty": 2,
+    "contentMd": "When a user creates an account, the server should never store the password in plaintext. If the database is ever leaked, every plaintext password becomes an immediate breach. The standard defense is hashing, a one-way function that turns any input into a fixed-length digest that cannot be reversed.\n\nHashing alone is not enough. Attackers use precomputed tables, known as rainbow tables, to reverse common passwords. To defeat this, we add a salt: a random value unique to each user, stored alongside the hash. The salt makes identical passwords produce different digests, so attackers must crack each password separately.\n\nChoose a slow, purpose-built algorithm such as bcrypt, scrypt, or Argon2 rather than fast hashes like MD5 or SHA-1, which are now considered broken. Slowness is a feature here, because it raises the cost of brute force attacks. Always enforce a minimum length, rate-limit login attempts, and consider multi-factor authentication for sensitive accounts.",
+    "license": "original",
+    "category": "pitfalls",
+    "contentCn": "当用户创建账户时，服务端绝不应该以明文存储密码。一旦数据库泄露，每一个明文密码都会立刻变成安全事件。标准的防御手段是哈希（hashing）：一种单向函数，把任意输入变成固定长度的摘要，且无法被反向还原。\n\n光靠哈希还不够。攻击者会使用预先计算好的查找表，也就是所谓的彩虹表（rainbow table），来反推常见密码。为了对付它，我们会加入盐（salt）：一个对每个用户都唯一的随机值，与哈希值一同存储。盐使得相同的密码产生不同的摘要，攻击者因此必须逐个破解。\n\n请选择专门设计且速度较慢的算法，例如 bcrypt、scrypt 或 Argon2，而不是 MD5、SHA-1 这类快速哈希——它们如今已被视为不安全。在这里，「慢」反而是一种特性，因为它提高了暴力破解的成本。始终要强制设置最小长度，对登录尝试做限流，并对敏感账户考虑启用多因素认证。",
+    "titleEn": "Why We Hash Passwords Instead of Encrypting Them",
+    "titleCn": "为什么我们哈希密码，而不是加密它"
+  },
+  {
+    "slug": "security-tls-under-hood",
+    "stackSlug": "security",
+    "title": "What Happens During a TLS Handshake",
+    "difficulty": 3,
+    "contentMd": "Whenever your browser shows a padlock, a TLS handshake has already finished. The goal of the handshake is for the client and server to agree on how to encrypt the session and to verify each other's identity. It begins when the client sends a list of supported cipher suites and a random value.\n\nThe server replies with its own random value and a digital certificate. That certificate, issued by a certificate authority, binds the server's public key to its domain name. The client verifies the certificate chain before trusting it. Then the two sides use key exchange to derive a shared secret that becomes the symmetric session key.\n\nFrom that point on, application data is encrypted with a fast symmetric cipher. The handshake itself relies on asymmetric encryption only long enough to establish trust and exchange keys, which keeps the connection both secure and efficient. Misconfigured or expired certificates are a common cause of outages, so automate renewal with a tool like certbot and monitor expiry.",
+    "license": "original",
+    "category": "tooling",
+    "contentCn": "每当你的浏览器显示一把小锁，就说明一次 TLS 握手已经完成。握手的目标是让客户端和服务器就如何加密本次会话达成一致，并验证彼此的身份。它始于客户端发送自己支持的密码套件列表以及一个随机值。\n\n服务器会回复它自己的随机值以及一张数字证书（digital certificate）。这张证书由证书颁发机构（certificate authority）签发，把服务器的公钥与它的域名绑定在一起。客户端在信任它之前会先验证整条证书链。随后双方通过密钥交换（key exchange）派生出一个共享密钥，它将成为本次会话的对称密钥。\n\n从那一刻起，应用数据都用快速的对称密码算法加密。握手本身只在建立信任和交换密钥这段短时间内依赖非对称加密，这既保证了连接安全，又保持了高效。证书配置错误或过期是导致服务中断的常见原因，所以要用 certbot 之类的工具把续期自动化，并监控证书有效期。",
+    "titleEn": "What Happens During a TLS Handshake",
+    "titleCn": "TLS 握手期间到底发生了什么"
+  },
+  {
+    "slug": "security-auth-vs-authz",
+    "stackSlug": "security",
+    "title": "Authentication vs Authorization: Know the Difference",
+    "difficulty": 1,
+    "contentMd": "Two terms confuse many newcomers: authentication and authorization. Authentication asks who you are. It is the process of verifying identity using something you know, have, or are, such as a password, a hardware token, or a fingerprint. Authorization, on the other hand, asks what you are allowed to do once your identity is established.\n\nA simple analogy helps. Authentication is showing your ID at the door; authorization is whether that ID grants you access to the server room. You can be authenticated but not authorized, and you should never be authorized without first being authenticated.\n\nIn code, this shows up as two separate checks. A login endpoint authenticates the user and issues a session token or JWT. Later, a protected endpoint reads that token, confirms it is valid, and then checks the user's permissions before returning data. Mixing the two, for example trusting a user ID from the request body, is a classic cause of broken access control vulnerabilities.",
+    "license": "original",
+    "category": "practice",
+    "contentCn": "有两个术语让许多新手感到困惑：认证（authentication）和授权（authorization）。认证问的是「你是谁」。它是利用你所知道的、所持有的或你所具备的某种特征来验证身份的过程，比如密码、硬件令牌或指纹。授权问的则是「在身份确认之后，你可以做什么」。\n\n一个简单的类比会有帮助。认证相当于在门口出示身份证；授权则取决于这张身份证是否准你进入机房。你可以通过了认证却没有获得授权，而绝不应该在未经认证的情况下就拥有授权。\n\n在代码里，这表现为两处彼此独立的检查。登录接口负责认证用户，并签发会话 token 或 JWT。之后，受保护的接口读取该 token，确认它有效，再检查用户权限，然后才返回数据。把两者混在一起——比如直接信任请求体里的用户 ID——正是访问控制失效（broken access control）漏洞的经典成因。",
+    "titleEn": "Authentication vs Authorization: Know the Difference",
+    "titleCn": "认证与授权：一定要分清"
+  },
+  {
+    "slug": "security-owasp-top10",
+    "stackSlug": "security",
+    "title": "The OWASP Top 10 and Why They Matter",
+    "difficulty": 2,
+    "contentMd": "The OWASP Top 10 is a standard awareness document that lists the most critical web application security risks. It is updated every few years based on real-world incident data, and it gives developers a practical checklist of what to defend against first. Broken access control, injection, and security misconfiguration consistently dominate the list.\n\nInjection, especially SQL injection, happens when untrusted input is interpreted as code. The fix is almost always parameterized queries plus strict input validation. Cross-site scripting, or XSS, lets an attacker inject scripts into pages viewed by others, and it is mitigated by output encoding and a strong content security policy. Cross-site request forgery tricks a logged-in user's browser into sending unwanted requests, which CSRF tokens prevent.\n\nReading the Top 10 is not enough; you must bake the defenses into your framework defaults, your review checklist, and your automated tests. Many frameworks now protect against several of these risks out of the box, but only if you configure them correctly.",
+    "license": "original",
+    "category": "tooling",
+    "contentCn": "OWASP Top 10 是一份标准性的意识文档，列出了最关键的 Web 应用安全风险。它每隔几年依据真实世界的事故数据更新一次，为开发者提供了一份实用的清单，告诉你应该优先防范什么。访问控制失效、注入和安全配置错误始终位居榜首。\n\n注入，尤其是 SQL 注入，发生在不可信输入被当作代码解释的时候。修复方案几乎总是参数化查询加上严格的输入校验。跨站脚本（XSS）让攻击者能够向他人浏览的页面注入脚本，缓解手段是输出编码和一套严格的内容安全策略（content security policy）。跨站请求伪造（CSRF）则诱导已登录用户的浏览器发出非预期的请求，用 CSRF token 可以阻止它。\n\n读完 Top 10 是不够的；你必须把这些防护措施固化到框架默认配置、评审清单和自动化测试之中。如今许多框架开箱即用地防护了其中若干项风险，但前提是你正确地配置了它们。",
+    "titleEn": "The OWASP Top 10 and Why They Matter",
+    "titleCn": "OWASP Top 10，以及它为什么重要"
+  },
+  {
+    "slug": "security-jwt-oauth",
+    "stackSlug": "security",
+    "title": "JWT and OAuth: Stateless Tokens and Delegated Access",
+    "difficulty": 3,
+    "contentMd": "Modern APIs rarely keep server-side session state for every user. Instead, they issue a JWT, a compact token that encodes claims in a signed JSON object. Because the token carries its own signature, the server can verify it without a shared session store, which makes horizontal scaling easier.\n\nA JWT is not the same as a full login system, though. OAuth is a framework that lets a user grant one application limited access to another, without sharing their password. When you click Sign in with Google, the site redirects you to Google, you approve a scope, and Google returns an authorization code that the site exchanges for tokens. OpenID Connect adds an identity layer on top of OAuth using an ID token.\n\nThe danger is treating these tokens carelessly. Store them securely, set short expiration times, and never put secrets inside a JWT's payload, since the payload is only signed, not encrypted. Rotate signing keys and use asymmetric signatures so resource servers can verify tokens with a public key.",
+    "license": "original",
+    "category": "practice",
+    "contentCn": "现代 API 很少再为每个用户在服务端保存会话状态。取而代之的是签发 JWT——一种紧凑的令牌，把声明信息编码进一个带签名的 JSON 对象里。由于令牌自带签名，服务端无需共享的会话存储就能校验它，这让水平扩展变得更容易。\n\n不过 JWT 并不等同于一套完整的登录系统。OAuth 是一套框架，允许用户在不共享密码的前提下，授予某个应用对另一个应用的有限访问权。当你点击「使用 Google 登录」时，网站把你跳转到 Google，你批准一个 scope，Google 返回一个 authorization code，网站再用它换取令牌。OpenID Connect 则在 OAuth 之上加了一层身份标识，通过 ID token 来实现。\n\n危险之处在于随意对待这些令牌。要安全地存储它们，设置较短的有效期，并且绝不要把机密放进 JWT 的 payload 里——因为 payload 只是被签名，并没有被加密。要定期轮换签名密钥，并使用非对称签名，这样资源服务器才能用公钥校验令牌。",
+    "titleEn": "JWT and OAuth: Stateless Tokens and Delegated Access",
+    "titleCn": "JWT 与 OAuth：无状态令牌与委托授权"
+  },
+  {
+    "slug": "security-phishing-social",
+    "stackSlug": "security",
+    "title": "Phishing and the Human Side of Security",
+    "difficulty": 1,
+    "contentMd": "Most breaches do not start with a clever exploit; they start with a person. Phishing is the practice of pretending to be a trusted party, such as a bank or a coworker, to trick someone into revealing credentials or installing malware. A convincing message might urge you to reset a password or open an urgent invoice.\n\nThe defense is awareness combined with technical controls. Train people to check sender domains, hover over links before clicking, and report suspicious messages. On the technical side, enforce multi-factor authentication so a stolen password alone is not enough, and use email authentication standards to block spoofed senders.\n\nEven skilled engineers get fooled under pressure, which is why defense in depth matters. If one control fails, another should catch the attacker. Security awareness turns every employee into an extra sensor that can spot and report an attack before it spreads.",
+    "license": "original",
+    "category": "pitfalls",
+    "contentCn": "大多数数据泄露都不是从某个精妙的漏洞利用开始的，而是从一个人开始的。网络钓鱼（phishing）是指冒充可信身份方（比如银行或同事），诱骗他人交出凭据或安装恶意软件的做法。一条逼真的消息可能会催促你重置密码，或者打开一份紧急发票。\n\n防御手段是意识培训加上技术管控的组合。要训练大家核对发件人域名、点击前先悬停查看链接、举报可疑邮件。在技术侧，强制启用多因素认证，使得仅凭被盗的密码不足以登录，并使用邮件认证标准来拦截伪造发件人。\n\n即便经验丰富的工程师，在压力之下也可能上当，这正是纵深防御之所以重要的原因。如果一道防线失效，应当有另一道接住攻击者。安全意识让每位员工都变成一个额外的传感器，能够在攻击扩散之前发现并上报它。",
+    "titleEn": "Phishing and the Human Side of Security",
+    "titleCn": "网络钓鱼与安全中的人的因素"
+  },
+  {
+    "slug": "security-zero-trust",
+    "stackSlug": "security",
+    "title": "Zero Trust: Never Trust, Always Verify",
+    "difficulty": 3,
+    "contentMd": "The old security model assumed that everything inside the corporate network could be trusted. That assumption broke the moment laptops, cloud services, and contractors entered the picture. Zero trust is a different model: no request is trusted by default, regardless of where it originates, and every access is verified continuously.\n\nIn a zero trust architecture, identity is the new perimeter. Every service authenticates with mutual TLS, every user proves who they are, and every request is checked against fine-grained policy. Least privilege means a process gets only the permissions it needs and nothing more, which limits the damage if it is compromised.\n\nImplementing zero trust is incremental. Start by inventorying your assets, requiring strong authentication everywhere, segmenting the network to slow lateral movement, and logging every access decision. The goal is not a single product but a posture: assume the network is already compromised and design accordingly.",
+    "license": "original",
+    "category": "pitfalls",
+    "contentCn": "过去的安全模型假定：公司网络内部的任何东西都可以被信任。随着笔记本、云服务和外包人员的加入，这个假定立刻崩塌了。零信任（zero trust）是另一套模型：任何请求都不被默认信任，无论它来自哪里；每一次访问都持续地被验证。\n\n在零信任架构中，身份就是新的边界。每一个服务都用双向 TLS（mutual TLS）做认证，每一个用户都证明自己是谁，每一次请求都要对照细粒度策略进行检查。最小权限原则意味着一个进程只获得它必需的权限，多一点都没有，从而在它被攻破时把损失限制住。\n\n落地零信任是渐进式的。先盘点你的资产，在所有地方要求强认证，对网络做分段以延缓横向移动，并记录每一次访问决策。目标不是某一个产品，而是一种姿态：假定网络已经被攻破，并据此进行设计。",
+    "titleEn": "Zero Trust: Never Trust, Always Verify",
+    "titleCn": "零信任：永不默认信任，始终验证"
+  },
+  {
+    "slug": "security-pentest-red-blue",
+    "stackSlug": "security",
+    "title": "Penetration Testing, Red Teams, and Blue Teams",
+    "difficulty": 2,
+    "contentMd": "You cannot fix what you cannot see, which is why organizations test themselves. Penetration testing is an authorized, time-boxed attempt to find and exploit weaknesses in a system, usually following a defined scope and ending with a report of findings and fixes. It is like a planned fire drill for your defenses.\n\nA red team goes further. Instead of a checklist, it emulates a realistic adversary using the same tactics as a real attacker, often without the defensive side knowing the exact scenario. The blue team is the defensive counterpart: the people who monitor, detect, and respond. Together, red and blue exercises reveal both technical gaps and process failures.\n\nThe value is not in catching the red team every time but in shortening the time to detect and contain an incident. After each exercise, teams run root cause analysis, patch the gaps, and rehearse again. Security improves through repetition, not through a single audit.",
+    "license": "original",
+    "category": "practice",
+    "contentCn": "看不见的东西你无法修复，这就是组织要自我测试的原因。渗透测试（penetration testing）是在授权范围内、在限定时间内尝试找出并利用系统中弱点的一种行为，通常遵循约定的范围，最后产出一份包含发现与修复建议的报告。它就像是为你的防线安排的一次计划内消防演习。\n\n红队（red team）走得更远。它不按清单行事，而是使用真实攻击者同样的战术来模拟一个真实的对手，而且往往不提前让防守方知道具体场景。蓝队（blue team）则是防守方的对应角色：负责监控、检测和响应。红蓝对抗共同暴露出技术层面的缺口和流程层面的失效。\n\n它的价值不在于每次都抓住红队，而在于缩短发现和遏制事故的时间。每次演练之后，团队会做根因分析、补上缺口，然后再次演练。安全是通过反复练习提升的，而不是靠一次审计。",
+    "titleEn": "Penetration Testing, Red Teams, and Blue Teams",
+    "titleCn": "渗透测试、红队与蓝队"
+  },
+  {
+    "slug": "security-secrets-management",
+    "stackSlug": "security",
+    "title": "Managing Secrets and Keys Without Pain",
+    "difficulty": 2,
+    "contentMd": "Hard-coding an API key in source code is the fastest way to leak it. Once a secret reaches a public repository, it is usually harvested by bots within minutes. The disciplined alternative is secrets management: a dedicated system that stores credentials, encrypts them at rest, and hands them out only to authorized services at runtime.\n\nKey management extends this idea to cryptographic keys. Good practice means generating keys in a hardware-backed store when possible, rotating them on a schedule, and scoping each key to a single purpose. If a key is compromised, you revoke and replace it without redeploying your whole application.\n\nTreat logs and error messages as leak surfaces too. Never print tokens or passwords, and scrub them from stack traces before they reach monitoring dashboards. Combine secrets management with least privilege and audit logging, and you remove the most common path attackers use to move from a small gap to a full data breach.",
+    "license": "original",
+    "category": "tooling",
+    "contentCn": "把 API key 硬编码在源代码里，是泄露它最快的方式。一旦某个机密进入公开仓库，通常几分钟内就会被自动化脚本批量收集起来。更有纪律的做法是机密管理（secrets management）：一套专门的系统，负责存储凭据、对静态数据加密，并且只在运行时把凭据发给获得授权的服务。\n\n密钥管理把这个思路进一步扩展到密码学密钥。良好的实践意味着：尽可能在有硬件支持的存储中生成密钥，按计划定期轮换，并为每个密钥限定单一用途。如果某个密钥泄露，你可以吊销并替换它，而不必重新部署整个应用。\n\n也要把日志和错误消息当成泄露面来对待。绝不要打印 token 或密码，更要在它们进入监控仪表盘之前从堆栈跟踪里清除掉。把机密管理与最小权限、审计日志结合起来，你就能堵上攻击者最常见的那条路径——从一个细小的缺口一路演变成完整的数据泄露事件。",
+    "titleEn": "Managing Secrets and Keys Without Pain",
+    "titleCn": "轻松管理机密与密钥"
+  }
+]
